@@ -24,3 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /config/keys_dev.js
+
+.env

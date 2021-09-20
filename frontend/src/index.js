@@ -8,6 +8,8 @@ import { logout } from './actions/sessionActions';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
+import dotenv from 'dotenv';
+dotenv.config();
 
 document.addEventListener('DOMContentLoaded', () => {
   let store;
@@ -15,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.jwtToken) {
     setAuthToken(localStorage.jwtToken);
     const decodedUser = jwt_decode(localStorage.jwtToken);
-    const preloadedState = { session: { isAuthenticated: true, user: decodedUser } };
+    const preloadedState = {
+      session: { isAuthenticated: true, user: decodedUser },
+    };
     store = configureStore(preloadedState);
     const currentTime = Date.now() / 1000;
 
@@ -27,9 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
     store = configureStore({});
   }
   const root = document.getElementById('root');
-  ReactDOM.render(<Provider store={ store }>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </Provider>, root);
+  ReactDOM.render(
+    <Provider store={store}>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Provider>,
+    root,
+  );
 });
