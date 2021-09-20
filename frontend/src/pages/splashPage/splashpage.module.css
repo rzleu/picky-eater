@@ -1,0 +1,25 @@
+.button-container,
+.splash-container {
+  display: flex;
+  flex-direction: column;
+}
+
+button:first-child,
+button:nth-child(2) {
+  width: 80%;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+button:first-child {
+  background-color: var(--white);
+  border-radius: var(--button-border-radius);
+  border: none;
+  color: #303742;
+}
+
+button:nth-child(2) {
+  border: 2px solid var(--white);
+  color: var(--white);
+  border-radius: var(--button-border-radius);
+}
