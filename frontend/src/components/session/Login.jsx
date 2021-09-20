@@ -2,6 +2,8 @@ import React from 'react'
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { useDispatch } from 'react-redux';
+import { login } from '../../actions/sessionActions';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -10,10 +12,11 @@ const schema = yup.object().shape({
 });
 
 export default function LoginForm() {
+  const dispatch = useDispatch();
   const { register, handleSubmit, formState:{ errors } } = useForm({
     resolver: yupResolver(schema)
   });
-  const onSubmit = data => console.log(data);
+  const onSubmit = user => dispatch(login(user));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -21,15 +24,17 @@ export default function LoginForm() {
       <input {...register("username")} />
       <p>{errors.username?.message}</p>
       
-      <label htmlFor="username">Email</label>
-      <input {...register("email")} />
-      <p>{errors.email?.message}</p>
+      {/* <label htmlFor="email">Email</label>
+      <input type='email' {...register("email")} />
+      <p>{errors.email?.message}</p> */}
 
-      <label htmlFor="username">Password</label>
-      <input {...register("password")} />
+      <label htmlFor="password">Password</label>
+      <input type='password' {...register("password")} />
       <p>{errors.password?.message}</p>
       
       <input type="submit" />
     </form>
   );
 }
+
+
