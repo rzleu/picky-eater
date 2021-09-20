@@ -43,7 +43,9 @@ app.listen(port, () =>
   console.log(`Server is running on port ${port}`),
 );
 
-server.listen(3001);
+server.listen(3001, () => {
+  console.log('Server is running on 3001');
+});
 
 const MAX_ROOM_SIZE = 2;
 io.on('connection', (socket) => {
