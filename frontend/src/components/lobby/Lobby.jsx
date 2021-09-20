@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
 // @ts-ignore
-const socket = io.connect('/4000');
+const socket = io(`http://${window.location.hostname}:3001`);
 
 function Lobby() {
   const [selections, setSelections] = useState([
@@ -15,10 +15,12 @@ function Lobby() {
   const [match, setMatch] = useState('');
 
   useEffect(() => {
-    socket.on('approved-list', ({ approved }) => {
-      if (approved.some((item) => item === currSelection)) {
-        setMatch(currSelection);
-      }
+    socket.on('approved-list', (approved) => {
+      // if (approved.some((item) => item === currSelection)) {
+      console.log(approved);
+      console.log('hello');
+      //   setMatch(currSelection);
+      // }
     });
   });
 

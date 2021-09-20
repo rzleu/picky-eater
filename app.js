@@ -1,6 +1,8 @@
 const express = require('express');
 
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, { cors: { origin: '*' } });
 const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
@@ -40,3 +42,22 @@ const port = process.env.PORT || 5000;
 app.listen(port, () =>
   console.log(`Server is running on port ${port}`),
 );
+
+server.listen(3001);
+
+const MAX_ROOM_SIZE = 2;
+io.on('connection', (socket) => {
+  // if (io.sockets.clients('rooms') >= MAX_ROOM_SIZE) {
+  //   // logic to create another socket
+  // }
+  // if (io.sockets)
+  // listens for right-swipe
+  socket.on('right-swipe', ({ selection }) => {
+    const approvedList = [selection];
+    socket.broadcast.emit('approved-list', approvedList);
+  });
+
+  socket.on('disconnect', () => {
+    io.emit('message', 'A user has left the chat');
+  });
+});
