@@ -1,13 +1,12 @@
 import React from 'react';
-import './splashpage.module.css';
+import styles from './splashpage.module.css';
 
 function SplashPage() {
   return (
-    <div className="splash-container h-100">
-      <img src="#" alt="" />
+    <div className={`h-100 ${styles.splashContainer}`}>
       <h1>Tinder</h1>
-      <h1>Swipe Right</h1>
-      <div className="button-container">
+      <h2>Swipe Right</h2>
+      <div className={styles.buttonContainer}>
         <button>Create Account</button>
         <button>Log In</button>
       </div>
