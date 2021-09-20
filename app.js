@@ -7,8 +7,9 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
 const db = require('./config/keys').mongoURI;
-
 const users = require('./routes/api/users');
+const lobbies = require('./routes/api/lobbies');
+app.set('socketio', io);
 
 mongoose
   .connect(db, { useNewUrlParser: true })
@@ -34,9 +35,8 @@ app.use(
 app.use(passport.initialize());
 
 require('./config/passport')(passport);
-
 app.use('/api/users', users);
-
+app.use('/api/lobbies', lobbies);
 const port = process.env.PORT || 5000;
 
 app.listen(port, () =>
@@ -47,19 +47,26 @@ server.listen(3001, () => {
   console.log('Server is running on 3001');
 });
 
-const MAX_ROOM_SIZE = 2;
-io.on('connection', (socket) => {
-  // if (io.sockets.clients('rooms') >= MAX_ROOM_SIZE) {
-  //   // logic to create another socket
-  // }
-  // if (io.sockets)
-  // listens for right-swipe
-  socket.on('right-swipe', ({ selection }) => {
-    const approvedList = [selection];
-    socket.broadcast.emit('approved-list', approvedList);
-  });
-
-  socket.on('disconnect', () => {
-    io.emit('message', 'A user has left the chat');
-  });
-});
+// let approvedList = [];
+// const users = {
+//   1: {
+//     id: 1,
+//     list: [],
+//   },
+//   2: {
+//     id: 2,
+//     list: [],
+//   },
+// };
+// socket.on('right-swipe', ({ selection, id }) => {
+//   users[id] = {
+//     ...users[id],
+//     list: users[id].list.concat(selection),
+//   };
+//   if (id === 1) {
+//     approvedList = users[2].list;
+//   } else {
+//     approvedList = users[1].list;
+//   }
+//   io.sockets.emit('approved-list', approvedList);
+// });

@@ -4,36 +4,35 @@ import io from 'socket.io-client';
 // @ts-ignore
 const socket = io(`http://${window.location.hostname}:3001`);
 
-function Lobby() {
-  const [selections, setSelections] = useState([
-    'Sushi',
-    'Pizza',
-    'Sauasge',
-    'Durian',
-  ]);
+function Lobby({
+  categories = ['Sushi', 'Pizza', 'Sausage', 'Durian'],
+}) {
+  const [selections, setSelections] = useState(categories);
   const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
 
   useEffect(() => {
     socket.on('approved-list', (approved) => {
-      // if (approved.some((item) => item === currSelection)) {
-      console.log(approved);
-      console.log('hello');
-      //   setMatch(currSelection);
-      // }
+      if (approved.some((item) => item && item === currSelection)) {
+        console.log(approved);
+        setMatch(currSelection);
+      }
     });
-  });
+  }, [currSelection]);
 
   const removeAndSelectNext = () => {
-    setSelections((oldSelections) =>
-      oldSelections.filter((select) => select !== currSelection),
+    // console.log(selections);
+    const filteedItems = selections.filter(
+      (selection) => selection !== currSelection,
     );
-    setCurrSelection(selections[0]);
+    setSelections(filteedItems);
+    setCurrSelection(filteedItems[0]);
   };
 
-  const handleLeftSwipe = () => removeAndSelectNext();
+  const handleLeftSwipe = (e) => removeAndSelectNext();
 
-  const handleRightSwipe = () => {
+  const handleRightSwipe = (e) => {
+    e.preventDefault();
     socket.emit('right-swipe', {
       selection: currSelection,
     });
@@ -44,7 +43,7 @@ function Lobby() {
       <h2>Swipe Left or Righ!</h2>
       {currSelection}
       <button onClick={handleLeftSwipe}>Left</button>
-      <button onClick={handleRightSwipe}>Right</button>
+      <button onClick={(e) => handleRightSwipe(e)}>Right</button>
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
