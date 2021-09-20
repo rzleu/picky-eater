@@ -30,6 +30,7 @@ h2 {
   text-transform: uppercase;
   margin-bottom: -65px;
   text-shadow: 2px 2px #ff0000;
+  font-style: italic;
 }
 
 .splashContainer {
@@ -74,12 +75,14 @@ button:nth-child(2) {
 }
 
 h1 {
-  border: 5px solid red;
-  position: absolute;
+  position: relative;
   top: 2.5%;
-  left: 2.5%;
+  left: 5.5%;
   font-size: 2rem;
   color: white;
+  font-family: 'Kanit', sans-serif;
+  font-weight: 400;
+  align-self: flex-start;
 }
 
 @media screen and (min-width: 400px) {
@@ -96,8 +99,15 @@ h1 {
   }
 
   h2 {
-    text-shadow: 2px 2px #00ff40;
+    text-shadow: 3px 3px #373737;
+    color: #ff984c;
     margin-bottom: 50px;
+    margin-top: 170px;
+  }
+
+  h1 {
+    position: absolute;
+    left: 2.5%;
   }
 
   button:first-child {
@@ -121,6 +131,22 @@ h1 {
   }
 
   button:nth-child(2) {
-    display: none;
+    display: inline;
+    position: absolute;
+    top: 0.5%;
+    right: 2.5%;
+    background: white;
+    color: #ff984c;
+    width: 100px;
+    border-radius: 3px;
+    padding: 0px 6px;
+    font-size: 14px;
+  }
+
+  button:nth-child(2):hover {
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(45deg, #ff468d, #ff864d);
+    border: none;
   }
 }
