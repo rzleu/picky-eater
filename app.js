@@ -52,9 +52,28 @@ io.on('connection', (socket) => {
   // }
   // if (io.sockets)
   // listens for right-swipe
-  socket.on('right-swipe', ({ selection }) => {
-    const approvedList = [selection];
-    socket.broadcast.emit('approved-list', approvedList);
+  let approvedList = [];
+  const users = {
+    1: {
+      id: 1,
+      list: [],
+    },
+    2: {
+      id: 2,
+      list: [],
+    },
+  };
+  socket.on('right-swipe', ({ selection, id }) => {
+    users[id] = {
+      ...users[id],
+      list: users[id].list.concat(selection),
+    };
+    if (id === 1) {
+      approvedList = users[2].list;
+    } else {
+      approvedList = users[1].list;
+    }
+    io.sockets.emit('approved-list', approvedList);
   });
 
   socket.on('disconnect', () => {
