@@ -6,6 +6,7 @@ const router = express.Router();
 const swipeLobby = {};
 router.post('/', (req, res) => {
   const io = req.app.get('socketio');
+
   if (!swipeLobby[req.body.room]) {
     swipeLobby[req.body.room] = { users: {} };
     io.emit('room-created', req.body.room);
