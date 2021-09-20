@@ -69,9 +69,10 @@ router.post('/login', (req, res) => {
     return res.status(400).json(errors);
   }
 
-  const { username, password } = req.body.username;
+  const { username, password } = req.body;
 
   User.findOne({ username }).then((user) => {
+    console.log(user);
     if (!user) {
       errors.username = 'This user does not exist';
       return res.status(400).json(errors);

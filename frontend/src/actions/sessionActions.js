@@ -1,5 +1,5 @@
-import * as SessionAPIUtil from '../util/sessionApiUtil'
-import jwt_decode from 'jwt-decode'
+import * as SessionAPIUtil from '../util/sessionApiUtil';
+import jwt_decode from 'jwt-decode';
 
 export const RECEIVE_CURRENT_USER = 'RECEIVE_CURRENT_USER';
 export const RECEIVE_SESSION_ERRORS = 'RECEIVE_SESSION_ERRORS';
@@ -27,7 +27,7 @@ export const logoutUser = () => ({
 export const signup = (user) => (dispatch) =>
   SessionAPIUtil.signup(user).then(
     () => dispatch(receiveUserSignIn()),
-    (err) => dispatch(receiveErrors(err.response.data))
+    (err) => dispatch(receiveErrors(err.response.data)),
   );
 
 export const login = (user) => (dispatch) =>
@@ -38,9 +38,11 @@ export const login = (user) => (dispatch) =>
       SessionAPIUtil.setAuthToken(token);
       const decoded = jwt_decode(token);
       dispatch(receiveCurrentUser(decoded));
+      console.log(res);
     })
     .catch((err) => {
       dispatch(receiveErrors(err.response.data));
+      console.log(err);
     });
 
 export const logout = () => (dispatch) => {
