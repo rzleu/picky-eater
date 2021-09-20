@@ -1,3 +1,4 @@
+import { fetchAllRestaurants } from './actions/restaurantActions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 // import Root from './components/root';
@@ -8,10 +9,9 @@ import { logout } from './actions/sessionActions';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
-import dotenv from 'dotenv';
-dotenv.config();
 
 document.addEventListener('DOMContentLoaded', () => {
+  window.fetchAllRestaurants = fetchAllRestaurants;
   let store;
 
   if (localStorage.jwtToken) {
