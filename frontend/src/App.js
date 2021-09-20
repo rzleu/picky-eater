@@ -1,11 +1,15 @@
 import React from 'react';
 import LoginForm from './components/session/Login';
-import './index.css'
+import Lobby from './components/lobby';
+import './index.css';
 
 function App() {
   return (
-    <div><LoginForm/></div>
-  )
+    <div>
+      <LoginForm />
+      <Lobby />
+    </div>
+  );
 }
 
 export default App;
