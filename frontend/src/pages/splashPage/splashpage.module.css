@@ -1,11 +1,38 @@
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .buttonContainer,
 .splashContainer {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.buttonContainer {
+  width: 100%;
+  margin-bottom: 20%;
+  gap: 4px;
+}
+
+h2 {
+  color: var(--white);
+  font-size: clamp(3rem, 7.3vw + 1.4rem, 5rem);
+  font-family: 'Kanit', sans-serif;
+  text-transform: uppercase;
+  margin-bottom: -65px;
+  text-shadow: 2px 2px #ff0000;
 }
 
 .splashContainer {
-  /* background: grey !important; */
   background-image: linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0) 40%,
@@ -17,6 +44,7 @@
   background-position: center;
   background-repeat: no-repeat;
   mix-blend-mode: color-burn;
+  justify-content: space-between;
 }
 
 button:first-child,
@@ -27,6 +55,7 @@ button:nth-child(2) {
   min-height: 54px;
   font-weight: 700;
   letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 button:first-child {
@@ -44,8 +73,54 @@ button:nth-child(2) {
   margin-top: 15px;
 }
 
+h1 {
+  border: 5px solid red;
+  position: absolute;
+  top: 2.5%;
+  left: 2.5%;
+  font-size: 2rem;
+  color: white;
+}
+
 @media screen and (min-width: 400px) {
   .splashContainer {
-    background-image: url(../../assets/images/desktop-splash-bg.webp);
+    /* background-image: url(../../assets/images/desktop-splash-bg.webp); */
+    justify-content: center;
+    background-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0) 60%,
+        rgba(0, 0, 0, 0.5) 90%,
+        rgba(0, 0, 0, 0.7)
+      ),
+      url(../../assets/images/desktop-splash-bg.webp);
+  }
+
+  h2 {
+    text-shadow: 2px 2px #00ff40;
+    margin-bottom: 50px;
+  }
+
+  button:first-child {
+    width: 275px;
+    background: linear-gradient(
+      -45deg,
+      rgba(131, 58, 180, 1) 0%,
+      rgb(206, 75, 218) 25%,
+      rgba(253, 29, 29, 1) 50%,
+      rgba(252, 176, 69, 1) 80%
+    );
+    background-size: 300% 300%;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  button:first-child:hover {
+    animation: gradient 10s ease infinite;
+  }
+
+  button:nth-child(2) {
+    display: none;
   }
 }
