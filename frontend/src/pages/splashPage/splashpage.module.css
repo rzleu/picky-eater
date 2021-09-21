@@ -49,7 +49,7 @@ h2 {
 }
 
 button:first-child,
-button:nth-child(2) {
+.splashBtn2 {
   width: 80%;
   text-transform: uppercase;
   text-align: center;
@@ -66,7 +66,7 @@ button:first-child {
   color: #303742;
 }
 
-button:nth-child(2) {
+.splashBtn2 {
   border: 2px solid var(--white);
   color: var(--white);
   border-radius: var(--button-border-radius);
@@ -132,7 +132,7 @@ h1 {
     animation: gradient 10s ease infinite;
   }
 
-  button:nth-child(2) {
+  .splashBtn2 {
     display: inline;
     position: absolute;
     top: 0.5%;
@@ -147,7 +147,7 @@ h1 {
     font-family: 'Kanit', sans-serif;
   }
 
-  button:nth-child(2):hover {
+  .splashBtn2:hover {
     color: white;
     cursor: pointer;
     background: linear-gradient(45deg, #ff468d, #ff864d);
