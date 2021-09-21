@@ -12,6 +12,9 @@ import { useForm } from 'react-hook-form';
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 
+import styles from './lobby.module.css';
+import fetchRestaurantData from '../../util/restaurantUtil';
+
 const schema = yup.object().shape({
   lobby: yup.string().required(),
 });
@@ -26,6 +29,7 @@ function Lobby() {
   });
   const socket = useContext(SocketContext);
   const [showCardSwipe, setShowCardSwipe] = useState(false);
+  const [setRoomCode, setSetRoomCode] = useState('');
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
@@ -34,13 +38,18 @@ function Lobby() {
     socket.emit('JOIN_ROOM');
   }, []);
 
-  const handleCreateRoom = useCallback(() => {
-    socket.emit('CREATE_RAND_ROOM');
+  const handleCreateRoom = useCallback(async () => {
+    const data = await fetchRestaurantData();
+    socket.emit('CREATE_RAND_ROOM', data);
   }, []);
 
-  const handleRoomAccepted = useCallback(() => {
+  const handleRoomAccepted = useCallback((data) => {
     setShowCardSwipe(true);
   }, []);
+
+  const handleRoomCode = useCallback((code) => {
+    setRoomCode(code);
+  });
 
   useEffect(() => {
     if (username && id) {
@@ -48,26 +57,35 @@ function Lobby() {
     }
 
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
+    socket.on('ROOM_CODE', handleRoomCode);
 
     return () => {
       socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
+      socket.off('ROOM_CODE');
     };
   }, [socket, username, id, handleRoomAccepted]);
 
   return (
-    <div>
+    <div className={styles.container}>
       {!showCardSwipe ? (
-        <div>
-          <h2>Have a Pin?</h2>
-          <form onSubmit={handleSubmit(handleJoinRoom)}>
-            <input {...register('lobby')} />
-            <p>{errors.lobby?.message}</p>
-          </form>
-          <h3>Create a room?</h3>
-          <button onClick={handleCreateRoom}>
-            Generate Random Room!
-          </button>
-        </div>
+        <>
+          <div className={styles.formWrapper}>
+            <form onSubmit={handleSubmit(handleJoinRoom)}>
+              <h2>Have a Pin?</h2>
+              <div>
+                <input {...register('lobby')} />
+                <p className="errorMsg">{errors.lobby?.message}</p>
+                <input type="submit" value="Enter" />
+              </div>
+            </form>
+            <div>
+              <h3>Create a room?</h3>
+              <button onClick={handleCreateRoom}>
+                Generate Random Room!
+              </button>
+            </div>
+          </div>
+        </>
       ) : (
         <CardSwipe />
       )}
