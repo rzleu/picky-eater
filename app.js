@@ -45,21 +45,6 @@ server.listen(3001, () => {
   console.log('Server is running on 3001');
 });
 
-// app.post('/api/lobbies', (req, res) => {
-//   const rooms = io.sockets.adapter.rooms;
-
-//   console.log(rooms);
-//   if (!rooms.has(req.body.room)) {
-//     // rooms[req.body.room] = { users: {} };
-//     io.on('connection', (socket) => {
-//       socket.join(req.body.room);
-//     });
-//     io.to(req.body).emit('room-created', req.body.room);
-//     res.json(rooms);
-//   } else {
-//     res.json(rooms);
-//   }
-// });
 const randomCodeGenerator = () => {
   let string = '';
 
@@ -72,7 +57,7 @@ const randomCodeGenerator = () => {
 
 io.on('connection', (socket) => {
   socket.on('USER_ONLINE', ({ username, id }) => {
-    socket.user = { username: username, id: id };
+    socket.user = { username, id };
   });
 
   socket.on('CREATE_RAND_ROOM', () => {
@@ -84,8 +69,7 @@ io.on('connection', (socket) => {
 
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
-    console.log(socket.adapter.rooms);
-    socket.emit('RETURN_ROOM_CODE', roomCode); // return code to FE
+    socket.emit('ROOM_CODE', roomCode); // return code to FE
   });
 
   socket.on('JOIN_ROOM', (room) => {
@@ -99,15 +83,24 @@ io.on('connection', (socket) => {
       rooms.get(room).size < 2
     ) {
       socket.join(room);
-      console.log(socket.adapter.rooms);
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
     } else {
-      console.log('fail');
+      console.log('room full');
       socket.emit('full-room', {
         message: 'Room is unavailable',
         room,
       });
     }
+  });
+
+  socket.on('MASTER_LIST', (resData, room) => {
+    // get room code from FE
+    const rooms = socket.adapter.rooms;
+
+    rooms.get(room).forEach((socketId) => {
+      io.sockets.sockets.get(socketId).list = resData;
+      // console.log(io.sockets.sockets.get(socketId));
+    });
   });
 
   socket.on('disconnect', () => {
