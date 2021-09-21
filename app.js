@@ -46,26 +46,41 @@ server.listen(3001, () => {
   console.log('Server is running on 3001');
 });
 
-const rooms = {};
-app.post('/api/lobbies', (req, res) => {
-  if (!rooms[req.body.room]) {
-    const room = req.body.room;
-    rooms[room] = { users: {} };
-    io.emit('room-created', req.body.room);
-    res.json({ room: rooms });
-  }
-});
+// app.post('/api/lobbies', (req, res) => {
+//   const rooms = io.sockets.adapter.rooms;
+
+//   console.log(rooms);
+//   if (!rooms.has(req.body.room)) {
+//     // rooms[req.body.room] = { users: {} };
+//     io.on('connection', (socket) => {
+//       socket.join(req.body.room);
+//     });
+//     io.to(req.body).emit('room-created', req.body.room);
+//     res.json(rooms);
+//   } else {
+//     res.json(rooms);
+//   }
+// });
 
 io.on('connection', (socket) => {
   // joining a room that is empty/full
+  socket.on('join-room', (room) => {
+    // console.log(socket);
 
-  socket.on('join-room', (room, username) => {
-    if (Object.values(rooms[room]).length < 2) {
+    const rooms = socket.adapter.rooms;
+    // console.log(room);
+    // console.log(rooms);
+    if (
+      !rooms.has(room) ||
+      (rooms.has(room) && rooms.get(room).size < 2)
+    ) {
       socket.join(room);
-      rooms[room].users[socket.id] = username;
-      res.send('Socket on ending');
+      console.log(socket.adapter.rooms);
+      // console.log(socket.rooms);
+      socket.to(room).emit('Socket on ending');
       // rooms = { room: { users: { 1: anthill499, 2: cindyjiang } } }
     } else {
+      console.log('fail');
       socket.emit('full-room', {
         message: 'Room is unavailable',
         room,
@@ -73,8 +88,8 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', (room) => {
-    delete rooms[room].users[socket.id];
-    io.emit('disconnect-message', 'A user has left the chat');
-  });
+  // socket.on('disconnect', (room) => {
+  //   delete rooms[room].users[socket.id];
+  //   io.emit('disconnect-message', 'A user has left the chat');
+  // });
 });
