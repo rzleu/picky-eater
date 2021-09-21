@@ -64,7 +64,7 @@ server.listen(3001, () => {
 
 io.on('connection', (socket) => {
   // joining a room that is empty/full
-  socket.on('join-room', (room) => {
+  socket.on('JOIN-ROOM', (room) => {
     // console.log(socket);
 
     const rooms = socket.adapter.rooms;
@@ -81,7 +81,7 @@ io.on('connection', (socket) => {
       // rooms = { room: { users: { 1: anthill499, 2: cindyjiang } } }
     } else {
       console.log('fail');
-      socket.emit('full-room', {
+      socket.emit('FULL-ROOM', {
         message: 'Room is unavailable',
         room,
       });
