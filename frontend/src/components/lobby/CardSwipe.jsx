@@ -37,17 +37,10 @@ function CardSwipe() {
 
   const removeAndSelectNext = () => {
     // console.log(selections);
-<<<<<<< HEAD
-    const filteredItems = selections.filter(
-      (selection) => selection !== currSelection,
-    );
-    setSelections(filteredItems);
-=======
     const filteredItems = masterList.filter(
       (selection) => selection !== currSelection,
     );
     setMasterList(filteredItems);
->>>>>>> origin/main
     setCurrSelection(filteredItems[0]);
   };
 
@@ -63,21 +56,11 @@ function CardSwipe() {
 
   console.log(masterList);
   return (
-<<<<<<< HEAD
-    <div className={style.swipeContainer}>
-      <h2>Swipe Left or Right!</h2>
-      <div className="cardContainer">
-        <div>{currSelection}</div>
-        <button onClick={handleLeftSwipe}>Left</button>
-        <button onClick={handleRightSwipe}>Right</button>
-      </div>
-=======
     <div>
       <h2>Swipe Left or Right!</h2>
       {currSelection}
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
->>>>>>> origin/main
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
