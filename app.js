@@ -8,7 +8,6 @@ const passport = require('passport');
 const path = require('path');
 const db = require('./config/keys').mongoURI;
 const users = require('./routes/api/users');
-const lobbies = require('./routes/api/lobbies');
 
 mongoose
   .connect(db, { useNewUrlParser: true })
@@ -35,7 +34,7 @@ app.use(passport.initialize());
 
 require('./config/passport')(passport);
 app.use('/api/users', users);
-// app.use('/api/lobbies', lobbies);
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () =>
@@ -61,24 +60,47 @@ server.listen(3001, () => {
 //     res.json(rooms);
 //   }
 // });
+const randomCodeGenerator = () => {
+  let string = '';
+
+  for (let i = 0; i < 4; i++) {
+    string += Math.floor(Math.random() * 9);
+  }
+
+  return string;
+};
 
 io.on('connection', (socket) => {
-  // joining a room that is empty/full
-  socket.on('join-room', (room) => {
-    // console.log(socket);
+  socket.on('USER_ONLINE', ({ username, id }) => {
+    socket.user = { username: username, id: id };
+  });
+
+  socket.on('CREATE_RAND_ROOM', () => {
+    let roomCode = randomCodeGenerator();
+
+    while (socket.adapter.rooms.has(roomCode)) {
+      roomCode = randomCodeGenerator();
+    }
+
+    socket.leave(socket.id);
+    socket.join(roomCode); // user will join room with rand 4-digit code
+    console.log(socket.adapter.rooms);
+    socket.emit('RETURN_ROOM_CODE', roomCode); // return code to FE
+  });
+
+  socket.on('JOIN_ROOM', (room) => {
+    socket.leave(socket.id);
 
     const rooms = socket.adapter.rooms;
-    // console.log(room);
-    // console.log(rooms);
+
     if (
-      !rooms.has(room) ||
-      (rooms.has(room) && rooms.get(room).size < 2)
+      // !rooms.has(room) ||
+      rooms.has(room) &&
+      rooms.get(room).size < 2
     ) {
       socket.join(room);
       console.log(socket.adapter.rooms);
-      // console.log(socket.rooms);
-      socket.to(room).emit('Socket on ending');
-      // rooms = { room: { users: { 1: anthill499, 2: cindyjiang } } }
+      socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
     } else {
       console.log('fail');
       socket.emit('full-room', {
@@ -88,8 +110,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // socket.on('disconnect', (room) => {
-  //   delete rooms[room].users[socket.id];
-  //   io.emit('disconnect-message', 'A user has left the chat');
-  // });
+  socket.on('disconnect', () => {
+    io.emit('disconnect-message', 'A user has left the chat');
+  });
 });
