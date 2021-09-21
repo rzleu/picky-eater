@@ -52,6 +52,7 @@ router.post('/signup', (req, res) => {
                 res.json({
                   success: true,
                   token: `Bearer ${token}`,
+                  payload,
                 });
               },
             );
