@@ -8,7 +8,7 @@ import { SocketContext } from '../../context/socket';
 
 // @ts-ignore
 
-function Lobby({
+function CardSwipe({
   categories = ['Sushi', 'Pizza', 'Sausage', 'Durian'],
 }) {
   const [selections, setSelections] = useState(categories);
@@ -17,14 +17,15 @@ function Lobby({
   const socket = useContext(SocketContext);
 
   useEffect(() => {
-    socket.on('approved-list', (approved) => {
+    socket.on('APPROVED_LIST', (approved) => {
+      //approved list is list of matched restaurants
       if (approved.some((item) => item && item === currSelection)) {
         console.log(approved);
         setMatch(currSelection);
       }
     });
     return () => {
-      socket.off('approved-list');
+      socket.off('APPROVED_LIST');
     };
   }, [currSelection, socket]);
 
@@ -63,4 +64,4 @@ function Lobby({
   );
 }
 
-export default Lobby;
+export default CardSwipe;
