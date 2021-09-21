@@ -1,8 +1,11 @@
-h2 {
-  /* margin: 0; */
+.swipeHeader {
+  margin: 0;
 }
 
 .swipeContainer {
   background: rgb(70, 70, 70);
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

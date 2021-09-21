@@ -40,7 +40,7 @@ function success(pos) {
       // socket.emit('MASTER_LIST', resData);
     })
     .catch(function (error) {
-      console.log('Blame Anthony');
+      // console.log('Blame Anthony');
       console.error(error);
     });
 }

@@ -27,7 +27,7 @@ export default function SignupForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    console.log(user);
+    // console.log(user);
     dispatch(signup(user));
   };
 

@@ -23,7 +23,7 @@ function CardSwipe() {
     socket.on('APPROVED_LIST', (approved) => {
       //approved list is list of matched restaurants
       if (approved.some((item) => item && item === currSelection)) {
-        console.log(approved);
+        // console.log(approved);
         setMatch(currSelection);
       }
     });
@@ -56,9 +56,9 @@ function CardSwipe() {
 
   console.log(masterList);
   return (
-    <div>
-      <h2>Swipe Left or Right!</h2>
-      {currSelection}
+    <div className={style.swipeContainer}>
+      <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
+      <div>{currSelection} test</div>
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
       {match && (

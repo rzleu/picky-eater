@@ -23,7 +23,7 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    console.log(user);
+    // console.log(user);
     dispatch(login(user));
   };
 
