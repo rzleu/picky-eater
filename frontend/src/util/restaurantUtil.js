@@ -1,6 +1,9 @@
 import axios from 'axios';
-import { useContext } from 'react';
-import { socket, SocketContext } from '../context/socket';
+import socketio from 'socket.io-client';
+
+const socket = socketio.connect(
+  `http://${window.location.hostname}:3001`,
+);
 
 function fetchRestaurantData() {
   return navigator.geolocation.getCurrentPosition(success);
