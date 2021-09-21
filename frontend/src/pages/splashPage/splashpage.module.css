@@ -124,6 +124,8 @@ h1 {
     color: white;
     font-size: 0.9rem;
     font-weight: 600;
+    letter-spacing: 2px;
+    font-family: 'Kanit', sans-serif;
   }
 
   button:first-child:hover {
@@ -141,6 +143,8 @@ h1 {
     border-radius: 3px;
     padding: 0px 6px;
     font-size: 14px;
+    letter-spacing: 1.5px;
+    font-family: 'Kanit', sans-serif;
   }
 
   button:nth-child(2):hover {
