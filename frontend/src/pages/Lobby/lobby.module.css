@@ -29,3 +29,7 @@ form > h2 {
 form > input {
   width: 70%;
 }
+
+.lobbyEnter {
+  padding-left: 0;
+}

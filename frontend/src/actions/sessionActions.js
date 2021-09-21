@@ -39,11 +39,11 @@ export const login = (user) => (dispatch) =>
       SessionAPIUtil.setAuthToken(token);
       const decoded = jwt_decode(token);
       dispatch(receiveUserSignIn(decoded));
-      console.log(res);
+      // console.log(res);
     })
     .catch((err) => {
       dispatch(receiveErrors(err.response.data));
-      console.log(err);
+      // console.log(err);
     });
 
 export const logout = () => (dispatch) => {
