@@ -5,6 +5,7 @@ import React, {
   useContext,
 } from 'react';
 import { SocketContext } from '../../context/socket';
+import style from './cardswipe.module.css';
 
 // @ts-ignore
 
@@ -31,11 +32,11 @@ function CardSwipe({
 
   const removeAndSelectNext = () => {
     // console.log(selections);
-    const filteedItems = selections.filter(
+    const filteredItems = selections.filter(
       (selection) => selection !== currSelection,
     );
-    setSelections(filteedItems);
-    setCurrSelection(filteedItems[0]);
+    setSelections(filteredItems);
+    setCurrSelection(filteredItems[0]);
   };
 
   const handleLeftSwipe = () => removeAndSelectNext();
@@ -49,11 +50,13 @@ function CardSwipe({
   }, []);
 
   return (
-    <div>
-      <h2>Swipe Left or Righ!</h2>
-      {currSelection}
-      <button onClick={handleLeftSwipe}>Left</button>
-      <button onClick={handleRightSwipe}>Right</button>
+    <div className={style.swipeContainer}>
+      <h2>Swipe Left or Right!</h2>
+      <div className="cardContainer">
+        <div>{currSelection}</div>
+        <button onClick={handleLeftSwipe}>Left</button>
+        <button onClick={handleRightSwipe}>Right</button>
+      </div>
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>

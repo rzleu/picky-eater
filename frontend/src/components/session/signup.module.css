@@ -1,12 +1,15 @@
 form {
   position: relative;
   z-index: 2;
-  background: var(--white);
+  /* background: var(--white); */
   gap: 10px;
   height: auto;
   padding: 40px;
   border-radius: 10px;
   font-family: Kanit;
+  backdrop-filter: brightness(0.5) blur(5px);
+  -webkit-box-shadow: 0px 0px 20px 5px #ffffff;
+  box-shadow: 0px 0px 5px 1px #cccccc;
 }
 
 form > div {
@@ -22,21 +25,61 @@ form > button {
   background: transparent;
   border: none;
   cursor: pointer;
+  color: white;
 }
 
 form > h3 {
   align-self: center;
   position: relative;
   bottom: 10px;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-family: Kanit;
   font-style: italic;
+  margin-bottom: 10px;
+  color: white;
 }
 
 input {
-  border-radius: 3px;
   border: 2px solid grey;
   padding: 5px 5px;
+  border-radius: 100px;
+  height: 40px;
+  padding-left: 16px;
+}
+
+form > input:last-of-type {
+  background: #ff984c;
+  color: white;
+  min-height: 54px;
+  border: 2px solid white;
+  border-radius: var(--button-border-radius);
+  margin-top: 10px;
+  cursor: pointer;
+  font-family: Kanit;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 1.5px;
+  font-weight: bold;
+  width: 80%;
+  align-self: center;
+}
+
+form > input:last-of-type:hover {
+  background: linear-gradient(
+    -45deg,
+    rgb(255, 213, 155) 10%,
+    rgb(255, 179, 73) 33%,
+    rgb(255, 166, 42) 80%
+  );
+  animation: gradient 10s ease infinite;
+}
+
+form > div > label {
+  margin-left: 16px;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  color: white;
 }
 
 input:focus {
