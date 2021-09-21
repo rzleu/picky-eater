@@ -1,0 +1,50 @@
+form {
+  position: relative;
+  z-index: 2;
+  background: var(--white);
+  gap: 10px;
+  width: 300px;
+  height: auto;
+  padding: 20px;
+  border-radius: 3px;
+  font-family: Kanit;
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.formContainer {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.maskBG {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+form > button {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  background: transparent;
+}
+
+input {
+  border-radius: 3px;
+  border: 1px solid grey;
+  padding: 5px 5px;
+}
+
+input:focus {
+  outline: coral;
+  border: 1px solid coral;
+}
