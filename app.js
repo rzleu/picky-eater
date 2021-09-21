@@ -60,16 +60,19 @@ io.on('connection', (socket) => {
     socket.user = { username, id };
   });
 
-  socket.on('CREATE_RAND_ROOM', () => {
+  socket.on('CREATE_RAND_ROOM', (restaurants) => {
     let roomCode = randomCodeGenerator();
 
     while (socket.adapter.rooms.has(roomCode)) {
       roomCode = randomCodeGenerator();
     }
+    console.log({ restaurants });
 
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
+    io.sockets.sockets.get(socket.id).list = restaurants;
     socket.emit('ROOM_CODE', roomCode); // return code to FE
+    socket.to(roomCode).emit('MASTER_LIST', restaurants);
   });
 
   socket.on('JOIN_ROOM', (room) => {
@@ -83,7 +86,9 @@ io.on('connection', (socket) => {
       rooms.get(room).size < 2
     ) {
       socket.join(room);
+      const data = io.sockets.sockets.get(room).list;
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
+      socket.to(room).emit('MASTER_LIST', data);
     } else {
       console.log('room full');
       socket.emit('full-room', {
@@ -93,15 +98,15 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('MASTER_LIST', (resData, room) => {
-    // get room code from FE
-    const rooms = socket.adapter.rooms;
+  // socket.on('MASTER_LIST', (resData, room) => {
+  //   // get room code from FE
+  //   const rooms = socket.adapter.rooms;
 
-    rooms.get(room).forEach((socketId) => {
-      io.sockets.sockets.get(socketId).list = resData;
-      // console.log(io.sockets.sockets.get(socketId));
-    });
-  });
+  //   rooms.get(room).forEach((socketId) => {
+  //     io.sockets.sockets.get(socketId).list = resData;
+  //     // console.log(io.sockets.sockets.get(socketId));
+  //   });
+  // });
 
   socket.on('disconnect', () => {
     io.emit('disconnect-message', 'A user has left the chat');

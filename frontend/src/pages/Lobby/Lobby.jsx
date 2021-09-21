@@ -6,6 +6,7 @@ import React, {
   useEffect,
 } from 'react';
 import * as yup from 'yup';
+import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -29,7 +30,8 @@ function Lobby() {
   });
   const socket = useContext(SocketContext);
   const [showCardSwipe, setShowCardSwipe] = useState(false);
-  const [setRoomCode, setSetRoomCode] = useState('');
+  const [roomCode, setRoomCode] = useState('');
+  const [masterList, setMasterList] = useState([]);
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
@@ -38,10 +40,9 @@ function Lobby() {
     socket.emit('JOIN_ROOM');
   }, []);
 
-  const handleCreateRoom = useCallback(async () => {
-    const data = await fetchRestaurantData();
-    socket.emit('CREATE_RAND_ROOM', data);
-  }, []);
+  const handleCreateRoom = useCallback(() => {
+    socket.emit('CREATE_RAND_ROOM', masterList);
+  }, [masterList]);
 
   const handleRoomAccepted = useCallback((data) => {
     setShowCardSwipe(true);
@@ -50,6 +51,74 @@ function Lobby() {
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
   });
+
+  function success(pos) {
+    const options = {
+      method: 'GET',
+      url: 'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng',
+      params: {
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+        limit: '30',
+        currency: 'USD',
+        distance: '10',
+        open_now: 'false',
+        lunit: 'mi',
+        lang: 'en_US',
+      },
+      headers: {
+        'x-rapidapi-host': 'travel-advisor.p.rapidapi.com',
+        'x-rapidapi-key': process.env.REACT_APP_DB_KEY,
+      },
+    };
+    axios
+      .request(options)
+      .then(function ({ data }) {
+        //emit to backend
+        const resData = data.data
+          .map(
+            ({
+              name,
+              photo,
+              phone,
+              price_level,
+              website,
+              num_reviews,
+              address,
+              latitude,
+              longitude,
+              distance_string,
+            }) => ({
+              name,
+              photo,
+              phone,
+              price_level,
+              website,
+              num_reviews,
+              address,
+              latitude,
+              longitude,
+              distance_string,
+            }),
+          )
+          .filter((data) => {
+            return Object.values(data).length > 8;
+          });
+        console.log(resData);
+
+        setMasterList(resData);
+        return resData;
+        // socket.emit('MASTER_LIST', resData);
+      })
+      .catch(function (error) {
+        console.log('Blame Anthony');
+        console.error(error);
+      });
+  }
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(success);
+  }, []);
 
   useEffect(() => {
     if (username && id) {
@@ -65,9 +134,10 @@ function Lobby() {
     };
   }, [socket, username, id, handleRoomAccepted]);
 
+  console.log({ masterList });
   return (
     <div className={styles.container}>
-      {!showCardSwipe ? (
+      {!roomCode ? (
         <>
           <div className={styles.formWrapper}>
             <form onSubmit={handleSubmit(handleJoinRoom)}>
