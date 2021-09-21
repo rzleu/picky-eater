@@ -1,3 +1,4 @@
+import { fetchAllRestaurants } from './actions/restaurantActions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 // import Root from './components/root';
@@ -11,6 +12,7 @@ import { SocketContext, socket } from './context/socket';
 import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
+  window.fetchAllRestaurants = fetchAllRestaurants;
   let store;
 
   if (localStorage.jwtToken) {
