@@ -9,13 +9,15 @@ import style from './cardswipe.module.css';
 
 // @ts-ignore
 
-function CardSwipe({
-  categories = ['Sushi', 'Pizza', 'Sausage', 'Durian'],
-}) {
-  const [selections, setSelections] = useState(categories);
+function CardSwipe() {
+  const [masterList, setMasterList] = useState([]);
   const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
   const socket = useContext(SocketContext);
+
+  const handleMasterList = useCallback((list) => {
+    setMasterList(list);
+  }, []);
 
   useEffect(() => {
     socket.on('APPROVED_LIST', (approved) => {
@@ -25,17 +27,27 @@ function CardSwipe({
         setMatch(currSelection);
       }
     });
+
+    socket.on('MASTER_LIST', handleMasterList);
+
     return () => {
       socket.off('APPROVED_LIST');
     };
-  }, [currSelection, socket]);
+  }, [currSelection, socket, handleMasterList]);
 
   const removeAndSelectNext = () => {
     // console.log(selections);
+<<<<<<< HEAD
     const filteredItems = selections.filter(
       (selection) => selection !== currSelection,
     );
     setSelections(filteredItems);
+=======
+    const filteredItems = masterList.filter(
+      (selection) => selection !== currSelection,
+    );
+    setMasterList(filteredItems);
+>>>>>>> origin/main
     setCurrSelection(filteredItems[0]);
   };
 
@@ -49,7 +61,9 @@ function CardSwipe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log(masterList);
   return (
+<<<<<<< HEAD
     <div className={style.swipeContainer}>
       <h2>Swipe Left or Right!</h2>
       <div className="cardContainer">
@@ -57,6 +71,13 @@ function CardSwipe({
         <button onClick={handleLeftSwipe}>Left</button>
         <button onClick={handleRightSwipe}>Right</button>
       </div>
+=======
+    <div>
+      <h2>Swipe Left or Right!</h2>
+      {currSelection}
+      <button onClick={handleLeftSwipe}>Left</button>
+      <button onClick={handleRightSwipe}>Right</button>
+>>>>>>> origin/main
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>

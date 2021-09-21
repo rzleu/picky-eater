@@ -1,6 +1,9 @@
 import axios from 'axios';
-import { useContext } from 'react';
-import { socket, SocketContext } from '../context/socket';
+import socketio from 'socket.io-client';
+
+const socket = socketio.connect(
+  `http://${window.location.hostname}:3001`,
+);
 
 function fetchRestaurantData() {
   return navigator.geolocation.getCurrentPosition(success);
@@ -32,9 +35,12 @@ function success(pos) {
       const resData = data.data.filter((data) => {
         return Object.values(data).length > 8;
       });
-      socket.emit('MASTER_LIST', resData);
+      return resData;
+      // console.log(resData);
+      // socket.emit('MASTER_LIST', resData);
     })
     .catch(function (error) {
+      console.log('Blame Anthony');
       console.error(error);
     });
 }
