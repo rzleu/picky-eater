@@ -8,10 +8,9 @@ const path = require('path');
 const db = require('./config/keys').mongoURI;
 const users = require('./routes/api/users');
 
-mongoose
-  .connect(db, { useNewUrlParser: true })
-  .then(() => console.log('Connected to MongoDB successfully'))
-  .catch((err) => console.log(err));
+mongoose.connect(db, { useNewUrlParser: true });
+// .then(() => console.log('Connected to MongoDB successfully'))
+// .catch((err) => console.log(err));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
@@ -36,13 +35,14 @@ app.use('/api/users', users);
 
 const port = process.env.PORT || 5000;
 
-app.listen(port, () =>
-  console.log(`Server is running on port ${port}`),
-);
+app.listen(port);
+//  () =>
+//   console.log(`Server is running on port ${port}`),
 
-server.listen(3001, () => {
-  console.log('Server is running on 3001');
-});
+server.listen(3001);
+// , () => {
+//   console.log('Server is running on 3001');
+// });
 
 const randomCodeGenerator = () => {
   let string = '';
@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
     while (socket.adapter.rooms.has(roomCode)) {
       roomCode = randomCodeGenerator();
     }
-    console.log({ restaurants });
+    // console.log({ restaurants });
 
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
@@ -89,7 +89,7 @@ io.on('connection', (socket) => {
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
       socket.to(room).emit('MASTER_LIST', data);
     } else {
-      console.log('room full');
+      // console.log('room full');
       socket.emit('full-room', {
         message: 'Room is unavailable',
         room,

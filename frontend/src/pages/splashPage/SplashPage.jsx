@@ -6,7 +6,11 @@ import styles from './splashpage.module.css';
 function SplashPage() {
   return (
     <div className={`h-100 ${styles.splashContainer}`}>
-      <h1>pickyEatr</h1>
+      <h1>
+        {/* {' '}
+        <img src="../../assets/images/logoTemp.png" alt="" />{' '} */}
+        pickyEatr
+      </h1>
       <h2>Swipe Right</h2>
       <div className={styles.buttonContainer}>
         {/* <button>Create Account</button> */}

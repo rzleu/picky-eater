@@ -104,15 +104,15 @@ function Lobby() {
           .filter((data) => {
             return Object.values(data).length > 8;
           });
-        console.log(resData);
+        // console.log(resData);
 
         setMasterList(resData);
         return resData;
         // socket.emit('MASTER_LIST', resData);
       })
       .catch(function (error) {
-        console.log('Blame Anthony');
-        console.error(error);
+        // console.log('Blame Anthony');
+        // console.error(error);
       });
   }
 
@@ -134,7 +134,7 @@ function Lobby() {
     };
   }, [socket, username, id, handleRoomAccepted]);
 
-  console.log({ masterList });
+  // console.log({ masterList });
   return (
     <div className={styles.container}>
       {!roomCode ? (
@@ -145,7 +145,11 @@ function Lobby() {
               <div>
                 <input {...register('lobby')} />
                 <p className="errorMsg">{errors.lobby?.message}</p>
-                <input type="submit" value="Enter" />
+                <input
+                  className={styles.lobbyEnter}
+                  type="submit"
+                  value="Enter"
+                />
               </div>
             </form>
             <div>

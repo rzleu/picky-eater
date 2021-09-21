@@ -27,7 +27,7 @@ export default function SignupForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    console.log(user);
+    // console.log(user);
     dispatch(signup(user));
   };
 
@@ -36,7 +36,6 @@ export default function SignupForm({ splashBtn }) {
       {openModal && (
         <>
           <div className="maskBG" />
-
           <div className="formContainer">
             <form onSubmit={handleSubmit(onSubmit)}>
               <h3>Create Account</h3>
