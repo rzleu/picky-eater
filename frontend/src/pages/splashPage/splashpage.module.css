@@ -48,7 +48,7 @@ h2 {
   justify-content: space-between;
 }
 
-button:first-child,
+.splashBtn1,
 .splashBtn2 {
   width: 80%;
   text-transform: uppercase;
@@ -59,7 +59,7 @@ button:first-child,
   white-space: nowrap;
 }
 
-button:first-child {
+.splashBtn1 {
   background-color: var(--white);
   border-radius: var(--button-border-radius);
   border: none;
@@ -110,7 +110,7 @@ h1 {
     left: 2.5%;
   }
 
-  button:first-child {
+  .splashBtn1 {
     width: 275px;
     background: linear-gradient(
       -45deg,
@@ -128,7 +128,7 @@ h1 {
     font-family: 'Kanit', sans-serif;
   }
 
-  button:first-child:hover {
+  .splashBtn1:hover {
     animation: gradient 10s ease infinite;
   }
 

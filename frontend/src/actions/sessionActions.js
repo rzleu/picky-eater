@@ -11,8 +11,9 @@ export const receiveCurrentUser = (currentUser) => ({
   currentUser,
 });
 
-export const receiveUserSignIn = () => ({
+export const receiveUserSignIn = (currentUser) => ({
   type: RECEIVE_USER_SIGN_IN,
+  currentUser,
 });
 
 export const receiveErrors = (errors) => ({
@@ -26,7 +27,7 @@ export const logoutUser = () => ({
 
 export const signup = (user) => (dispatch) =>
   SessionAPIUtil.signup(user).then(
-    () => dispatch(receiveUserSignIn()),
+    ({ data: { payload } }) => dispatch(receiveCurrentUser(payload)),
     (err) => dispatch(receiveErrors(err.response.data)),
   );
 
@@ -37,7 +38,7 @@ export const login = (user) => (dispatch) =>
       localStorage.setItem('jwtToken', token);
       SessionAPIUtil.setAuthToken(token);
       const decoded = jwt_decode(token);
-      dispatch(receiveCurrentUser(decoded));
+      dispatch(receiveUserSignIn(decoded));
       console.log(res);
     })
     .catch((err) => {
