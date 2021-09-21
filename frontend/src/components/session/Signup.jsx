@@ -13,7 +13,7 @@ const schema = yup.object().shape({
   password: yup.string().min(8).required(),
   password2: yup
     .string()
-    .oneOf([yup.ref('password'), null], 'Passwords must match'),
+    .oneOf([yup.ref('password'), null], 'passwords must match'),
 });
 
 export default function SignupForm({ splashBtn }) {
