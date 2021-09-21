@@ -31,10 +31,6 @@ export default function LoginForm() {
       <input {...register('username')} />
       <p>{errors.username?.message}</p>
 
-      {/* <label htmlFor="email">Email</label>
-      <input type='email' {...register("email")} />
-      <p>{errors.email?.message}</p> */}
-
       <label htmlFor="password">Password</label>
       <input type="password" {...register('password')} />
       <p>{errors.password?.message}</p>

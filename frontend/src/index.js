@@ -7,6 +7,7 @@ import { setAuthToken } from './util/sessionApiUtil';
 import { logout } from './actions/sessionActions';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
+import { SocketContext, socket } from './context/socket';
 import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,7 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <Provider store={store}>
       <HashRouter>
-        <App />
+        <SocketContext.Provider value={socket}>
+          <App />
+        </SocketContext.Provider>
       </HashRouter>
     </Provider>,
     document.getElementById('root'),
