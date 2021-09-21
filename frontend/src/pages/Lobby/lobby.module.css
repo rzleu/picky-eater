@@ -1,0 +1,31 @@
+.container {
+  min-height: 100%;
+  background-image: url('../../assets/svg/layered-waves-haikei.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  place-items: center;
+}
+
+.formWrapper {
+  display: grid;
+  place-items: center;
+}
+
+.container form {
+  width: auto;
+  align-items: center;
+  background-image: url('../../assets/svg/blob-haikei.svg');
+  background-size: cover;
+  min-height: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+form > h2 {
+  white-space: nowrap;
+  margin: 0;
+}
+form > input {
+  width: 70%;
+}

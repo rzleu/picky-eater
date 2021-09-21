@@ -8,13 +8,15 @@ import { SocketContext } from '../../context/socket';
 
 // @ts-ignore
 
-function CardSwipe({
-  categories = ['Sushi', 'Pizza', 'Sausage', 'Durian'],
-}) {
-  const [selections, setSelections] = useState(categories);
+function CardSwipe() {
+  const [masterList, setMasterList] = useState([]);
   const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
   const socket = useContext(SocketContext);
+
+  const handleMasterList = useCallback((list) => {
+    setMasterList(list);
+  }, []);
 
   useEffect(() => {
     socket.on('APPROVED_LIST', (approved) => {
@@ -24,18 +26,21 @@ function CardSwipe({
         setMatch(currSelection);
       }
     });
+
+    socket.on('MASTER_LIST', handleMasterList);
+
     return () => {
       socket.off('APPROVED_LIST');
     };
-  }, [currSelection, socket]);
+  }, [currSelection, socket, handleMasterList]);
 
   const removeAndSelectNext = () => {
     // console.log(selections);
-    const filteedItems = selections.filter(
+    const filteredItems = masterList.filter(
       (selection) => selection !== currSelection,
     );
-    setSelections(filteedItems);
-    setCurrSelection(filteedItems[0]);
+    setMasterList(filteredItems);
+    setCurrSelection(filteredItems[0]);
   };
 
   const handleLeftSwipe = () => removeAndSelectNext();
@@ -48,9 +53,10 @@ function CardSwipe({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  console.log(masterList);
   return (
     <div>
-      <h2>Swipe Left or Righ!</h2>
+      <h2>Swipe Left or Right!</h2>
       {currSelection}
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
