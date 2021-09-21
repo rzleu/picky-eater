@@ -1,3 +1,3 @@
-import Lobby from './Lobby';
+import CardSwipe from './CardSwipe';
 
-export default Lobby;
+export default CardSwipe;

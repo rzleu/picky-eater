@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
+import { SocketContext } from '../../context/socket';
 
 // @ts-ignore
-const socket = io(`http://${window.location.hostname}:3001`);
 
 function Lobby({
   categories = ['Sushi', 'Pizza', 'Sausage', 'Durian'],
@@ -10,6 +14,7 @@ function Lobby({
   const [selections, setSelections] = useState(categories);
   const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     socket.on('approved-list', (approved) => {
@@ -18,7 +23,10 @@ function Lobby({
         setMatch(currSelection);
       }
     });
-  }, [currSelection]);
+    return () => {
+      socket.off('approved-list');
+    };
+  }, [currSelection, socket]);
 
   const removeAndSelectNext = () => {
     // console.log(selections);
@@ -29,21 +37,22 @@ function Lobby({
     setCurrSelection(filteedItems[0]);
   };
 
-  const handleLeftSwipe = (e) => removeAndSelectNext();
+  const handleLeftSwipe = () => removeAndSelectNext();
 
-  const handleRightSwipe = (e) => {
-    e.preventDefault();
+  const handleRightSwipe = useCallback(() => {
     socket.emit('right-swipe', {
       selection: currSelection,
     });
     removeAndSelectNext();
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div>
       <h2>Swipe Left or Righ!</h2>
       {currSelection}
       <button onClick={handleLeftSwipe}>Left</button>
-      <button onClick={(e) => handleRightSwipe(e)}>Right</button>
+      <button onClick={handleRightSwipe}>Right</button>
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
