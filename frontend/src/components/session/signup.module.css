@@ -41,7 +41,7 @@ input {
 
 input:focus {
   outline: coral;
-  border: 1px solid coral;
+  border: 2px solid coral;
 }
 
 @media screen and (min-width: 400px) {
