@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.jwtToken) {
     setAuthToken(localStorage.jwtToken);
     const decodedUser = jwt_decode(localStorage.jwtToken);
-    const preloadedState = { session: { isAuthenticated: true, user: decodedUser } };
+    const preloadedState = {
+      session: { isAuthenticated: true, user: decodedUser },
+    };
     store = configureStore(preloadedState);
     const currentTime = Date.now() / 1000;
 
@@ -26,10 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     store = configureStore({});
   }
-  const root = document.getElementById('root');
-  ReactDOM.render(<Provider store={ store }>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </Provider>, root);
+  ReactDOM.render(
+    <Provider store={store}>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Provider>,
+    document.getElementById('root'),
+  );
 });
