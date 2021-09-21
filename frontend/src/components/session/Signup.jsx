@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { signup } from '../../actions/sessionActions';
 import styles from './signup.module.css';
+import ClassNames from 'classnames';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -15,8 +16,8 @@ const schema = yup.object().shape({
     .oneOf([yup.ref('password'), null], 'Passwords must match'),
 });
 
-export default function SignupForm() {
-  const dispatch = useDispatch;
+export default function SignupForm({ splashBtn }) {
+  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
   const {
     register,
@@ -34,31 +35,57 @@ export default function SignupForm() {
     <div>
       {openModal && (
         <>
-          <div className={styles.maskBG} />
+          <div className="maskBG" />
 
-          <div className={styles.formContainer}>
+          <div className="formContainer">
             <form onSubmit={handleSubmit(onSubmit)}>
+              <h3>Create Account</h3>
               <div>
                 <label htmlFor="username">Username</label>
-                <input {...register('username')} />
-                <p>{errors.username?.message}</p>
+                <input
+                  className={ClassNames({
+                    errorInput: errors.username?.message,
+                  })}
+                  {...register('username')}
+                />
+                <p className="errorMsg">{errors.username?.message}</p>
               </div>
               <div>
                 <label htmlFor="email">Email</label>
-                <input type="email" {...register('email')} />
-                <p>{errors.email?.message}</p>
+                <input
+                  className={ClassNames({
+                    errorInput: errors.email?.message,
+                  })}
+                  type="email"
+                  {...register('email')}
+                />
+                <p className="errorMsg">{errors.email?.message}</p>
               </div>
               <div>
                 <label htmlFor="password">Password</label>
-                <input type="password" {...register('password')} />
-                <p>{errors.password?.message}</p>
+                <input
+                  className={ClassNames({
+                    errorInput: errors.password?.message,
+                  })}
+                  type="password"
+                  {...register('password')}
+                />
+                <p className="errorMsg">{errors.password?.message}</p>
               </div>
               <div>
                 <label htmlFor="password2">
                   Confirm your password
                 </label>
-                <input type="password" {...register('password2')} />
-                <p>{errors.password2?.message}</p>
+                <input
+                  className={ClassNames({
+                    errorInput: errors.password2?.message,
+                  })}
+                  type="password"
+                  {...register('password2')}
+                />
+                <p className="errorMsg">
+                  {errors.password2?.message}
+                </p>
               </div>
               <input type="submit" />
               <button onClick={() => setOpenModal(false)}>✖</button>
@@ -66,7 +93,10 @@ export default function SignupForm() {
           </div>
         </>
       )}
-      <button onClick={() => setOpenModal(true)}>
+      <button
+        className={splashBtn}
+        onClick={() => setOpenModal(true)}
+      >
         Create Account
       </button>
     </div>

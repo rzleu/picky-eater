@@ -10,8 +10,9 @@ function SplashPage() {
       <h2>Swipe Right</h2>
       <div className={styles.buttonContainer}>
         {/* <button>Create Account</button> */}
-        <SignupForm />
-        <button className={styles.splashBtn2}>Log In</button>
+        <SignupForm splashBtn={styles.splashBtn1} />
+        {/* <button className={styles.splashBtn2}>Log In</button> */}
+        <LoginForm splashBtn={styles.splashBtn2} />
       </div>
     </div>
   );

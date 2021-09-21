@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { useContext } from 'react';
+import { socket, SocketContext } from '../context/socket';
 
 function fetchRestaurantData() {
   return navigator.geolocation.getCurrentPosition(success);
@@ -13,7 +15,7 @@ function success(pos) {
       longitude: pos.coords.longitude,
       limit: '30',
       currency: 'USD',
-      distance: '2',
+      distance: '10',
       open_now: 'false',
       lunit: 'km',
       lang: 'en_US',
@@ -26,11 +28,11 @@ function success(pos) {
   axios
     .request(options)
     .then(function ({ data }) {
-      console.log(
-        data.data.filter((data) => {
-          return Object.values(data).length > 8;
-        }),
-      );
+      //emit to backend
+      const resData = data.data.filter((data) => {
+        return Object.values(data).length > 8;
+      });
+      socket.emit('MASTER_LIST', resData);
     })
     .catch(function (error) {
       console.error(error);

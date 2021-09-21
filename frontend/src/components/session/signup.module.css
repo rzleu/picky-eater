@@ -3,10 +3,9 @@ form {
   z-index: 2;
   background: var(--white);
   gap: 10px;
-  width: 300px;
   height: auto;
-  padding: 20px;
-  border-radius: 3px;
+  padding: 40px;
+  border-radius: 10px;
   font-family: Kanit;
 }
 
@@ -16,35 +15,37 @@ form > div {
   gap: 2px;
 }
 
-.formContainer {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  display: grid;
-  place-items: center;
-}
-
-.maskBG {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.5);
-}
-
 form > button {
   position: absolute;
   top: 2%;
   right: 2%;
   background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+form > h3 {
+  align-self: center;
+  position: relative;
+  bottom: 10px;
+  font-size: 1.5rem;
+  font-family: Kanit;
+  font-style: italic;
 }
 
 input {
   border-radius: 3px;
-  border: 1px solid grey;
+  border: 2px solid grey;
   padding: 5px 5px;
 }
 
 input:focus {
   outline: coral;
   border: 1px solid coral;
+}
+
+@media screen and (min-width: 400px) {
+  form {
+    width: 400px;
+  }
 }
