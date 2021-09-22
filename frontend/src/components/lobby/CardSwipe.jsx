@@ -10,21 +10,26 @@ import style from './cardswipe.module.css';
 // @ts-ignore
 
 function CardSwipe() {
+  const [approvedList, setApprovedList] = useState([]);
   const [masterList, setMasterList] = useState([]);
-  const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
   const socket = useContext(SocketContext);
 
   const handleMasterList = useCallback((list) => {
+    console.log({ list });
+    if (!list || !list.length) return;
     setMasterList(list);
   }, []);
 
   useEffect(() => {
     socket.on('APPROVED_LIST', (approved) => {
-      //approved list is list of matched restaurants
-      if (approved.some((item) => item && item === currSelection)) {
-        // console.log(approved);
-        setMatch(currSelection);
+      //approved list is list of the other users matched restaurants
+      const match = approved.find((value) =>
+        approvedList.includes(value),
+      );
+      if (match) {
+        // setMatch(match);
+        socket.emit('FOUND_MATCH', match);
       }
     });
 
@@ -33,32 +38,49 @@ function CardSwipe() {
     return () => {
       socket.off('APPROVED_LIST');
     };
-  }, [currSelection, socket, handleMasterList]);
+  }, [socket, handleMasterList, approvedList]);
 
-  const removeAndSelectNext = () => {
-    // console.log(selections);
-    const filteredItems = masterList.filter(
-      (selection) => selection !== currSelection,
-    );
-    setMasterList(filteredItems);
-    setCurrSelection(filteredItems[0]);
+  const handleLeftSwipe = () => {
+    console.log('chje', { masterList });
+    if (masterList.length === 0) return;
+
+    const copy = [...masterList];
+    copy.push(copy.shift());
+    setMasterList(copy);
   };
 
-  const handleLeftSwipe = () => removeAndSelectNext();
-
   const handleRightSwipe = useCallback(() => {
-    socket.emit('right-swipe', {
-      selection: currSelection,
-    });
-    removeAndSelectNext();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (masterList.length === 0) return;
+
+    setApprovedList(approvedList.concat(masterList[0]));
+    setMasterList(
+      masterList.filter((item) => item !== masterList[0]),
+    );
+    socket.emit('RIGHT_SWIP_LIST', approvedList);
+  }, [approvedList, socket, masterList]);
 
   console.log(masterList);
+  if (!masterList.length) return null;
+  const { name, phone, website, photo, address } = masterList[0];
+  console.log({ photo });
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
-      <div>{currSelection} test</div>
+      <div>
+        <div>
+          <h3>{name}</h3>
+          {photo && (
+            <img
+              src={photo.images.large.url}
+              alt={name}
+              className={style.images}
+            />
+          )}
+          <div>
+            {phone} {address} {website}
+          </div>
+        </div>
+      </div>
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
       {match && (

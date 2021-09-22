@@ -14,7 +14,6 @@ import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 
 import styles from './lobby.module.css';
-import fetchRestaurantData from '../../util/restaurantUtil';
 
 const schema = yup.object().shape({
   lobby: yup.string().required(),
@@ -32,6 +31,7 @@ function Lobby() {
   const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
+  const [fetchedData, setFetchedData] = useState(true);
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
@@ -41,7 +41,9 @@ function Lobby() {
   }, []);
 
   const handleCreateRoom = useCallback(() => {
-    socket.emit('CREATE_RAND_ROOM', masterList);
+    if (masterList.length) {
+      socket.emit('CREATE_RAND_ROOM', masterList);
+    }
   }, [masterList]);
 
   const handleRoomAccepted = useCallback((data) => {
@@ -53,6 +55,7 @@ function Lobby() {
   });
 
   function success(pos) {
+    setFetchedData(false);
     const options = {
       method: 'GET',
       url: 'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng',
@@ -75,7 +78,11 @@ function Lobby() {
       .request(options)
       .then(function ({ data }) {
         //emit to backend
+        setFetchedData(true);
         const resData = data.data
+          .filter((data) => {
+            return Object.values(data).length > 8;
+          })
           .map(
             ({
               name,
@@ -100,25 +107,27 @@ function Lobby() {
               longitude,
               distance_string,
             }),
-          )
-          .filter((data) => {
-            return Object.values(data).length > 8;
-          });
-        // console.log(resData);
+          );
 
         setMasterList(resData);
         return resData;
         // socket.emit('MASTER_LIST', resData);
       })
       .catch(function (error) {
-        // console.log('Blame Anthony');
-        // console.error(error);
+        console.log('Blame Anthony');
+        console.error(error);
       });
   }
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(success);
   }, []);
+
+  useEffect(() => {
+    if (masterList.length) {
+      socket.emit('MASTER_LIST', masterList);
+    }
+  }, [masterList]);
 
   useEffect(() => {
     if (username && id) {
@@ -134,9 +143,9 @@ function Lobby() {
     };
   }, [socket, username, id, handleRoomAccepted]);
 
-  // console.log({ masterList });
   return (
     <div className={styles.container}>
+      {!fetchedData && <div>...loading</div>}
       {!roomCode ? (
         <>
           <div className={styles.formWrapper}>

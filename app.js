@@ -71,6 +71,7 @@ io.on('connection', (socket) => {
     socket.join(roomCode); // user will join room with rand 4-digit code
     io.sockets.sockets.get(socket.id).list = restaurants;
     socket.emit('ROOM_CODE', roomCode); // return code to FE
+    console.log('backend', { restaurants });
     socket.to(roomCode).emit('MASTER_LIST', restaurants);
   });
 
