@@ -1,0 +1,40 @@
+.aboutContainer {
+  height: 100%;
+  background: black;
+  display: flex;
+  flex-direction: column;
+}
+
+.aboutHeader {
+  font-size: 3rem;
+  color: rgb(255, 255, 255);
+  position: relative;
+  align-self: center;
+}
+
+.teamContainer {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.proPic {
+  height: 150px;
+}
+
+.teamItems {
+  border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+}
+
+.teamItem {
+  padding-left: 80px;
+  border: 2px solid orange;
+  width: 75%;
+  margin: 20px;
+  background: hotpink;
+  border-radius: var(--button-border-radius);
+}

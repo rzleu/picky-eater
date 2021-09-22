@@ -8,6 +8,7 @@ import SplashPage from './pages/splashPage/SplashPage';
 import SignupForm from './components/session/Signup';
 import CardSwipe from './components/lobby/CardSwipe';
 import Lobby from './pages/Lobby/Lobby';
+import About from './pages/About/About.jsx';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route exact path="/swipe" component={CardSwipe} />
         {/* Make this authroute later */}
         <Route path="/lobby" component={Lobby} />
+        <Route path="/about" component={About} />
       </Switch>
     </div>
   );

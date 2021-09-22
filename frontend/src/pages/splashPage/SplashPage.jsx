@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import React from 'react';
 import LoginForm from '../../components/session/Login';
 import SignupForm from '../../components/session/Signup';

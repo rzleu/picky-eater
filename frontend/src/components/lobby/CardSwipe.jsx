@@ -17,6 +17,7 @@ function CardSwipe() {
   const [match, setMatch] = useState('');
   const cardRef = useRef(null);
   const socket = useContext(SocketContext);
+  let startX = useRef(null);
 
   const handleMasterList = useCallback((list) => {
     setMasterList(list);
@@ -69,9 +70,19 @@ function CardSwipe() {
     const observer = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach((entry) => {
-          // console.log({ entry });
+          startX =
+            (window.innerWidth -
+              document.querySelector('.card').clientWidth) /
+            2;
+          console.log({ entry });
           if (!entry.isIntersecting) {
-            console.log('it has touched');
+            console.log(startX);
+            console.log(entry.boundingClientRect.x);
+            if (entry.boundingClientRect.x - startX < 0) {
+              console.log('touched left');
+            } else if (entry.boundingClientRect.x - startX > 80) {
+              console.log('touched right');
+            }
           }
         });
       },
