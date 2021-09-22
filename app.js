@@ -13,6 +13,7 @@ mongoose
   .then(() => console.log('Connected to MongoDB successfully'))
   .catch((err) => console.log(err));
 
+console.log('on port ' + process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
   app.get('/', (req, res) => {
