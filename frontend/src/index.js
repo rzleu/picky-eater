@@ -1,4 +1,3 @@
-import { fetchAllRestaurants } from './actions/restaurantActions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 // import Root from './components/root';
@@ -12,7 +11,6 @@ import { SocketContext, socket } from './context/socket';
 import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.fetchAllRestaurants = fetchAllRestaurants;
   let store;
 
   if (localStorage.jwtToken) {
@@ -34,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <Provider store={store}>
       <HashRouter>
-        <SocketContext.Provider value={socket}>
+        <SocketContext.Provider value={socket()}>
           <App />
         </SocketContext.Provider>
       </HashRouter>
