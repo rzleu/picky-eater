@@ -8,20 +8,6 @@ import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
-let observer = new IntersectionObserver(
-  (entries, observer) => {
-    entries.forEach((entry) => {
-      /* Placeholder replacement */
-      console.log('it has touched');
-    });
-  },
-  {
-    threshold: 0.8,
-    root: document.querySelector('#idklol'),
-    rootMargin: '0px',
-  },
-);
-
 // @ts-ignore
 
 function CardSwipe() {
@@ -78,6 +64,24 @@ function CardSwipe() {
   );
 
   useEffect(() => {
+    let observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (
+            entry.isIntersecting &&
+            Math.floor(entry.intersectionRatio) === 1
+          )
+            console.log('it has touched');
+        });
+      },
+      {
+        threshold: 1,
+        root: document.querySelector('#idklol'),
+        rootMargin: '20px',
+      },
+      [],
+    );
+
     document.querySelectorAll('.card').forEach((card) => {
       observer.observe(card);
     });
@@ -88,13 +92,15 @@ function CardSwipe() {
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
       <div className={style.cardContainerContainer}>
         <div className={style.cardContainer} id="idklol">
-          <motion.div
-            className={`${style.card} card`}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-          >
-            {currSelection} test
-          </motion.div>
+          <div className={style.cardContainerChild}>
+            <motion.div
+              className={`${style.card} card`}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+            >
+              {currSelection} test
+            </motion.div>
+          </div>
         </div>
       </div>
       <button onClick={handleLeftSwipe}>Left</button>
