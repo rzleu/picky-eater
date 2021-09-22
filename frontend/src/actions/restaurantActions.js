@@ -1,5 +1,3 @@
-import fetchRestaurantData from '../util/restaurantUtil';
-
 export const RECEIVE_RESTAURANTS = 'RECEIVE_RESTAURANTS';
 
 export const receiveRestaurants = (restaurants) => ({
@@ -11,5 +9,3 @@ export const receiveRestaurants = (restaurants) => ({
 //   RestaurantUtil.fetchRestaurants().then((res) =>
 //     dispatch(receiveRestaurants(res)),
 //   );
-
-export const fetchAllRestaurants = fetchRestaurantData;
