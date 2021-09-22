@@ -148,10 +148,10 @@ function Lobby() {
     socket.on('ROOM_CODE', handleRoomCode);
     socket.on('MASTER_LIST', handleMasterList);
 
-    return () => {
-      socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
-      socket.off('ROOM_CODE');
-    };
+    // return () => {
+    //   socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
+    //   socket.off('ROOM_CODE');
+    // };
   }, [socket, username, id, handleRoomAccepted]);
   console.log(`id: ${socket.id}`);
   return (
