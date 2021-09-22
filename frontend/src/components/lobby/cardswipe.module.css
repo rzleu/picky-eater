@@ -24,7 +24,7 @@
 
 .cardContainerContainer {
   height: 100%;
-  width: 50%;
+  width: 20%;
   display: grid;
   place-items: center;
   justify-content: center;
@@ -33,7 +33,7 @@
 #idklol {
 }
 
-.cardContainerChild {
+/* .cardContainerChild {
   height: 50%;
   width: 50%;
-}
+} */

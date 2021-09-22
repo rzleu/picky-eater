@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useCallback,
   useContext,
+  useRef,
 } from 'react';
 import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
@@ -14,6 +15,7 @@ function CardSwipe() {
   const [masterList, setMasterList] = useState([]);
   const [currSelection, setCurrSelection] = useState('');
   const [match, setMatch] = useState('');
+  const cardRef = useRef(null);
   const socket = useContext(SocketContext);
 
   const handleMasterList = useCallback((list) => {
@@ -64,44 +66,47 @@ function CardSwipe() {
   );
 
   useEffect(() => {
-    let observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach((entry) => {
-          if (
-            entry.isIntersecting &&
-            Math.floor(entry.intersectionRatio) === 1
-          )
+          // console.log({ entry });
+          if (!entry.isIntersecting) {
             console.log('it has touched');
+          }
         });
       },
       {
-        threshold: 1,
+        threshold: 0.5,
         root: document.querySelector('#idklol'),
-        rootMargin: '20px',
+        rootMargin: '0px',
       },
-      [],
     );
-
-    document.querySelectorAll('.card').forEach((card) => {
-      observer.observe(card);
-    });
-  });
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
-      <div className={style.cardContainerContainer}>
-        <div className={style.cardContainer} id="idklol">
-          <div className={style.cardContainerChild}>
-            <motion.div
-              className={`${style.card} card`}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-            >
-              {currSelection} test
-            </motion.div>
-          </div>
+      <div className={style.cardContainerContainer} id="idklol">
+        {/* <div className={style.cardContainer}> */}
+        <div className={style.cardContainerChild}>
+          <motion.div
+            ref={cardRef}
+            className={`${style.card} card`}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+          >
+            {currSelection} test
+          </motion.div>
         </div>
+        {/* </div> */}
       </div>
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
