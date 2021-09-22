@@ -6,6 +6,21 @@ import React, {
 } from 'react';
 import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+
+let observer = new IntersectionObserver(
+  (entries, observer) => {
+    entries.forEach((entry) => {
+      /* Placeholder replacement */
+      console.log('it has touched');
+    });
+  },
+  {
+    threshold: 0.8,
+    root: document.querySelector('#idklol'),
+    rootMargin: '0px',
+  },
+);
 
 // @ts-ignore
 
@@ -55,10 +70,33 @@ function CardSwipe() {
   }, []);
 
   console.log(masterList);
+  const x = useMotionValue(0);
+  const background = useTransform(
+    x,
+    [-100, 0, 100],
+    ['#ff008c', '#7700ff', 'rgb(230, 255, 0)'],
+  );
+
+  useEffect(() => {
+    document.querySelectorAll('.card').forEach((card) => {
+      observer.observe(card);
+    });
+  });
+
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
-      <div>{currSelection} test</div>
+      <div className={style.cardContainerContainer}>
+        <div className={style.cardContainer} id="idklol">
+          <motion.div
+            className={`${style.card} card`}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+          >
+            {currSelection} test
+          </motion.div>
+        </div>
+      </div>
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
       {match && (
