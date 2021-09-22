@@ -8,9 +8,10 @@ const path = require('path');
 const db = require('./config/keys').mongoURI;
 const users = require('./routes/api/users');
 
-mongoose.connect(db, { useNewUrlParser: true });
-// .then(() => console.log('Connected to MongoDB successfully'))
-// .catch((err) => console.log(err));
+mongoose
+  .connect(db, { useNewUrlParser: true })
+  .then(() => console.log('Connected to MongoDB successfully'))
+  .catch((err) => console.log(err));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
