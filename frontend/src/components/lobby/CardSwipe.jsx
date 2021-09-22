@@ -52,12 +52,12 @@ function CardSwipe() {
   const handleRightSwipe = useCallback(() => {
     if (masterList.length === 0) return;
     const updatedApprovedList = approvedList.concat(masterList[0]);
-
+    console.log({ updatedApprovedList });
     setApprovedList(updatedApprovedList);
     setMasterList(
       masterList.filter((item) => item !== masterList[0]),
     );
-    socket.emit('RIGHT_SWIP_LIST', updatedApprovedList);
+    socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [approvedList, socket, masterList]);
 
   console.log(masterList);

@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
 
     io.sockets.sockets.get(socket.id).approvedList = [];
     socket.emit('ROOM_CODE', roomCode); // return code to FE
-    console.log('backend', { restaurants });
+    // console.log('backend', { restaurants });
     socket.to(roomCode).emit('MASTER_LIST', restaurants);
   });
 
@@ -127,7 +127,7 @@ io.on('connection', (socket) => {
   socket.on('RIGHT_SWIPE_LIST', (array) => {
     // ["french", "italian"]
 
-    // console.log(array);
+    console.log(array);
     socket.approvedList = array;
 
     // console.log(socket.approvedList);
@@ -142,7 +142,7 @@ io.on('connection', (socket) => {
 
     // console.log(otherUser);
     // const match = approved.find((value) => approvedList.includes(value));
-    io.sockets.sockets.get(otherUser).broadcast.emit(array);
+    // io.sockets.sockets.get(otherUser).broadcast.emit(array);
     socket.broadcast.emit(array); // sending right swipes to each other
     // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
     socket.emit('APPROVED_LIST', array);
