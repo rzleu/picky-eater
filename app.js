@@ -149,10 +149,10 @@ io.on('connection', (socket) => {
     // const match = approved.find((value) => approvedList.includes(value));
 
     // io.sockets.sockets.get(otherUser).to(room).emit(approvedList);
-    socket.to(room).emit('APPROVED_LIST', {
-      approvedList: approvedList,
-      socketId: socket.id,
-    }); // sending right swipes to each other
+    socket.to(room).emit('APPROVED_LIST', approvedList); //{
+    //   approvedList: approvedList,)
+    //   socketId: socket.id,
+    // }); // sending right swipes to each other
 
     // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
     // socket.emit('APPROVED_LIST', array);
