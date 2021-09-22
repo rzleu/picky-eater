@@ -158,6 +158,11 @@ io.on('connection', (socket) => {
   //   });
   // });
 
+  socket.on('error', (error) => {
+    // this may be server side error handling
+    console.log(error);
+  });
+
   socket.on('disconnect', () => {
     io.emit('disconnect-message', 'A user has left the chat');
   });
