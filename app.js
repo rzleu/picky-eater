@@ -132,23 +132,25 @@ io.on('connection', (socket) => {
   socket.on('RIGHT_SWIPE_LIST', (array) => {
     // ["french", "italian"]
 
-    console.log(array);
-    socket.approvedList = array;
+    // console.log(array);
+    // socket.approvedList = array;
 
     // console.log(socket.approvedList);
     const room = io.sockets.sockets.get(socket.id).roomId;
 
-    let otherUser;
-    socket.adapter.rooms.get(room).forEach((socketId) => {
-      if (socketId !== socket.id) {
-        otherUser = socketId;
-      }
-    });
+    // let otherUser;
+    // socket.adapter.rooms.get(room).forEach((socketId) => {
+    //   if (socketId !== socket.id) {
+    //     otherUser = socketId;
+    //   }
+    // });
 
     // console.log(otherUser);
     // const match = approved.find((value) => approvedList.includes(value));
-    // io.sockets.sockets.get(otherUser).broadcast.emit(array);
-    socket.broadcast.emit('APPROVED_LIST', array); // sending right swipes to each other
+
+    // io.sockets.sockets.get(otherUser).to(room).emit(array);
+    socket.to(room).emit('APPROVED_LIST', array); // sending right swipes to each other
+
     // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
     // socket.emit('APPROVED_LIST', array);
   });
