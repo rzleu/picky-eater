@@ -18,5 +18,5 @@ const path =
     ? `http://${window.location.hostname}:${process.env.PORT}`
     : `${window.location.hostname}:5000`;
 
-export const socket = socketio.connect();
+export const socket = socketio.io();
 export const SocketContext = createContext();
