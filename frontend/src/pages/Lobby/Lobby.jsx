@@ -153,7 +153,7 @@ function Lobby() {
       socket.off('ROOM_CODE');
     };
   }, [socket, username, id, handleRoomAccepted]);
-
+  console.log(`id: ${socket.id}`);
   return (
     <div className={styles.container}>
       <h2>ROOM CODE IS {roomCode}</h2>

@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, { cors: { origin: '*' } });
 const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
@@ -13,7 +13,6 @@ mongoose
   .then(() => console.log('Connected to MongoDB successfully'))
   .catch((err) => console.log(err));
 
-console.log('on port ' + process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
   app.get('/', (req, res) => {
@@ -52,10 +51,16 @@ const randomCodeGenerator = () => {
   return string;
 };
 
+const port = process.env.PORT || 5000;
+
+server.listen(port, () =>
+  console.log(`Server is running on port ${port}`),
+);
+
 io.on('connection', (socket) => {
-  socket.on('USER_ONLINE', ({ username, id }) => {
-    socket.user = { username, id };
-  });
+  // socket.on('USER_ONLINE', ({ username, id }) => {
+  //   socket.user = { username, id };
+  // });
 
   socket.on('FOUND_MATCH', (match) => {
     const roomId = io.sockets.sockets.get(socket.id).roomId;
@@ -64,34 +69,22 @@ io.on('connection', (socket) => {
 
   socket.on('CREATE_RAND_ROOM', (restaurants) => {
     let roomCode = randomCodeGenerator();
-
     while (socket.adapter.rooms.has(roomCode)) {
       roomCode = randomCodeGenerator();
     }
-    // console.log({ restaurants });
-
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
 
-    // console.log(roomCode);
-
     io.sockets.sockets.get(socket.id).list = restaurants; // host's restaurants
-
-    // console.log(io.sockets.sockets.get(socket.id).list);
-
     io.sockets.sockets.get(socket.id).roomId = roomCode;
-
-    // console.log(io.sockets.sockets.get(socket.id).roomId);
 
     io.sockets.sockets.get(socket.id).approvedList = [];
     socket.emit('ROOM_CODE', roomCode); // return code to FE
-    // console.log('backend', { restaurants });
     socket.to(roomCode).emit('MASTER_LIST', restaurants);
   });
 
   socket.on('JOIN_ROOM', (room) => {
     socket.leave(socket.id);
-
     const rooms = socket.adapter.rooms;
 
     if (
@@ -108,11 +101,7 @@ io.on('connection', (socket) => {
         }
       });
 
-      // console.log(io.sockets.sockets.get(otherUser).list);
-
       const data = io.sockets.sockets.get(otherUser).list;
-      // const data = io.sockets.sockets.get(socket.id).list; // undefined
-      // const data = io.sockets.sockets.get(room).list;
 
       io.sockets.sockets.get(socket.id).roomId = room;
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
@@ -129,13 +118,12 @@ io.on('connection', (socket) => {
 
   socket.on('RIGHT_SWIPE_LIST', (approvedList) => {
     // ["french", "italian"]
-
-    // console.log(array);
+    console.log({ approvedList: approvedList });
+    console.log({ socket: socket.id });
     // socket.approvedList = array;
-
     // console.log(socket.approvedList);
     const room = io.sockets.sockets.get(socket.id).roomId;
-
+    console.log({ room });
     // let otherUser;
     // socket.adapter.rooms.get(room).forEach((socketId) => {
     //   if (socketId !== socket.id) {
@@ -147,7 +135,8 @@ io.on('connection', (socket) => {
     // const match = approved.find((value) => approvedList.includes(value));
 
     // io.sockets.sockets.get(otherUser).to(room).emit(approvedList);
-    socket.to(room).emit('APPROVED_LIST', approvedList); //{
+    socket.to(room).emit('RECEIVE_OTHER_LIST', approvedList); //{
+    // io.to(otherUser).emit('APPROVED_LIST', approvedList);
     //   approvedList: approvedList,)
     //   socketId: socket.id,
     // }); // sending right swipes to each other
@@ -175,9 +164,3 @@ io.on('connection', (socket) => {
     io.emit('disconnect-message', 'A user has left the chat');
   });
 });
-
-const port = process.env.PORT || 5000;
-
-server.listen(port, () =>
-  console.log(`Server is running on port ${port}`),
-);

@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     store = configureStore({});
   }
+
   ReactDOM.render(
     <Provider store={store}>
       <HashRouter>

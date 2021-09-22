@@ -13,10 +13,5 @@ import socketio from 'socket.io-client';
 //   }
 //   return socketio.io;
 // }
-const path =
-  process.env.NODE_ENV === 'production'
-    ? `http://${window.location.hostname}:${process.env.PORT}`
-    : `${window.location.hostname}:5000`;
-
 export const socket = socketio.io();
 export const SocketContext = createContext();
