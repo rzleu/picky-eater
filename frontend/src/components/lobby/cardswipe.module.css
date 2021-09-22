@@ -9,3 +9,9 @@
   flex-direction: column;
   align-items: center;
 }
+
+.image {
+  width: 400px;
+  max-height: 400px;
+  object-fit: cover;
+}

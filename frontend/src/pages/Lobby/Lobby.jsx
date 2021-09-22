@@ -14,7 +14,6 @@ import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 
 import styles from './lobby.module.css';
-import fetchRestaurantData from '../../util/restaurantUtil';
 
 const schema = yup.object().shape({
   lobby: yup.string().required(),
@@ -32,27 +31,38 @@ function Lobby() {
   const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
+  const [fetchedData, setFetchedData] = useState(true);
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
 
-  const handleJoinRoom = useCallback(() => {
-    socket.emit('JOIN_ROOM');
+  const handleJoinRoom = useCallback(({ lobby }) => {
+    socket.emit('JOIN_ROOM', lobby);
   }, []);
 
   const handleCreateRoom = useCallback(() => {
-    socket.emit('CREATE_RAND_ROOM', masterList);
+    if (masterList.length) {
+      socket.emit('CREATE_RAND_ROOM', masterList);
+    }
   }, [masterList]);
 
   const handleRoomAccepted = useCallback((data) => {
     setShowCardSwipe(true);
+    setRoomCode(data);
   }, []);
 
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
   });
 
+  const handleMasterList = useCallback((data) => {
+    if (data && data.length) {
+      setMasterList(data);
+    }
+  });
+
   function success(pos) {
+    setFetchedData(false);
     const options = {
       method: 'GET',
       url: 'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng',
@@ -75,7 +85,12 @@ function Lobby() {
       .request(options)
       .then(function ({ data }) {
         //emit to backend
+        setFetchedData(true);
+        // console.log({ data });
         const resData = data.data
+          .filter((data) => {
+            return Object.values(data).length > 8;
+          })
           .map(
             ({
               name,
@@ -87,6 +102,7 @@ function Lobby() {
               address,
               latitude,
               longitude,
+              location_id,
               distance_string,
             }) => ({
               name,
@@ -98,21 +114,18 @@ function Lobby() {
               address,
               latitude,
               longitude,
+              location_id,
               distance_string,
             }),
-          )
-          .filter((data) => {
-            return Object.values(data).length > 8;
-          });
-        // console.log(resData);
+          );
 
         setMasterList(resData);
         return resData;
         // socket.emit('MASTER_LIST', resData);
       })
       .catch(function (error) {
-        // console.log('Blame Anthony');
-        // console.error(error);
+        console.log('Blame Anthony');
+        console.error(error);
       });
   }
 
@@ -121,12 +134,19 @@ function Lobby() {
   }, []);
 
   useEffect(() => {
+    if (masterList.length) {
+      socket.emit('MASTER_LIST', masterList);
+    }
+  }, [masterList]);
+
+  useEffect(() => {
     if (username && id) {
       socket.emit('USER_ONLINE', { username, id });
     }
 
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
     socket.on('ROOM_CODE', handleRoomCode);
+    socket.on('MASTER_LIST', handleMasterList);
 
     return () => {
       socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
@@ -134,9 +154,10 @@ function Lobby() {
     };
   }, [socket, username, id, handleRoomAccepted]);
 
-  // console.log({ masterList });
   return (
     <div className={styles.container}>
+      <h2>ROOM CODE IS {roomCode}</h2>
+      {!fetchedData && <div>...loading</div>}
       {!roomCode ? (
         <>
           <div className={styles.formWrapper}>
@@ -161,7 +182,7 @@ function Lobby() {
           </div>
         </>
       ) : (
-        <CardSwipe />
+        <CardSwipe masterList={masterList} />
       )}
     </div>
   );
