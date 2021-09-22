@@ -1,9 +1,7 @@
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io').listen(server, {
-  cors: { origin: '*' },
-});
+const io = require('socket.io')(server, { cors: { origin: '*' } });
 const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
@@ -21,6 +19,9 @@ if (process.env.NODE_ENV === 'production') {
       path.resolve(__dirname, 'frontend', 'build', 'index.html'),
     );
   });
+  server.listen(process.env.PORT);
+} else {
+  server.listen(3001);
 }
 
 app.use(express.json());
@@ -41,7 +42,6 @@ app.listen(port);
 //  () =>
 //   console.log(`Server is running on port ${port}`),
 
-server.listen(3001);
 // , () => {
 //   console.log('Server is running on 3001');
 // });
