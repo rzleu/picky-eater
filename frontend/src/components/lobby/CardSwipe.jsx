@@ -9,24 +9,29 @@ import style from './cardswipe.module.css';
 
 // @ts-ignore
 
-function CardSwipe() {
+function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
-  const [masterList, setMasterList] = useState([]);
-  const [match, setMatch] = useState('');
+  const [masterListCopy, setMasterListCopy] = useState(masterList);
+  const [match, setMatch] = useState(null);
   const socket = useContext(SocketContext);
 
   const handleMasterList = useCallback((list) => {
-    console.log({ list });
+    console.log('masterlist', { list });
     if (!list || !list.length) return;
-    setMasterList(list);
+    setMasterListCopy(list);
   }, []);
 
   useEffect(() => {
     socket.on('APPROVED_LIST', (approved) => {
       //approved list is list of the other users matched restaurants
-      const match = approved.find((value) =>
-        approvedList.includes(value),
+      console.log({ approved: approved });
+      const match = approved.find(({ location_id }) =>
+        approvedList.some(
+          (currUserItem) => location_id === currUserItem.location_id,
+        ),
       );
+
+      console.log({ match });
       if (match) {
         // setMatch(match);
         socket.emit('FOUND_MATCH', match);
@@ -34,36 +39,41 @@ function CardSwipe() {
     });
 
     socket.on('MASTER_LIST', handleMasterList);
-
-    return () => {
-      socket.off('APPROVED_LIST');
-    };
+    socket.on('MATCH', ({ match, message }) => {
+      console.log('AAAAAA', { match, message });
+      setMatch(match);
+    });
+    // return () => {
+    //   socket.off('APPROVED_LIST');
+    //   socket.off('MATCH');
+    //   socket.off('MASTER_LIST')
+    // };
   }, [socket, handleMasterList, approvedList]);
 
   const handleLeftSwipe = () => {
-    console.log('chje', { masterList });
-    if (masterList.length === 0) return;
+    if (masterListCopy.length === 0) return;
 
     const copy = [...masterList];
     copy.push(copy.shift());
-    setMasterList(copy);
+    setMasterListCopy(copy);
   };
 
   const handleRightSwipe = useCallback(() => {
-    if (masterList.length === 0) return;
-    const updatedApprovedList = approvedList.concat(masterList[0]);
+    if (masterListCopy.length === 0) return;
+    const updatedApprovedList = approvedList.concat(
+      masterListCopy[0],
+    );
     console.log({ updatedApprovedList });
     setApprovedList(updatedApprovedList);
-    setMasterList(
-      masterList.filter((item) => item !== masterList[0]),
+    setMasterListCopy(
+      masterListCopy.filter((item) => item !== masterListCopy[0]),
     );
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
-  }, [approvedList, socket, masterList]);
+  }, [approvedList, socket, masterListCopy]);
 
-  console.log(masterList);
-  if (!masterList.length) return null;
-  const { name, phone, website, photo, address } = masterList[0];
-  console.log({ photo });
+  console.log({ masterList });
+  if (!masterListCopy.length) return null;
+  const { name, phone, website, photo, address } = masterListCopy[0];
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
@@ -87,7 +97,7 @@ function CardSwipe() {
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
-          <span>How does {match} sound?</span>
+          <span>How does {match.name} sound?</span>
         </div>
       )}
     </div>

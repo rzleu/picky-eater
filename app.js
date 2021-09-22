@@ -59,6 +59,11 @@ io.on('connection', (socket) => {
     socket.user = { username, id };
   });
 
+  socket.on('FOUND_MATCH', (match) => {
+    const roomId = io.sockets.sockets.get(socket.id).roomId;
+    io.in(roomId).emit('MATCH', { message: 'found match!', match });
+  });
+
   socket.on('CREATE_RAND_ROOM', (restaurants) => {
     let roomCode = randomCodeGenerator();
 
@@ -112,7 +117,7 @@ io.on('connection', (socket) => {
       // const data = io.sockets.sockets.get(room).list;
 
       io.sockets.sockets.get(socket.id).roomId = room;
-      socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
+      socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
     } else {
       console.log('room full');
@@ -143,9 +148,9 @@ io.on('connection', (socket) => {
     // console.log(otherUser);
     // const match = approved.find((value) => approvedList.includes(value));
     // io.sockets.sockets.get(otherUser).broadcast.emit(array);
-    socket.broadcast.emit(array); // sending right swipes to each other
+    socket.broadcast.emit('APPROVED_LIST', array); // sending right swipes to each other
     // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
-    socket.emit('APPROVED_LIST', array);
+    // socket.emit('APPROVED_LIST', array);
   });
 
   // socket.on('MASTER_LIST', (resData, room) => {

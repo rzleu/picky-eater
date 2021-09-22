@@ -36,8 +36,8 @@ function Lobby() {
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
 
-  const handleJoinRoom = useCallback(() => {
-    socket.emit('JOIN_ROOM');
+  const handleJoinRoom = useCallback(({ lobby }) => {
+    socket.emit('JOIN_ROOM', lobby);
   }, []);
 
   const handleCreateRoom = useCallback(() => {
@@ -48,10 +48,17 @@ function Lobby() {
 
   const handleRoomAccepted = useCallback((data) => {
     setShowCardSwipe(true);
+    setRoomCode(data);
   }, []);
 
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
+  });
+
+  const handleMasterList = useCallback((data) => {
+    if (data && data.length) {
+      setMasterList(data);
+    }
   });
 
   function success(pos) {
@@ -79,6 +86,7 @@ function Lobby() {
       .then(function ({ data }) {
         //emit to backend
         setFetchedData(true);
+        // console.log({ data });
         const resData = data.data
           .filter((data) => {
             return Object.values(data).length > 8;
@@ -94,6 +102,7 @@ function Lobby() {
               address,
               latitude,
               longitude,
+              location_id,
               distance_string,
             }) => ({
               name,
@@ -105,6 +114,7 @@ function Lobby() {
               address,
               latitude,
               longitude,
+              location_id,
               distance_string,
             }),
           );
@@ -136,6 +146,7 @@ function Lobby() {
 
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
     socket.on('ROOM_CODE', handleRoomCode);
+    socket.on('MASTER_LIST', handleMasterList);
 
     return () => {
       socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
@@ -145,6 +156,7 @@ function Lobby() {
 
   return (
     <div className={styles.container}>
+      <h2>ROOM CODE IS {roomCode}</h2>
       {!fetchedData && <div>...loading</div>}
       {!roomCode ? (
         <>
@@ -170,7 +182,7 @@ function Lobby() {
           </div>
         </>
       ) : (
-        <CardSwipe />
+        <CardSwipe masterList={masterList} />
       )}
     </div>
   );
