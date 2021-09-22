@@ -118,12 +118,10 @@ io.on('connection', (socket) => {
 
   socket.on('RIGHT_SWIPE_LIST', (approvedList) => {
     // ["french", "italian"]
-    console.log({ approvedList: approvedList });
-    console.log({ socket: socket.id });
+
     // socket.approvedList = array;
     // console.log(socket.approvedList);
     const room = io.sockets.sockets.get(socket.id).roomId;
-    console.log({ room });
     // let otherUser;
     // socket.adapter.rooms.get(room).forEach((socketId) => {
     //   if (socketId !== socket.id) {
@@ -135,7 +133,9 @@ io.on('connection', (socket) => {
     // const match = approved.find((value) => approvedList.includes(value));
 
     // io.sockets.sockets.get(otherUser).to(room).emit(approvedList);
-    socket.to(room).emit('RECEIVE_OTHER_LIST', approvedList); //{
+    socket.broadcast
+      .to(room)
+      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id }); //{
     // io.to(otherUser).emit('APPROVED_LIST', approvedList);
     //   approvedList: approvedList,)
     //   socketId: socket.id,
