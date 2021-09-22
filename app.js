@@ -69,7 +69,18 @@ io.on('connection', (socket) => {
 
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
-    io.sockets.sockets.get(socket.id).list = restaurants;
+
+    // console.log(roomCode);
+
+    io.sockets.sockets.get(socket.id).list = restaurants; // host's restaurants
+
+    // console.log(io.sockets.sockets.get(socket.id).list);
+
+    io.sockets.sockets.get(socket.id).roomId = roomCode;
+
+    // console.log(io.sockets.sockets.get(socket.id).roomId);
+
+    io.sockets.sockets.get(socket.id).approvedList = [];
     socket.emit('ROOM_CODE', roomCode); // return code to FE
     console.log('backend', { restaurants });
     socket.to(roomCode).emit('MASTER_LIST', restaurants);
@@ -86,16 +97,55 @@ io.on('connection', (socket) => {
       rooms.get(room).size < 2
     ) {
       socket.join(room);
-      const data = io.sockets.sockets.get(room).list;
+
+      let otherUser;
+      rooms.get(room).forEach((socketId) => {
+        if (socketId !== socket.id) {
+          otherUser = socketId;
+        }
+      });
+
+      // console.log(io.sockets.sockets.get(otherUser).list);
+
+      const data = io.sockets.sockets.get(otherUser).list;
+      // const data = io.sockets.sockets.get(socket.id).list; // undefined
+      // const data = io.sockets.sockets.get(room).list;
+
+      io.sockets.sockets.get(socket.id).roomId = room;
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
       socket.to(room).emit('MASTER_LIST', data);
     } else {
-      // console.log('room full');
+      console.log('room full');
+
       socket.emit('full-room', {
         message: 'Room is unavailable',
         room,
       });
     }
+  });
+
+  socket.on('RIGHT_SWIPE_LIST', (array) => {
+    // ["french", "italian"]
+
+    // console.log(array);
+    socket.approvedList = array;
+
+    // console.log(socket.approvedList);
+    const room = io.sockets.sockets.get(socket.id).roomId;
+
+    let otherUser;
+    socket.adapter.rooms.get(room).forEach((socketId) => {
+      if (socketId !== socket.id) {
+        otherUser = socketId;
+      }
+    });
+
+    // console.log(otherUser);
+    // const match = approved.find((value) => approvedList.includes(value));
+    io.sockets.sockets.get(otherUser).broadcast.emit(array);
+    socket.broadcast.emit(array); // sending right swipes to each other
+    // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
+    socket.emit('APPROVED_LIST', array);
   });
 
   // socket.on('MASTER_LIST', (resData, room) => {
@@ -107,6 +157,11 @@ io.on('connection', (socket) => {
   //     // console.log(io.sockets.sockets.get(socketId));
   //   });
   // });
+
+  socket.on('error', (error) => {
+    // this may be server side error handling
+    console.log(error);
+  });
 
   socket.on('disconnect', () => {
     io.emit('disconnect-message', 'A user has left the chat');
