@@ -11,52 +11,76 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 // @ts-ignore
 
-function CardSwipe() {
-  const [masterList, setMasterList] = useState([]);
-  const [currSelection, setCurrSelection] = useState('');
-  const [match, setMatch] = useState('');
-  const cardRef = useRef(null);
+function CardSwipe({ masterList = [] }) {
+  const [approvedList, setApprovedList] = useState([]);
+  const [masterListCopy, setMasterListCopy] = useState(masterList);
+  const [match, setMatch] = useState(null);
   const socket = useContext(SocketContext);
+  const cardRef = useRef(null);
   let startX = useRef(null);
 
   const handleMasterList = useCallback((list) => {
-    setMasterList(list);
+    if (!list || !list.length) return;
+    setMasterListCopy(list);
+  }, []);
+
+  const handleMatch = useCallback(({ match }) => {
+    console.log({ anthony: match });
+    setMatch(match);
   }, []);
 
   useEffect(() => {
-    socket.on('APPROVED_LIST', (approved) => {
-      //approved list is list of matched restaurants
-      if (approved.some((item) => item && item === currSelection)) {
-        // console.log(approved);
-        setMatch(currSelection);
-      }
-    });
+    socket.on(
+      'RECEIVE_OTHER_LIST',
+      ({ user, approvedList: otherUserList }) => {
+        if (!otherUserList || !otherUserList.length) return;
+        if (socket.id === user) return;
+        //approved list is list of the other users matched restaurants
+        const match = approvedList.find(({ location_id }) =>
+          otherUserList.some(
+            (currUserItem) =>
+              location_id === currUserItem.location_id,
+          ),
+        );
+        if (match) {
+          socket.emit('FOUND_MATCH', match);
+        }
+      },
+    );
 
     socket.on('MASTER_LIST', handleMasterList);
-
+    socket.on('MATCH', handleMatch);
     return () => {
       socket.off('APPROVED_LIST');
+      socket.off('MATCH');
+      socket.off('MASTER_LIST');
     };
-  }, [currSelection, socket, handleMasterList]);
+  }, [approvedList, handleMasterList, socket, handleMatch]);
 
-  const removeAndSelectNext = () => {
-    // console.log(selections);
-    const filteredItems = masterList.filter(
-      (selection) => selection !== currSelection,
-    );
-    setMasterList(filteredItems);
-    setCurrSelection(filteredItems[0]);
+  const handleLeftSwipe = () => {
+    if (masterListCopy.length === 0) return;
+
+    const copy = [...masterListCopy];
+    copy.push(copy.shift());
+    setMasterListCopy(copy);
   };
 
-  const handleLeftSwipe = () => removeAndSelectNext();
-
+  // ! WHAT THE HASHROUTER
   const handleRightSwipe = useCallback(() => {
-    socket.emit('right-swipe', {
-      selection: currSelection,
-    });
-    removeAndSelectNext();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (masterListCopy.length === 0) return;
+    const updatedApprovedList = approvedList.concat(
+      masterListCopy[0],
+    );
+    setApprovedList(updatedApprovedList);
+    setMasterListCopy(
+      masterListCopy.filter(
+        ({ location_id }) =>
+          location_id !== masterListCopy[0].location_id,
+      ),
+    );
+    console.log({ updatedApprovedList: updatedApprovedList });
+    socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
+  }, [masterListCopy, approvedList]);
 
   console.log(masterList);
   const x = useMotionValue(0);
@@ -102,29 +126,39 @@ function CardSwipe() {
     };
   }, []);
 
+  if (!masterListCopy.length) return null;
+  const { name, phone, website, photo, address } = masterListCopy[0];
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
       <div className={style.cardContainerContainer} id="idklol">
-        {/* <div className={style.cardContainer}> */}
         <div className={style.cardContainerChild}>
-          <motion.div
-            ref={cardRef}
-            className={`${style.card} card`}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-          >
-            {currSelection} test
-          </motion.div>
+          <h3>{name}</h3>
+          {photo && (
+            <motion.div
+              ref={cardRef}
+              className={`${style.card} card`}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+            >
+              <img
+                src={photo.images.large.url}
+                alt={name}
+                className={style.images}
+              />
+            </motion.div>
+          )}
+          <div>
+            {phone} {address} {website}
+          </div>
         </div>
-        {/* </div> */}
       </div>
       <button onClick={handleLeftSwipe}>Left</button>
       <button onClick={handleRightSwipe}>Right</button>
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
-          <span>How does {match} sound?</span>
+          <span>How does {match.name} sound?</span>
         </div>
       )}
     </div>

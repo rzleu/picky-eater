@@ -37,3 +37,8 @@
   height: 50%;
   width: 50%;
 } */
+.image {
+  width: 400px;
+  max-height: 400px;
+  object-fit: cover;
+}
