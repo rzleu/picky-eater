@@ -9,8 +9,8 @@ import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import placeHolder from '../../assets/images/DanPic.png';
-import swipeLeft from '../../assets/images/swipeLeft.png';
-import swipeRight from '../../assets/images/swipeRight.png';
+import leftSwipeBtn from '../../assets/svg/x.svg';
+import rightSwipeBtn from '../../assets/svg/heart.svg';
 
 // @ts-ignore
 
@@ -156,18 +156,10 @@ function CardSwipe({ masterList = [] }) {
               className={style.images}
             />
             <button ref={leftSwipe} onClick={handleLeftSwipe}>
-              <img
-                className={style.swipe}
-                src={swipeLeft}
-                alt="swipeLeft"
-              />
+              <img src={leftSwipeBtn} alt="left swipe" />
             </button>
             <button ref={rightSwipe} onClick={handleRightSwipe}>
-              <img
-                className={style.swipe}
-                src={swipeRight}
-                alt="swipeRight"
-              />
+              <img src={rightSwipeBtn} alt="right" />
             </button>
           </motion.div>
           <div>
