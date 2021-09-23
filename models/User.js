@@ -1,7 +1,5 @@
 /* eslint-disable */
-
 const mongoose = require('mongoose');
-
 const { Schema } = mongoose;
 
 const UserSchema = new Schema(
@@ -20,7 +18,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    favorites: [
+    saved: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Restaurant',
