@@ -62,76 +62,85 @@ function Lobby() {
     }
   });
 
-  function success(pos) {
+  async function success(pos) {
     setFetchedData(false);
-    const options = {
-      method: 'GET',
-      url: 'https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng',
-      params: {
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-        limit: '30',
-        currency: 'USD',
-        distance: '10',
-        open_now: 'false',
-        lunit: 'mi',
-        lang: 'en_US',
-      },
-      headers: {
-        'x-rapidapi-host': 'travel-advisor.p.rapidapi.com',
-        'x-rapidapi-key': process.env.REACT_APP_DB_KEY,
-      },
-    };
-    axios
-      .request(options)
-      .then(function ({ data }) {
-        //emit to backend
-        setFetchedData(true);
-        // console.log({ data });
-        const resData = data.data
-          .filter((data) => {
-            return Object.values(data).length > 8;
-          })
-          .map(
-            ({
-              name,
-              photo,
-              phone,
-              price_level,
-              website,
-              num_reviews,
-              address,
-              latitude,
-              longitude,
-              location_id,
-              distance_string,
-            }) => ({
-              name,
-              photo,
-              phone,
-              price_level,
-              website,
-              num_reviews,
-              address,
-              latitude,
-              longitude,
-              location_id,
-              distance_string,
-            }),
-          );
 
-        setMasterList(resData);
-        return resData;
-        // socket.emit('MASTER_LIST', resData);
-      })
-      .catch(function (error) {
-        console.log('Blame Anthony');
-        console.error(error);
+    const placeIdOptions = {
+      method: 'GET',
+      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&type=restaurant&type=food&radius=16000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      headers: {},
+    };
+
+    try {
+      const placeIds = await axios(placeIdOptions)
+        .then((data) => {
+          return data.data.results.map(({ place_id }) => {
+            return place_id;
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      const restaurants = placeIds.map(async (placeId) => {
+        const placeDetailOptions = {
+          method: 'GET',
+          url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+          headers: {},
+        };
+
+        const placeDetails = await axios(placeDetailOptions)
+          .then((data) => {
+            return data.data.result;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+
+        return placeDetails;
       });
+
+      const resDetails = (await Promise.all(restaurants)).map(
+        (data) => {
+          return {
+            name: data.name,
+            address: data.vicinity,
+            phone: data.formatted_phone_number,
+            location: data.geometry.location,
+            photoRefs: data.photos
+              .map((photo) => {
+                return photo.photo_reference;
+              })
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 3),
+            rating: data.rating,
+            website: data.website,
+          };
+        },
+      );
+
+      setMasterList(resDetails);
+    } catch (error) {
+      console.error(error);
+    }
+
+    // resDetails.map(async (photoRef) => {
+    //   const photoOptions = {
+    //     method: 'GET',
+    //     url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoRef}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+    //     headers: {},
+    //   };
+
+    //   return await axios(photoOptions).then(() => {
+
+    //   });
+    // })
   }
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(success);
+    navigator.geolocation.getCurrentPosition(success, null, {
+      enableHighAccuracy: true,
+    });
   }, []);
 
   useEffect(() => {
@@ -154,7 +163,7 @@ function Lobby() {
     //   socket.off('ROOM_CODE');
     // };
   }, [socket, username, id, handleRoomAccepted]);
-  console.log(`id: ${socket.id}`);
+  console.log(masterList);
   return (
     <div className={styles.container}>
       <h2>ROOM CODE IS {roomCode}</h2>
