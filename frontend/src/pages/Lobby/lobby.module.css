@@ -1,17 +1,45 @@
 .container {
   min-height: 100%;
   /* background-image: url('../../assets/svg/layered-waves-haikei.svg'); */
-  background-image: url('../../assets/images/DanPic.png');
+  /* background-image: url('../../assets/images/DanPic.png'); */
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   display: grid;
   place-items: center;
+  grid-template-rows: 20% 60%;
+}
+
+.container h2 {
+  position: relative;
+  z-index: 1;
+  margin-top: 50px;
+  margin-bottom: 0px;
+}
+
+.swipeHeader {
+  margin-top: 20px;
+}
+
+.havePin {
+  margin-top: 0px !important;
+  margin-bottom: 10px !important;
 }
 
 .formWrapper {
   display: grid;
   place-items: center;
+}
+
+.pinInput {
+  padding-left: 0;
+  text-align: center;
+  min-height: 65px;
+}
+
+.createRoom {
+  align-self: center;
+  margin: 20px 0;
 }
 
 .container form {
@@ -33,4 +61,108 @@ form > input {
 
 .lobbyEnter {
   padding-left: 0;
+  cursor: pointer;
+  min-height: 65px;
+  font-family: Kanit;
+  font-style: italic;
+  font-size: 2rem;
+  letter-spacing: 2px;
+}
+
+.generateButton {
+  height: 50px;
+  border: 2px solid grey;
+  padding: 5px 5px;
+  border-radius: 100px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  cursor: pointer;
+  min-height: 75px;
+  min-width: 175px;
+  font-family: Kanit;
+  font-style: italic;
+  font-size: 30px;
+  letter-spacing: 2px;
+}
+
+.loader {
+  /* border: 16px solid #464646; 
+  border-top: 16px solid #3498db; 
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite; */
+  align-self: center;
+  margin: 5px 0;
+  position: absolute;
+}
+
+/* @keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+} */
+
+.inputContainer {
+  width: 60%;
+  gap: 10px;
+}
+
+.loader {
+  animation: rotator 1.4s linear infinite;
+}
+
+@keyframes rotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+.path {
+  stroke-dasharray: 170;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.4s ease-in-out infinite,
+    colors 1.5s ease-in-out infinite;
+}
+
+@keyframes colors {
+  0% {
+    stroke: #ff45f6;
+  }
+  25% {
+    stroke: #de3e35;
+  }
+  50% {
+    stroke: #8820ff;
+  }
+  75% {
+    stroke: #ffc70d;
+  }
+  100% {
+    stroke: #ff0000;
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 187;
+  }
+  50% {
+    stroke-dashoffset: 187/4;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 187;
+    transform: rotate(450deg);
+  }
 }

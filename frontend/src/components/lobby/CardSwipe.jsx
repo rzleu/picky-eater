@@ -143,13 +143,13 @@ function CardSwipe({ masterList = [] }) {
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
       <div className={style.cardContainerContainer} id="idklol">
         <div className={style.cardContainerChild}>
-          <h3>{name}</h3>
           <motion.div
             ref={cardRef}
             className={`${style.card} card`}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
           >
+            <h3>{name}</h3>
             <img
               src={photo ? photo.images.large.url : placeHolder}
               alt={name}
@@ -157,7 +157,7 @@ function CardSwipe({ masterList = [] }) {
             />
             <button ref={leftSwipe} onClick={handleLeftSwipe}>
               <img
-                className={style.swipe}
+                className={style.leftSwipe}
                 src={swipeLeft}
                 alt="swipeLeft"
               />
