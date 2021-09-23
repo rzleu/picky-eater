@@ -4,6 +4,7 @@ import React, {
   useContext,
   useCallback,
   useEffect,
+  useRef,
 } from 'react';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -13,8 +14,12 @@ import { useForm } from 'react-hook-form';
 
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
-
+import WAVES from 'vanta/dist/vanta.waves.min';
+import PincodeInput from 'pincode-input';
+import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
+
+// VANTA.WAVES('.lobbyContainer');
 
 const schema = yup.object().shape({
   lobby: yup.string().required(),
@@ -33,6 +38,32 @@ function Lobby() {
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
+  const [vantaEffect, setVantaEffect] = useState(0);
+  const vantaRef = useRef(null);
+
+  useEffect(() => {
+    if (!vantaEffect) {
+      setVantaEffect(
+        WAVES({
+          el: vantaRef.current,
+          zoom: 0.65,
+          mouseControls: false,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 500.0,
+          minWidth: 500.0,
+          color: 0x312d2d,
+          scale: 0.5,
+          shininess: 16.0,
+          waveHeight: 11.0,
+          waveSpeed: 0.2,
+        }),
+      );
+    }
+    return () => {
+      if (vantaEffect) vantaEffect.destroy();
+    };
+  }, [vantaEffect]);
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
@@ -154,16 +185,28 @@ function Lobby() {
   console.log(masterList);
 
   return (
-    <div className={styles.container}>
-      <h2>ROOM CODE IS {roomCode}</h2>
-      {fetchingData && <div>...loading</div>}
+    <div className={`${styles.container}`} ref={vantaRef}>
+      {/* {!roomCode ? null : <h2>ROOM CODE IS {roomCode}</h2>} */}
+      {/* {document.querySelector('.card') ? (
+        <h2>ROOM CODE IS {roomCode}</h2>
+      ) : null} */}
+      <h2>ROOM CODE: {roomCode}</h2>
+
       {!roomCode ? (
         <>
           <div className={styles.formWrapper}>
             <form onSubmit={handleSubmit(handleJoinRoom)}>
-              <h2>Have a Pin?</h2>
-              <div>
-                <input {...register('lobby')} />
+              <h2 className={styles.havePin}>Have a Pin?</h2>
+              <div className={styles.inputContainer}>
+                {/* <div
+                  class={styles.pincodeInputContainer}
+                  {...register('lobby')}
+                ></div> */}
+                <input
+                  placeholder={'PIN'}
+                  className={styles.pinInput}
+                  {...register('lobby')}
+                />
                 <p className="errorMsg">{errors.lobby?.message}</p>
                 <input
                   className={styles.lobbyEnter}
@@ -171,13 +214,36 @@ function Lobby() {
                   value="Enter"
                 />
               </div>
+              <div>
+                <h3 className={styles.createRoom}>Create a room?</h3>
+                <button
+                  className={styles.generateButton}
+                  onClick={handleCreateRoom}
+                >
+                  {!fetchingData
+                    ? !fetchingData && (
+                        <svg
+                          className={styles.loader}
+                          width="50px"
+                          height="50px"
+                          viewBox="0 0 66 66"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            className={styles.path}
+                            fill="none"
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                            cx="33"
+                            cy="33"
+                            r="30"
+                          ></circle>
+                        </svg>
+                      )
+                    : 'Create'}
+                </button>
+              </div>
             </form>
-            <div>
-              <h3>Create a room?</h3>
-              <button onClick={handleCreateRoom}>
-                Generate Random Room!
-              </button>
-            </div>
           </div>
         </>
       ) : (
