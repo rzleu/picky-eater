@@ -8,6 +8,9 @@ import React, {
 import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import placeHolder from '../../assets/images/DanPic.png';
+import swipeLeft from '../../assets/images/swipeLeft.png';
+import swipeRight from '../../assets/images/swipeRight.png';
 
 // @ts-ignore
 
@@ -17,6 +20,8 @@ function CardSwipe({ masterList = [] }) {
   const [match, setMatch] = useState(null);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
+  const leftSwipe = useRef(null);
+  const rightSwipe = useRef(null);
   let startX = useRef(null);
 
   const handleMasterList = useCallback((list) => {
@@ -25,7 +30,6 @@ function CardSwipe({ masterList = [] }) {
   }, []);
 
   const handleMatch = useCallback(({ match }) => {
-    console.log({ anthony: match });
     setMatch(match);
   }, []);
 
@@ -78,11 +82,9 @@ function CardSwipe({ masterList = [] }) {
           location_id !== masterListCopy[0].location_id,
       ),
     );
-    console.log({ updatedApprovedList: updatedApprovedList });
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
 
-  console.log(masterList);
   const x = useMotionValue(0);
   const background = useTransform(
     x,
@@ -94,18 +96,25 @@ function CardSwipe({ masterList = [] }) {
     const observer = new IntersectionObserver(
       (entries, observer) => {
         entries.forEach((entry) => {
-          startX =
-            (window.innerWidth -
-              document.querySelector('.card').clientWidth) /
-            2;
-          console.log({ entry });
+          document.querySelector('.card')
+            ? (startX =
+                (window.innerWidth -
+                  document.querySelector('.card').clientWidth) /
+                2)
+            : (startX = 0);
+          // startX =
+          //   (window.innerWidth -
+          //     document.querySelector('.card').clientWidth) /
+          //   2;
           if (!entry.isIntersecting) {
             console.log(startX);
             console.log(entry.boundingClientRect.x);
             if (entry.boundingClientRect.x - startX < 0) {
-              console.log('touched left');
+              leftSwipe.current.click();
+              console.log('left');
             } else if (entry.boundingClientRect.x - startX > 80) {
-              console.log('touched right');
+              rightSwipe.current.click();
+              console.log('right');
             }
           }
         });
@@ -128,33 +137,44 @@ function CardSwipe({ masterList = [] }) {
 
   if (!masterListCopy.length) return null;
   const { name, phone, website, photo, address } = masterListCopy[0];
+  console.log(masterListCopy);
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
       <div className={style.cardContainerContainer} id="idklol">
         <div className={style.cardContainerChild}>
           <h3>{name}</h3>
-          {photo && (
-            <motion.div
-              ref={cardRef}
-              className={`${style.card} card`}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-            >
+          <motion.div
+            ref={cardRef}
+            className={`${style.card} card`}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+          >
+            <img
+              src={photo ? photo.images.large.url : placeHolder}
+              alt={name}
+              className={style.images}
+            />
+            <button ref={leftSwipe} onClick={handleLeftSwipe}>
               <img
-                src={photo.images.large.url}
-                alt={name}
-                className={style.images}
+                className={style.swipe}
+                src={swipeLeft}
+                alt="swipeLeft"
               />
-            </motion.div>
-          )}
+            </button>
+            <button ref={rightSwipe} onClick={handleRightSwipe}>
+              <img
+                className={style.swipe}
+                src={swipeRight}
+                alt="swipeRight"
+              />
+            </button>
+          </motion.div>
           <div>
             {phone} {address} {website}
           </div>
         </div>
       </div>
-      <button onClick={handleLeftSwipe}>Left</button>
-      <button onClick={handleRightSwipe}>Right</button>
       {match && (
         <div>
           <h3>Congrats yall decided!</h3>
