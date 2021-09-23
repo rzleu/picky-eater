@@ -12,10 +12,6 @@ const User = require('../../models/User');
 const validateSignupInput = require('../../validation/signup');
 const validateLoginInput = require('../../validation/login');
 
-router.get('/test', (req, res) =>
-  res.json({ msg: 'This is the users route' }),
-);
-
 router.post('/signup', (req, res) => {
   const { errors, isValid } = validateSignupInput(req.body);
 
@@ -108,7 +104,7 @@ router.get(
   (req, res) => {
     res.json({
       id: req.user.id,
-      handle: req.user.handle,
+      username: req.user.username,
       email: req.user.email,
     });
   },

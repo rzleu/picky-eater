@@ -29,10 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     store = configureStore({});
   }
+
   ReactDOM.render(
     <Provider store={store}>
       <HashRouter>
-        <SocketContext.Provider value={socket()}>
+        <SocketContext.Provider value={socket}>
           <App />
         </SocketContext.Provider>
       </HashRouter>
