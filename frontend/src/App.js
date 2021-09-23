@@ -20,7 +20,7 @@ function App() {
         <Route exact path="/swipe" component={CardSwipe} />
         {/* Make this authroute later */}
         <Route path="/lobby" component={Lobby} />
-        <Route path="/about" component={About} />
+        <Route exact path="/about" component={About} />
       </Switch>
     </div>
   );

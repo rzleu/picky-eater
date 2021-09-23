@@ -154,3 +154,15 @@ h1 {
     border: none;
   }
 }
+
+.splashLogo {
+  height: 100px;
+  margin-right: -20px;
+}
+
+.headerLogo {
+  left: 1%;
+  display: flex;
+  top: 1%;
+  align-items: center;
+}
