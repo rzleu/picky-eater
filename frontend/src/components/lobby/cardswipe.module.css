@@ -85,3 +85,14 @@
 .swipe {
   height: 50px;
 }
+
+.photoLeftBtn,
+.photoRightBtn {
+  position: absolute;
+  bottom: 50%;
+  left: 5%;
+}
+
+.photoRightBtn {
+  right: 5%;
+}

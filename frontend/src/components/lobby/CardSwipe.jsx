@@ -8,9 +8,11 @@ import React, {
 import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'react-feather';
 import placeHolder from '../../assets/images/DanPic.png';
 import leftSwipeBtn from '../../assets/svg/x.svg';
 import rightSwipeBtn from '../../assets/svg/heart.svg';
+import axios from 'axios';
 
 // @ts-ignore
 
@@ -18,6 +20,8 @@ function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
   const [match, setMatch] = useState(null);
+  const [photoList, setPhotoList] = useState([]);
+  const [currPhoto, setCurrPhoto] = useState(0);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
   const leftSwipe = useRef(null);
@@ -59,7 +63,7 @@ function CardSwipe({ masterList = [] }) {
       socket.off('MATCH');
       socket.off('MASTER_LIST');
     };
-  }, [approvedList, handleMasterList, socket, handleMatch]);
+  }, [approvedList, handleMatch]);
 
   const handleLeftSwipe = () => {
     if (masterListCopy.length === 0) return;
@@ -67,6 +71,7 @@ function CardSwipe({ masterList = [] }) {
     const copy = [...masterListCopy];
     copy.push(copy.shift());
     setMasterListCopy(copy);
+    setPhotoList(masterListCopy[0].photoRefs);
   };
 
   // ! WHAT THE HASHROUTER
@@ -76,12 +81,8 @@ function CardSwipe({ masterList = [] }) {
       masterListCopy[0],
     );
     setApprovedList(updatedApprovedList);
-    setMasterListCopy(
-      masterListCopy.filter(
-        ({ location_id }) =>
-          location_id !== masterListCopy[0].location_id,
-      ),
-    );
+    setMasterListCopy(masterListCopy.slice(1));
+    setPhotoList(masterListCopy[0].photoRefs);
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
 
@@ -135,9 +136,34 @@ function CardSwipe({ masterList = [] }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!photoList.length) return;
+    const photoOptions = {
+      method: 'GET',
+      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      headers: {},
+    };
+    axios(photoOptions).then((res) => {
+      console.log('hi ant');
+      console.log({ res });
+      // console.log(res.getUrl({ maxWidth: 100, maxHeight: 100 }));
+    });
+  }, [currPhoto, photoList]);
+
+  const handlePhotoLeftClick = () => {
+    if (currPhoto < 1) return;
+    setCurrPhoto((old) => old - 1);
+  };
+
+  const handlePhotoRightClick = () => {
+    if (currPhoto > 2) return;
+    setCurrPhoto((old) => old + 1);
+  };
+
   if (!masterListCopy.length) return null;
-  const { name, phone, website, photo, address } = masterListCopy[0];
-  console.log(masterListCopy);
+  const { name, phone, website, address } = masterListCopy[0];
+  console.log({ masterListCopy });
+
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
@@ -151,10 +177,22 @@ function CardSwipe({ masterList = [] }) {
             dragConstraints={{ left: 0, right: 0 }}
           >
             <img
-              src={photo ? photo.images.large.url : placeHolder}
+              src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`}
               alt={name}
               className={style.images}
             />
+            <button
+              onClick={handlePhotoLeftClick}
+              className={style.photoLeftBtn}
+            >
+              <ChevronLeft />
+            </button>
+            <button
+              onClick={handlePhotoRightClick}
+              className={style.photoRightBtn}
+            >
+              <ChevronRight />
+            </button>
             <button ref={leftSwipe} onClick={handleLeftSwipe}>
               <img src={leftSwipeBtn} alt="left swipe" />
             </button>

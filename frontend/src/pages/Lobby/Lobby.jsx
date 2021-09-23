@@ -32,7 +32,7 @@ function Lobby() {
   const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
-  const [fetchedData, setFetchedData] = useState(true);
+  const [fetchingData, setFetchingData] = useState(false);
 
   // * maybe this isn't user
   const { username, id } = useSelector((state) => state.session.user);
@@ -63,11 +63,11 @@ function Lobby() {
   });
 
   async function success(pos) {
-    setFetchedData(false);
+    setFetchingData(true);
 
     const placeIdOptions = {
       method: 'GET',
-      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&type=restaurant&type=food&radius=16000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
       headers: {},
     };
 
@@ -118,8 +118,8 @@ function Lobby() {
           };
         },
       );
-
       setMasterList(resDetails);
+      setFetchingData(false);
     } catch (error) {
       console.error(error);
     }
@@ -136,38 +136,27 @@ function Lobby() {
     //   });
     // })
   }
-
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(success, null, {
       enableHighAccuracy: true,
     });
-  }, []);
-
-  useEffect(() => {
-    if (masterList.length) {
-      socket.emit('MASTER_LIST', masterList);
-    }
-  }, [masterList]);
-
-  useEffect(() => {
-    if (username && id) {
-      socket.emit('USER_ONLINE', { username, id });
-    }
 
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
     socket.on('ROOM_CODE', handleRoomCode);
     socket.on('MASTER_LIST', handleMasterList);
 
-    // return () => {
-    //   socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
-    //   socket.off('ROOM_CODE');
-    // };
-  }, [socket, username, id, handleRoomAccepted]);
+    return () => {
+      socket.off('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
+      socket.off('ROOM_CODE', handleRoomCode);
+      socket.off('MASTER_LIST', handleMasterList);
+    };
+  }, []);
   console.log(masterList);
+
   return (
     <div className={styles.container}>
       <h2>ROOM CODE IS {roomCode}</h2>
-      {!fetchedData && <div>...loading</div>}
+      {fetchingData && <div>...loading</div>}
       {!roomCode ? (
         <>
           <div className={styles.formWrapper}>
