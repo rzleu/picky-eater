@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, { cors: { origin: '*' } });
@@ -22,6 +23,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+app.use(cors());
 app.use(express.json());
 app.use(
   express.urlencoded({
