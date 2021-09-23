@@ -149,7 +149,6 @@ function CardSwipe({ masterList = [] }) {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
           >
-            <h3>{name}</h3>
             <img
               src={photo ? photo.images.large.url : placeHolder}
               alt={name}
@@ -169,6 +168,7 @@ function CardSwipe({ masterList = [] }) {
                 alt="swipeRight"
               />
             </button>
+            <h3>{name}</h3>
           </motion.div>
           <div>
             {phone} {address} {website}

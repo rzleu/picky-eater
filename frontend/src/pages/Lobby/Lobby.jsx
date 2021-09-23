@@ -209,6 +209,7 @@ function Lobby() {
                   {...register('lobby')}
                 ></div> */}
                 <input
+                  placeholder={'PIN'}
                   className={styles.pinInput}
                   {...register('lobby')}
                 />
