@@ -1,0 +1,17 @@
+.swipeHeader {
+  margin: 0;
+}
+
+.swipeContainer {
+  background: rgb(70, 70, 70);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image {
+  width: 400px;
+  max-height: 400px;
+  object-fit: cover;
+}

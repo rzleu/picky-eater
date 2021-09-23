@@ -39,24 +39,24 @@ router.post('/signup', (req, res) => {
       bcrypt.hash(newUser.password, salt, (err, hash) => {
         if (err) throw err;
         newUser.password = hash;
-        newUser
-          .save()
-          .then((user) => {
-            const payload = { id: user.id, email: user.email };
+        newUser.save().then((user) => {
+          const payload = { id: user.id, email: user.email };
 
-            jwt.sign(
-              payload,
-              keys.secretOrKey,
-              { expiresIn: 3600 },
-              (_, token) => {
-                res.json({
-                  success: true,
-                  token: `Bearer ${token}`,
-                });
-              },
-            );
-          })
-          .catch((err) => console.log(err));
+          jwt.sign(
+            payload,
+            keys.secretOrKey,
+            { expiresIn: 3600 },
+            (_, token) => {
+              res.json({
+                payload,
+                success: true,
+                token: `Bearer ${token}`,
+                payload,
+              });
+            },
+          );
+        });
+        // .catch((err) => console.log(err));
       });
     });
   });
@@ -72,7 +72,7 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({ username }).then((user) => {
-    console.log(user);
+    // console.log(user);
     if (!user) {
       errors.username = 'This user does not exist';
       return res.status(400).json(errors);
@@ -88,6 +88,7 @@ router.post('/login', (req, res) => {
           { expiresIn: 3600 },
           (err, token) => {
             res.json({
+              payload,
               success: true,
               token: `Bearer ${token}`,
             });

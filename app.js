@@ -1,5 +1,4 @@
 const express = require('express');
-
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, { cors: { origin: '*' } });
@@ -8,12 +7,10 @@ const passport = require('passport');
 const path = require('path');
 const db = require('./config/keys').mongoURI;
 const users = require('./routes/api/users');
-const lobbies = require('./routes/api/lobbies');
 
-mongoose
-  .connect(db, { useNewUrlParser: true })
-  .then(() => console.log('Connected to MongoDB successfully'))
-  .catch((err) => console.log(err));
+mongoose.connect(db, { useNewUrlParser: true });
+// .then(() => console.log('Connected to MongoDB successfully'))
+// .catch((err) => console.log(err));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('frontend/build'));
@@ -35,61 +32,83 @@ app.use(passport.initialize());
 
 require('./config/passport')(passport);
 app.use('/api/users', users);
-// app.use('/api/lobbies', lobbies);
+
 const port = process.env.PORT || 5000;
 
-app.listen(port, () =>
-  console.log(`Server is running on port ${port}`),
-);
+app.listen(port);
+//  () =>
+//   console.log(`Server is running on port ${port}`),
 
-server.listen(3001, () => {
-  console.log('Server is running on 3001');
-});
-
-// app.post('/api/lobbies', (req, res) => {
-//   const rooms = io.sockets.adapter.rooms;
-
-//   console.log(rooms);
-//   if (!rooms.has(req.body.room)) {
-//     // rooms[req.body.room] = { users: {} };
-//     io.on('connection', (socket) => {
-//       socket.join(req.body.room);
-//     });
-//     io.to(req.body).emit('room-created', req.body.room);
-//     res.json(rooms);
-//   } else {
-//     res.json(rooms);
-//   }
+server.listen(3001);
+// , () => {
+//   console.log('Server is running on 3001');
 // });
 
+const randomCodeGenerator = () => {
+  let string = '';
+
+  for (let i = 0; i < 4; i++) {
+    string += Math.floor(Math.random() * 9);
+  }
+
+  return string;
+};
+
 io.on('connection', (socket) => {
-  // joining a room that is empty/full
-  socket.on('JOIN-ROOM', (room) => {
-    // console.log(socket);
+  socket.on('USER_ONLINE', ({ username, id }) => {
+    socket.user = { username, id };
+  });
+
+  socket.on('CREATE_RAND_ROOM', (restaurants) => {
+    let roomCode = randomCodeGenerator();
+
+    while (socket.adapter.rooms.has(roomCode)) {
+      roomCode = randomCodeGenerator();
+    }
+    // console.log({ restaurants });
+
+    socket.leave(socket.id);
+    socket.join(roomCode); // user will join room with rand 4-digit code
+    io.sockets.sockets.get(socket.id).list = restaurants;
+    socket.emit('ROOM_CODE', roomCode); // return code to FE
+    console.log('backend', { restaurants });
+    socket.to(roomCode).emit('MASTER_LIST', restaurants);
+  });
+
+  socket.on('JOIN_ROOM', (room) => {
+    socket.leave(socket.id);
 
     const rooms = socket.adapter.rooms;
-    // console.log(room);
-    // console.log(rooms);
+
     if (
-      !rooms.has(room) ||
-      (rooms.has(room) && rooms.get(room).size < 2)
+      // !rooms.has(room) ||
+      rooms.has(room) &&
+      rooms.get(room).size < 2
     ) {
       socket.join(room);
-      console.log(socket.adapter.rooms);
-      // console.log(socket.rooms);
-      socket.to(room).emit('Socket on ending');
-      // rooms = { room: { users: { 1: anthill499, 2: cindyjiang } } }
+      const data = io.sockets.sockets.get(room).list;
+      socket.to(room).emit('JOIN_REQUEST_ACCEPTED');
+      socket.to(room).emit('MASTER_LIST', data);
     } else {
-      console.log('fail');
-      socket.emit('FULL-ROOM', {
+      // console.log('room full');
+      socket.emit('full-room', {
         message: 'Room is unavailable',
         room,
       });
     }
   });
 
-  // socket.on('disconnect', (room) => {
-  //   delete rooms[room].users[socket.id];
-  //   io.emit('disconnect-message', 'A user has left the chat');
+  // socket.on('MASTER_LIST', (resData, room) => {
+  //   // get room code from FE
+  //   const rooms = socket.adapter.rooms;
+
+  //   rooms.get(room).forEach((socketId) => {
+  //     io.sockets.sockets.get(socketId).list = resData;
+  //     // console.log(io.sockets.sockets.get(socketId));
+  //   });
   // });
+
+  socket.on('disconnect', () => {
+    io.emit('disconnect-message', 'A user has left the chat');
+  });
 });

@@ -1,3 +1,4 @@
+import { fetchAllRestaurants } from './actions/restaurantActions';
 import React from 'react';
 import ReactDOM from 'react-dom';
 // import Root from './components/root';
@@ -7,9 +8,11 @@ import { setAuthToken } from './util/sessionApiUtil';
 import { logout } from './actions/sessionActions';
 import { Provider } from 'react-redux';
 import { HashRouter } from 'react-router-dom';
+import { SocketContext, socket } from './context/socket';
 import App from './App';
 
 document.addEventListener('DOMContentLoaded', () => {
+  window.fetchAllRestaurants = fetchAllRestaurants;
   let store;
 
   if (localStorage.jwtToken) {
@@ -31,7 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <Provider store={store}>
       <HashRouter>
-        <App />
+        <SocketContext.Provider value={socket}>
+          <App />
+        </SocketContext.Provider>
       </HashRouter>
     </Provider>,
     document.getElementById('root'),
