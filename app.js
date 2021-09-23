@@ -6,7 +6,9 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
 const db = require('./config/keys').mongoURI;
+
 const users = require('./routes/api/users');
+const restaurants = require('./routes/api/restaurants');
 
 mongoose
   .connect(db, { useNewUrlParser: true })
@@ -32,11 +34,9 @@ app.use(
 app.use(passport.initialize());
 
 require('./config/passport')(passport);
+
 app.use('/api/users', users);
-
-const port = process.env.PORT || 5000;
-
-server.listen(port);
+app.use('/api/restaurants', restaurants);
 
 const randomCodeGenerator = () => {
   let string = '';
@@ -115,3 +115,9 @@ io.on('connection', (socket) => {
     io.emit('disconnect-message', 'A user has left the chat');
   });
 });
+
+const port = process.env.PORT || 5000;
+
+server.listen(port, () =>
+  console.log(`Server is running on port ${port}`),
+);
