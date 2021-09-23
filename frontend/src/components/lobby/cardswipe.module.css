@@ -34,11 +34,15 @@
   align-items: center;
   width: 100%;
   margin-top: 10px;
+  bottom: 0px;
+  background: white;
+  min-height: 50px;
+  justify-content: center;
 }
 
 .card button {
   position: absolute;
-  bottom: 5%;
+  bottom: 12%;
   z-index: 10000;
   right: 5%;
   border: none;
