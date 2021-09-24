@@ -235,3 +235,27 @@
   text-decoration: none;
   pointer-events: auto;
 }
+
+.reload {
+  height: 50px;
+  border: 2px solid rgb(255, 255, 255);
+  padding: 5px 5px;
+  border-radius: 100px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  cursor: pointer;
+  min-height: 45px;
+  min-width: 175px;
+  font-family: Kanit;
+  font-style: italic;
+  font-size: 30px;
+  letter-spacing: 2px;
+  backdrop-filter: brightness(0.5);
+  background: transparent;
+  color: white;
+  box-shadow: 0px 0px 10px 1px #6d2929;
+  margin-bottom: 15px;
+}
