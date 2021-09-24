@@ -53,12 +53,6 @@ const randomCodeGenerator = () => {
   return string;
 };
 
-const port = process.env.PORT || 5000;
-
-server.listen(port, () =>
-  console.log(`Server is running on port ${port}`),
-);
-
 io.on('connection', (socket) => {
   // socket.on('USER_ONLINE', ({ username, id }) => {
   //   socket.user = { username, id };
@@ -166,3 +160,9 @@ io.on('connection', (socket) => {
     io.emit('disconnect-message', 'A user has left the chat');
   });
 });
+
+const port = process.env.PORT || 5000;
+
+server.listen(port, () =>
+  console.log(`Server is running on port ${port}`),
+);
