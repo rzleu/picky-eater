@@ -22,21 +22,26 @@ function CardSwipe({ masterList = [] }) {
     masterList[0]?.photoRefs,
   );
   const [currPhoto, setCurrPhoto] = useState(0);
+  const [infoButtonHidden, setinfoButtonHidden] = useState(false);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
   const leftSwipe = useRef(null);
   const rightSwipe = useRef(null);
   let startX = useRef(null);
   const handleMasterList = useCallback((list) => {
-    console.log({list});
+    console.log({ list });
     if (!list || !list.length) return;
     setMasterListCopy(list);
   }, []);
 
   const handleMatch = useCallback(({ match }) => {
-    console.log({match});
+    console.log({ match });
     setMatch(match);
   }, []);
+
+  const handleInfoButton = () => {
+    setinfoButtonHidden(!infoButtonHidden);
+  };
 
   useEffect(() => {
     socket.on(
@@ -152,11 +157,11 @@ function CardSwipe({ masterList = [] }) {
   console.log({ masterListCopy });
   if (!masterList || !masterList.length) return null;
   if (masterList && (!masterListCopy || !masterListCopy.length)) {
-    setMasterListCopy(masterList)
-    return
-  };
-  const { name, phone, website, address } = masterListCopy.[0];
-
+    setMasterListCopy(masterList);
+    return;
+  }
+  const { name, phone, address, rating, website } = masterListCopy[0];
+  console.log(rating);
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
@@ -189,7 +194,10 @@ function CardSwipe({ masterList = [] }) {
                 <ChevronRight strokeWidth={3} size={64} />
               </button>
             )}
-            <div className={style.swipeBar}>
+            <div
+              className={style.swipeBar}
+              style={{ bottom: infoButtonHidden ? '33%' : '12%' }}
+            >
               <button ref={leftSwipe} onClick={handleLeftSwipe}>
                 <img
                   className={style.leftSwipe}
@@ -197,18 +205,36 @@ function CardSwipe({ masterList = [] }) {
                   alt="swipeLeft"
                 />
               </button>
-              <button>
-                <Info size={36} strokeWidth={3} color="#e9ec67" />
+              <button
+                className={style.infoCircle}
+                onClick={handleInfoButton}
+              >
+                <Info size={36} strokeWidth={3} />
               </button>
               <button ref={rightSwipe} onClick={handleRightSwipe}>
                 <img src={rightSwipeBtn} alt="right" />
               </button>
             </div>
-            <h3>{name}</h3>
+            <div className={style.infoBlock}>
+              <h3>{name}</h3>
+              {infoButtonHidden && (
+                <div className={style.testing}>
+                  <p>Rating: {rating}</p>
+                  <p>Phone Number: {phone}</p>
+                  <p>Address: {address}</p>
+                  <p>
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Website
+                    </a>
+                  </p>
+                </div>
+              )}
+            </div>
           </motion.div>
-          <div>
-            {phone} {address} {website}
-          </div>
         </div>
       </div>
       {match && (

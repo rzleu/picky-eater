@@ -24,20 +24,21 @@
   border-radius: 20px;
 }
 
-.cardContainerChild h3 {
+.cardContainerChild .infoBlock {
   align-self: center;
   font-size: 2rem;
   font-family: Kanit;
   display: flex;
   flex-direction: column;
   position: absolute;
-  align-items: center;
+  /* align-items: center; */
   width: 100%;
   margin-top: 10px;
   bottom: 0px;
   background: white;
   min-height: 50px;
   justify-content: center;
+  z-index: 9999;
 }
 
 .card button {
@@ -132,10 +133,12 @@
   left: initial;
 }
 
+/* from info button click */
+/* 60px -> 200px */
 .swipeBar {
   display: flex;
   position: absolute;
-  bottom: 10%;
+  bottom: 34%;
   padding-left: 5%;
   padding-right: 5%;
   left: 0;
@@ -154,11 +157,53 @@
 .card::after {
   position: absolute;
   content: '';
-  background: linear-gradient(0deg, black 0%, transparent 50%) bottom;
+  background: linear-gradient(0deg, black 0%, transparent 60%) bottom;
   left: 0;
   right: 0;
   z-index: 1;
   height: 40%;
   width: 100%;
   bottom: 8.5%;
+}
+
+.infoCircle {
+  position: relative;
+  color: rgb(128, 128, 128);
+}
+
+.testing {
+  height: 130px;
+  max-height: 130px;
+  font-family: Kanit;
+}
+
+.testing p {
+  font-size: 16px;
+  margin-left: 7%;
+  margin-top: 3%;
+}
+.swipeBar button:hover {
+  /* filter: brightness(50%); */
+  /* backdrop-filter: saturation(150%); */
+  transition: 0.2s ease-in;
+  filter: saturate(200%);
+}
+
+.testing p:first-of-type {
+  margin-top: 2%;
+}
+.infoBlock h3 {
+  font-size: 2rem;
+  margin-left: 7%;
+  margin-top: 3%;
+  font-weight: 700;
+}
+
+.testing p a {
+  text-decoration: none;
+  color: black;
+}
+
+.testing p a:hover {
+  color: grey;
 }

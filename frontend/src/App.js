@@ -15,11 +15,11 @@ function App() {
     <div className="h-100">
       <Switch>
         <Route exact path="/" component={SplashPage} />
-        <AuthRoute exact path="/login" component={LoginForm} />
-        <AuthRoute exact path="/signup" component={SignupForm} />
-        <Route exact path="/swipe" component={CardSwipe} />
+        <AuthRoute exact path="/" component={LoginForm} />
+        <AuthRoute exact path="/" component={SignupForm} />
+        <ProtectedRoute exact path="/swipe" component={CardSwipe} />
         {/* Make this authroute later */}
-        <Route path="/lobby" component={Lobby} />
+        <ProtectedRoute path="/lobby" component={Lobby} />
         <Route exact path="/about" component={About} />
       </Switch>
     </div>
