@@ -41,9 +41,14 @@
 }
 
 .card button {
+  cursor: pointer;
+}
+
+.cardLeftBtn,
+.cardRightBtn {
   position: absolute;
   bottom: 12%;
-  z-index: 10000;
+  z-index: 100;
   right: 5%;
   border: none;
   background: transparent;
@@ -54,13 +59,13 @@
   left: 5%;
 }
 
-.card button:hover {
+.cardLeftBtn:hover {
   box-shadow: 0px 0px 15px 4px #ffffff;
 }
 
-.card button:first-of-type {
+.cardLeftBtn {
   left: 5%;
-  right: 0;
+  right: initial;
 }
 
 .cardContainer {
@@ -101,13 +106,30 @@
   height: 50px;
 }
 
+.card > .photoRightBtn,
+.card > .photoLeftBtn {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.card:hover > .photoRightBtn,
+.card:hover > .photoLeftBtn {
+  opacity: 1;
+}
+
 .photoLeftBtn,
 .photoRightBtn {
   position: absolute;
   bottom: 50%;
   left: 5%;
+  background: transparent;
+  border: 0;
+  color: whitesmoke;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .photoRightBtn {
   right: 5%;
+  left: initial;
 }

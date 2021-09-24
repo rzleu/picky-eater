@@ -20,7 +20,7 @@ function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
   const [match, setMatch] = useState(null);
-  const [photoList, setPhotoList] = useState([]);
+  const [photoList, setPhotoList] = useState(masterList[0].photoRefs);
   const [currPhoto, setCurrPhoto] = useState(0);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
@@ -72,6 +72,7 @@ function CardSwipe({ masterList = [] }) {
     copy.push(copy.shift());
     setMasterListCopy(copy);
     setPhotoList(masterListCopy[0].photoRefs);
+    setCurrPhoto(0);
   };
 
   // ! WHAT THE HASHROUTER
@@ -83,6 +84,7 @@ function CardSwipe({ masterList = [] }) {
     setApprovedList(updatedApprovedList);
     setMasterListCopy(masterListCopy.slice(1));
     setPhotoList(masterListCopy[0].photoRefs);
+    setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
 
@@ -136,20 +138,6 @@ function CardSwipe({ masterList = [] }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!photoList.length) return;
-    const photoOptions = {
-      method: 'GET',
-      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-      headers: {},
-    };
-    axios(photoOptions).then((res) => {
-      console.log('hi ant');
-      console.log({ res });
-      // console.log(res.getUrl({ maxWidth: 100, maxHeight: 100 }));
-    });
-  }, [currPhoto, photoList]);
-
   const handlePhotoLeftClick = () => {
     if (currPhoto < 1) return;
     setCurrPhoto((old) => old - 1);
@@ -160,7 +148,7 @@ function CardSwipe({ masterList = [] }) {
     setCurrPhoto((old) => old + 1);
   };
 
-  if (!masterListCopy.length) return null;
+  if (!masterList || !masterListCopy.length) return null;
   const { name, phone, website, address } = masterListCopy[0];
   console.log({ masterListCopy });
 
@@ -180,26 +168,39 @@ function CardSwipe({ masterList = [] }) {
               alt={name}
               className={style.images}
             />
+            {currPhoto !== 0 && (
+              <button
+                onClick={handlePhotoLeftClick}
+                className={style.photoLeftBtn}
+                strokeWidth={4}
+              >
+                <ChevronLeft size={48} strokeWidth={3} />
+              </button>
+            )}
+            {currPhoto < 2 && (
+              <button
+                onClick={handlePhotoRightClick}
+                className={style.photoRightBtn}
+              >
+                <ChevronRight strokeWidth={3} size={48} />
+              </button>
+            )}
             <button
-              onClick={handlePhotoLeftClick}
-              className={style.photoLeftBtn}
+              className={style.cardLeftBtn}
+              ref={leftSwipe}
+              onClick={handleLeftSwipe}
             >
-              <ChevronLeft />
-            </button>
-            <button
-              onClick={handlePhotoRightClick}
-              className={style.photoRightBtn}
-            >
-              <ChevronRight />
-            </button>
-            <button ref={leftSwipe} onClick={handleLeftSwipe}>
               <img
                 className={style.leftSwipe}
                 src={leftSwipeBtn}
                 alt="swipeLeft"
               />
             </button>
-            <button ref={rightSwipe} onClick={handleRightSwipe}>
+            <button
+              className={style.cardRightBtn}
+              ref={rightSwipe}
+              onClick={handleRightSwipe}
+            >
               <img src={rightSwipeBtn} alt="right" />
             </button>
             <h3>{name}</h3>

@@ -72,11 +72,15 @@ function Lobby() {
     socket.emit('JOIN_ROOM', lobby);
   }, []);
 
-  const handleCreateRoom = useCallback(() => {
-    if (masterList.length) {
-      socket.emit('CREATE_RAND_ROOM', masterList);
-    }
-  }, [masterList]);
+  const handleCreateRoom = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (masterList.length) {
+        socket.emit('CREATE_RAND_ROOM', masterList);
+      }
+    },
+    [masterList],
+  );
 
   const handleRoomAccepted = useCallback((data) => {
     setShowCardSwipe(true);
