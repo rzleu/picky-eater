@@ -49,7 +49,8 @@ h2 {
 }
 
 .splashBtn1,
-.splashBtn2 {
+.splashBtn2,
+.splashBtn3 {
   width: 80%;
   text-transform: uppercase;
   text-align: center;
@@ -59,7 +60,8 @@ h2 {
   white-space: nowrap;
 }
 
-.splashBtn1 {
+.splashBtn1,
+.splashBtn3 {
   background-color: var(--white);
   border-radius: var(--button-border-radius);
   border: none;
@@ -128,7 +130,8 @@ h1 {
     font-family: 'Kanit', sans-serif;
   }
 
-  .splashBtn1:hover {
+  .splashBtn1:hover,
+  .splashBtn3:hover {
     animation: gradient 10s ease infinite;
   }
 
@@ -145,6 +148,29 @@ h1 {
     font-size: 14px;
     letter-spacing: 1.5px;
     font-family: 'Kanit', sans-serif;
+  }
+
+  .splashBtn3 {
+    width: 275px;
+    background: linear-gradient(
+      -45deg,
+      rgba(131, 58, 180, 1) 0%,
+      rgb(206, 75, 218) 25%,
+      rgba(253, 29, 29, 1) 50%,
+      rgba(252, 176, 69, 1) 80%
+    );
+    background-size: 300% 300%;
+    cursor: pointer;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-family: 'Kanit', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    margin-top: 10px;
   }
 
   .splashBtn2:hover {

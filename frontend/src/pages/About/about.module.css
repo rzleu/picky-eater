@@ -3,13 +3,22 @@
   background: black;
   display: flex;
   flex-direction: column;
+  background-image: url(../../assets/images/tempAboutBG.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .aboutHeader {
-  font-size: 3rem;
+  font-size: 4rem;
   color: rgb(255, 255, 255);
   position: relative;
   align-self: center;
+  font-style: italic;
+  top: 50px;
+  left: 0;
+  text-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+  padding: 4px 8px;
+  border-radius: 10px;
 }
 
 .teamContainer {
@@ -24,37 +33,45 @@
 }
 
 .teamItems {
-  border: 2px solid red;
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 44%;
 }
 
-.teamItem {
+.teamItem,
+.teamItemDan {
   display: flex;
   padding-left: 12px;
   border: 2px solid orange;
   /* width: 75%; */
   margin: 20px;
-  background: rgb(255, 192, 224);
+  background: transparent;
   border-radius: var(--button-border-radius);
   height: 130px;
+  backdrop-filter: brightness(0.5) blur(5px);
+  -webkit-box-shadow: 0px 0px 20px 5px #ffffff;
+  box-shadow: 0px 0px 5px 1px #000000;
 }
 
 .teamItems:nth-of-type() {
   align-items: flex-end;
 }
 
-.teamItem ul {
+.teamItem ul,
+.teamItemDan ul {
   display: flex;
   justify-content: center;
   font-family: 'Kanit';
   font-size: 18px;
-  padding-left: 20px;
+  /* padding-left: 20px; */
   gap: 10px;
+  width: 50%;
+  display: flex;
+  justify-content: space-evenly;
 }
 
-.teamItem h2 {
+.teamItem h2,
+.teamItemDan h2 {
   margin: 0;
   top: 0;
   left: 0;
@@ -71,6 +88,15 @@ li a {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.teamItemLeft {
+  display: flex;
+  width: 100%;
+}
+
+.teamItemLeft:first-of-type .proPic {
+  margin-right: 10px;
 }
 
 .proPic {
@@ -92,8 +118,29 @@ li a {
   margin-top: 10px;
   list-style: none;
   font-family: Kanit;
+  color: white;
 }
 
 .nameHeader:nth-child(2) {
   font-size: 23px;
+  padding-left: 10px;
+}
+
+.gitHubLink img,
+.linkedInLink img,
+.personalSite img {
+  height: 20px !important;
+  width: 20px !important;
+}
+
+.teamItemDan ul {
+  display: flex;
+  justify-content: space-evenly;
+  width: 85%;
+}
+
+.needsWidth {
+  width: 50%;
+  display: flex;
+  justify-content: space-evenly;
 }

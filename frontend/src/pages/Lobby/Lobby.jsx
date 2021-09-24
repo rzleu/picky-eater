@@ -18,6 +18,9 @@ import WAVES from 'vanta/dist/vanta.waves.min';
 import PincodeInput from 'pincode-input';
 import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
 
 // VANTA.WAVES('.lobbyContainer');
 
@@ -49,13 +52,14 @@ function Lobby() {
           zoom: 0.65,
           mouseControls: false,
           touchControls: true,
-          gyroControls: false,
+          gyroControls: true,
           minHeight: 500.0,
-          minWidth: 500.0,
-          color: 0x312d2d,
-          scale: 0.5,
-          shininess: 16.0,
-          waveHeight: 11.0,
+          minWidth: 400.0,
+          color: 0x121220,
+          // color: 0x21213b,
+          scale: 1,
+          shininess: 70.0,
+          waveHeight: 20.0,
           waveSpeed: 0.2,
         }),
       );
@@ -178,12 +182,22 @@ function Lobby() {
 
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
-      {/* {!roomCode ? null : <h2>ROOM CODE IS {roomCode}</h2>} */}
+      {!roomCode ? (
+        <h2 style={{ opacity: '0' }}>ROOM CODE: {roomCode}</h2>
+      ) : (
+        <h2>ROOM CODE: {roomCode}</h2>
+      )}
       {/* {document.querySelector('.card') ? (
         <h2>ROOM CODE IS {roomCode}</h2>
       ) : null} */}
-      <h2>ROOM CODE: {roomCode}</h2>
-
+      {/* <h2>ROOM CODE: {roomCode}</h2> */}
+      <Link className={styles.aboutLink} to="/about">
+        <FontAwesomeIcon
+          className={styles.keyBoard}
+          icon={faKeyboard}
+        />
+        <p>About the Creators</p>
+      </Link>
       {!roomCode ? (
         <>
           <div className={styles.formWrapper}>
