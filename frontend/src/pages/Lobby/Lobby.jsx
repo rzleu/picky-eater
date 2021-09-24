@@ -40,6 +40,7 @@ function Lobby() {
   const [fetchingData, setFetchingData] = useState(false);
   const [vantaEffect, setVantaEffect] = useState(0);
   const vantaRef = useRef(null);
+  const [invalidRoomError, setinvalidRoomError] = useState(null);
 
   useEffect(() => {
     if (!vantaEffect) {
@@ -69,7 +70,14 @@ function Lobby() {
   const { username, id } = useSelector((state) => state.session.user);
 
   const handleJoinRoom = useCallback(({ lobby }) => {
+    console.log(lobby);
     socket.emit('JOIN_ROOM', lobby);
+    socket.on('INVALID_PIN', (message) => {
+      setinvalidRoomError(message);
+      setTimeout(() => {
+        setinvalidRoomError(null);
+      }, 3000);
+    });
   }, []);
 
   const handleCreateRoom = useCallback(
@@ -158,19 +166,8 @@ function Lobby() {
     } catch (error) {
       console.error(error);
     }
-
-    // resDetails.map(async (photoRef) => {
-    //   const photoOptions = {
-    //     method: 'GET',
-    //     url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoRef}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-    //     headers: {},
-    //   };
-
-    //   return await axios(photoOptions).then(() => {
-
-    //   });
-    // })
   }
+
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(success, null, {
       enableHighAccuracy: true,
@@ -211,7 +208,11 @@ function Lobby() {
                   className={styles.pinInput}
                   {...register('lobby')}
                 />
-                <p className="errorMsg">{errors.lobby?.message}</p>
+                {errors.lobby?.message ? (
+                  <p className="errorMsg">{errors.lobby?.message}</p>
+                ) : invalidRoomError ? (
+                  <p className="errorMsg">{invalidRoomError}</p>
+                ) : null}
                 <input
                   className={styles.lobbyEnter}
                   type="submit"

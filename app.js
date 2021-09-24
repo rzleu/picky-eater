@@ -36,13 +36,6 @@ app.use(passport.initialize());
 require('./config/passport')(passport);
 app.use('/api/users', users);
 
-//  () =>
-//   console.log(`Server is running on port ${port}`),
-
-// , () => {
-//   console.log('Server is running on 3001');
-// });
-
 const randomCodeGenerator = () => {
   let string = '';
 
@@ -54,10 +47,6 @@ const randomCodeGenerator = () => {
 };
 
 io.on('connection', (socket) => {
-  // socket.on('USER_ONLINE', ({ username, id }) => {
-  //   socket.user = { username, id };
-  // });
-
   socket.on('FOUND_MATCH', (match) => {
     const roomId = io.sockets.sockets.get(socket.id).roomId;
     io.in(roomId).emit('MATCH', { message: 'found match!', match });
@@ -83,11 +72,7 @@ io.on('connection', (socket) => {
     socket.leave(socket.id);
     const rooms = socket.adapter.rooms;
 
-    if (
-      // !rooms.has(room) ||
-      rooms.has(room) &&
-      rooms.get(room).size < 2
-    ) {
+    if (rooms.has(room) && rooms.get(room).size < 2) {
       socket.join(room);
 
       let otherUser;
@@ -103,57 +88,19 @@ io.on('connection', (socket) => {
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
     } else {
-      console.log('room full');
+      console.log('Room is unavailable');
 
-      socket.emit('full-room', {
-        message: 'Room is unavailable',
-        room,
-      });
+      const message = 'Invalid PIN';
+      socket.emit('INVALID_PIN', message);
     }
   });
 
   socket.on('RIGHT_SWIPE_LIST', (approvedList) => {
-    // ["french", "italian"]
-
-    // socket.approvedList = array;
-    // console.log(socket.approvedList);
     const room = io.sockets.sockets.get(socket.id).roomId;
-    // let otherUser;
-    // socket.adapter.rooms.get(room).forEach((socketId) => {
-    //   if (socketId !== socket.id) {
-    //     otherUser = socketId;
-    //   }
-    // });
 
-    // console.log(otherUser);
-    // const match = approved.find((value) => approvedList.includes(value));
-
-    // io.sockets.sockets.get(otherUser).to(room).emit(approvedList);
-    socket.broadcast
+    socket
       .to(room)
       .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id }); //{
-    // io.to(otherUser).emit('APPROVED_LIST', approvedList);
-    //   approvedList: approvedList,)
-    //   socketId: socket.id,
-    // }); // sending right swipes to each other
-
-    // socket.to(io.sockets.sockets.get(socket.id).roomId).emit(array);
-    // socket.emit('APPROVED_LIST', array);
-  });
-
-  // socket.on('MASTER_LIST', (resData, room) => {
-  //   // get room code from FE
-  //   const rooms = socket.adapter.rooms;
-
-  //   rooms.get(room).forEach((socketId) => {
-  //     io.sockets.sockets.get(socketId).list = resData;
-  //     // console.log(io.sockets.sockets.get(socketId));
-  //   });
-  // });
-
-  socket.on('error', (error) => {
-    // this may be server side error handling
-    console.log(error);
   });
 
   socket.on('disconnect', () => {
