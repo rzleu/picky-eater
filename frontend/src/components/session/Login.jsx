@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { login } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
-
+import { Redirect } from 'react-router-dom';
 const schema = yup.object().shape({
   username: yup.string().required(),
   // email: yup.string().email().required(),
@@ -23,7 +23,6 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    // console.log(user);
     dispatch(login(user));
   };
 

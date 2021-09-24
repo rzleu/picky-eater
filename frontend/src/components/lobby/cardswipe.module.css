@@ -1,5 +1,10 @@
 .swipeHeader {
   margin: 0;
+  margin-top: 10px !important;
+  position: absolute;
+  bottom: 5%;
+  margin-bottom: 25px !important;
+  letter-spacing: 2px;
 }
 
 .swipeContainer {
@@ -12,40 +17,57 @@
 }
 
 .card {
-  height: 300px;
-  width: 300px;
+  height: 550px;
+  width: 460px;
   overflow: hidden;
   position: relative;
   border: 3px solid white;
   border-radius: 20px;
 }
 
-.cardContainerChild h3 {
+.cardContainerChild .infoBlock {
   align-self: center;
   font-size: 2rem;
   font-family: Kanit;
   display: flex;
   flex-direction: column;
   position: absolute;
+  /* align-items: center; */
+  width: 100%;
+  margin-top: 10px;
+  bottom: 0px;
+  background: white;
+  min-height: 50px;
+  justify-content: center;
+  z-index: 9999;
 }
 
 .card button {
+  cursor: pointer;
+}
+
+.cardLeftBtn,
+.cardRightBtn {
   position: absolute;
-  bottom: 5%;
-  z-index: 10000;
+  bottom: 12%;
+  z-index: 100;
   right: 5%;
   border: none;
   background: transparent;
   height: 50px;
 }
 
-.card button:hover {
+.leftSwipe {
+  left: 5%;
+}
+
+.cardLeftBtn:hover {
   box-shadow: 0px 0px 15px 4px #ffffff;
 }
 
-.card button:nth-child(2) {
+.cardLeftBtn {
   left: 5%;
-  right: 0;
+  right: initial;
 }
 
 .cardContainer {
@@ -56,7 +78,7 @@
 
 .cardContainerContainer {
   height: 100%;
-  width: 20%;
+  width: 55%;
   display: grid;
   place-items: center;
   justify-content: center;
@@ -84,4 +106,201 @@
 
 .swipe {
   height: 50px;
+}
+
+.card > .photoRightBtn,
+.card > .photoLeftBtn {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.card:hover > .photoRightBtn,
+.card:hover > .photoLeftBtn {
+  opacity: 1;
+}
+
+.photoLeftBtn,
+.photoRightBtn {
+  position: absolute;
+  bottom: 50%;
+  left: 3%;
+  background: transparent;
+  border: 0;
+  color: whitesmoke;
+}
+
+.photoRightBtn {
+  right: 3%;
+  left: initial;
+}
+
+/* from info button click */
+/* 60px -> 200px */
+.swipeBar {
+  display: flex;
+  position: absolute;
+  bottom: 34%;
+  padding-left: 5%;
+  padding-right: 5%;
+  left: 0;
+  right: 0;
+  justify-content: space-between;
+  height: 48px;
+  z-index: 2;
+}
+
+.swipeBar button {
+  height: 100%;
+  background: transparent;
+  border: 0;
+}
+
+.card::after {
+  position: absolute;
+  content: '';
+  background: linear-gradient(0deg, black 0%, transparent 60%) bottom;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 40%;
+  width: 100%;
+  bottom: 8.5%;
+}
+
+.infoCircle {
+  position: relative;
+  color: rgb(128, 128, 128);
+}
+
+.testing {
+  height: 130px;
+  max-height: 130px;
+  font-family: Kanit;
+}
+
+.testing p {
+  font-size: 16px;
+  margin-left: 7%;
+  margin-top: 3%;
+}
+.swipeBar button:hover {
+  /* filter: brightness(50%); */
+  /* backdrop-filter: saturation(150%); */
+  transition: 0.2s ease-in;
+  filter: saturate(200%);
+}
+
+.testing p:first-of-type {
+  margin-top: 2%;
+}
+.infoBlock h3 {
+  font-size: 2rem;
+  margin-left: 7%;
+  margin-top: 3%;
+  font-weight: 700;
+}
+
+.testing p a {
+  text-decoration: none;
+  color: black;
+}
+
+.testing p a:hover {
+  color: grey;
+}
+
+.matchContainer {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.matchContainer > div {
+  width: 500px;
+  height: 600px;
+  background-color: #ff984c;
+  padding-top: 10%;
+  font-size: 1.3rem;
+  font-weight: 600;
+  object-fit: contain;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+  position: relative;
+  top: 10%;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.matchContainer > div h3 {
+  margin-bottom: 10px;
+}
+
+.matchHeading {
+  position: relative;
+}
+
+.matchHeading::before {
+  position: absolute;
+  content: '';
+  top: -25px;
+  left: 15%;
+  width: 37.5%;
+  height: 100%;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+}
+.matchHeading::after {
+  position: absolute;
+  content: '';
+  right: 15%;
+  bottom: -25px;
+  width: 37.5%;
+  height: 100%;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-left: 100px;
+}
+
+.bg {
+  background-image: url('../../assets/images/Success.png');
+  background-size: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.matchContainer > button {
+  position: absolute;
+  bottom: 10%;
+}
+
+.matchHeading a {
+  cursor: pointer;
+  color: #000080;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.reload {
+  height: 50px;
+  border: 2px solid rgb(255, 255, 255);
+  padding: 5px 5px;
+  border-radius: 100px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  cursor: pointer;
+  min-height: 45px;
+  min-width: 175px;
+  font-family: Kanit;
+  font-style: italic;
+  font-size: 30px;
+  letter-spacing: 2px;
+  backdrop-filter: brightness(0.5);
+  background: transparent;
+  color: white;
+  box-shadow: 0px 0px 10px 1px #6d2929;
+  margin-bottom: 15px;
 }

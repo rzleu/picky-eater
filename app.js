@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server, { cors: { origin: '*' } });
@@ -24,6 +25,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+app.use(cors());
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -35,8 +37,10 @@ app.use(passport.initialize());
 
 require('./config/passport')(passport);
 
+
 app.use('/api/users', users);
-app.use('/api/restaurants', restaurants);
+// app.use('/api/restaurants', restaurants);
+
 
 const randomCodeGenerator = () => {
   let string = '';
@@ -88,18 +92,17 @@ io.on('connection', (socket) => {
       });
 
       const data = io.sockets.sockets.get(otherUser).list;
-
       io.sockets.sockets.get(socket.id).roomId = room;
 
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
     } else {
-      console.log('Room is full');
+      console.log('Room is unavailable');
 
-      socket.emit('FULL_ROOM', {
-        message: 'Room is unavailable',
-        room,
-      });
+      const message = 'Invalid PIN';
+      socket.emit('INVALID_PIN', message);
+
+   
     }
   });
 
