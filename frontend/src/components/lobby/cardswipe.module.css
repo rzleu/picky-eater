@@ -1,7 +1,8 @@
 .swipeHeader {
   margin: 0;
   margin-top: 10px !important;
-  position: relative;
+  position: absolute;
+  bottom: 5%;
   margin-bottom: 25px !important;
   letter-spacing: 2px;
 }
@@ -161,4 +162,76 @@
   height: 40%;
   width: 100%;
   bottom: 8.5%;
+}
+
+.matchContainer {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.matchContainer > div {
+  width: 500px;
+  height: 600px;
+  background-color: #ff984c;
+  padding-top: 10%;
+  font-size: 1.3rem;
+  font-weight: 600;
+  object-fit: contain;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+  position: relative;
+  top: 10%;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.matchContainer > div h3 {
+  margin-bottom: 10px;
+}
+
+.matchHeading {
+  position: relative;
+}
+
+.matchHeading::before {
+  position: absolute;
+  content: '';
+  top: -25px;
+  left: 15%;
+  width: 37.5%;
+  height: 100%;
+  border-top: 2px solid black;
+  border-left: 2px solid black;
+}
+.matchHeading::after {
+  position: absolute;
+  content: '';
+  right: 15%;
+  bottom: -25px;
+  width: 37.5%;
+  height: 100%;
+  border-right: 2px solid black;
+  border-bottom: 2px solid black;
+  margin-left: 100px;
+}
+
+.bg {
+  background-image: url('../../assets/images/Success.png');
+  background-size: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.matchContainer > button {
+  position: absolute;
+  bottom: 10%;
+}
+
+.matchHeading a {
+  cursor: pointer;
+  color: #000080;
+  text-decoration: none;
+  pointer-events: auto;
 }

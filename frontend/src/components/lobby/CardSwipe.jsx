@@ -6,6 +6,8 @@ import React, {
   useRef,
 } from 'react';
 import { SocketContext } from '../../context/socket';
+import {CSSTransition} from 'react-transition-group'
+import {useHistory} from 'react-router-dom'
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Info } from 'react-feather';
@@ -17,10 +19,11 @@ import rightSwipeBtn from '../../assets/svg/heart.svg';
 function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
-  const [match, setMatch] = useState(null);
+  const [match, setMatch] = useState(false);
   const [photoList, setPhotoList] = useState(
     masterList[0]?.photoRefs,
   );
+  const history = useHistory()
   const [currPhoto, setCurrPhoto] = useState(0);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
@@ -28,7 +31,6 @@ function CardSwipe({ masterList = [] }) {
   const rightSwipe = useRef(null);
   let startX = useRef(null);
   const handleMasterList = useCallback((list) => {
-    console.log({list});
     if (!list || !list.length) return;
     setMasterListCopy(list);
   }, []);
@@ -36,6 +38,9 @@ function CardSwipe({ masterList = [] }) {
   const handleMatch = useCallback(({ match }) => {
     console.log({match});
     setMatch(match);
+    socket.off('APPROVED_LIST');
+    socket.off('MATCH');
+    socket.off('MASTER_LIST');
   }, []);
 
   useEffect(() => {
@@ -153,6 +158,7 @@ function CardSwipe({ masterList = [] }) {
   if (!masterList || !masterList.length) return null;
   if (masterList && (!masterListCopy || !masterListCopy.length)) {
     setMasterListCopy(masterList)
+    setPhotoList(masterList[0].photoRefs)
     return
   };
   const { name, phone, website, address } = masterListCopy.[0];
@@ -211,12 +217,19 @@ function CardSwipe({ masterList = [] }) {
           </div>
         </div>
       </div>
-      {match && (
-        <div>
-          <h3>Congrats yall decided!</h3>
-          <span>How does {match.name} sound?</span>
+      <CSSTransition in={!!match} timeout={400} unmountOnExit classNames="match">
+        <div className={style.matchContainer}>
+          <div>
+            <div className={style.matchHeading}>
+              <h3>You've got a match!</h3>
+              <span>How does <a href={website} rel='noreferrer' target='_blank'>{match.name}</a> sound?</span>
+            </div>
+
+            <div className={style.bg}/>
+          </div>
+          <button onClick={() => history.push('/')}>Reload?</button>
         </div>
-      )}
+      </CSSTransition>
     </div>
   );
 }
