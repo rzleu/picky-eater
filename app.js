@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
 const db = require('./config/keys').mongoURI;
+
 const users = require('./routes/api/users');
+const restaurants = require('./routes/api/restaurants');
 
 mongoose
   .connect(db, { useNewUrlParser: true })
@@ -34,7 +36,11 @@ app.use(
 app.use(passport.initialize());
 
 require('./config/passport')(passport);
+
+
 app.use('/api/users', users);
+// app.use('/api/restaurants', restaurants);
+
 
 const randomCodeGenerator = () => {
   let string = '';
@@ -54,22 +60,25 @@ io.on('connection', (socket) => {
 
   socket.on('CREATE_RAND_ROOM', (restaurants) => {
     let roomCode = randomCodeGenerator();
+
     while (socket.adapter.rooms.has(roomCode)) {
       roomCode = randomCodeGenerator();
     }
+
     socket.leave(socket.id);
     socket.join(roomCode); // user will join room with rand 4-digit code
 
     io.sockets.sockets.get(socket.id).list = restaurants; // host's restaurants
     io.sockets.sockets.get(socket.id).roomId = roomCode;
-
     io.sockets.sockets.get(socket.id).approvedList = [];
+
     socket.emit('ROOM_CODE', roomCode); // return code to FE
     socket.to(roomCode).emit('MASTER_LIST', restaurants);
   });
 
   socket.on('JOIN_ROOM', (room) => {
     socket.leave(socket.id);
+
     const rooms = socket.adapter.rooms;
 
     if (rooms.has(room) && rooms.get(room).size < 2) {
@@ -84,6 +93,7 @@ io.on('connection', (socket) => {
 
       const data = io.sockets.sockets.get(otherUser).list;
       io.sockets.sockets.get(socket.id).roomId = room;
+
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
     } else {
@@ -91,6 +101,8 @@ io.on('connection', (socket) => {
 
       const message = 'Invalid PIN';
       socket.emit('INVALID_PIN', message);
+
+   
     }
   });
 
@@ -99,7 +111,7 @@ io.on('connection', (socket) => {
 
     socket
       .to(room)
-      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id }); //{
+      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id });
   });
 
   socket.on('disconnect', () => {
