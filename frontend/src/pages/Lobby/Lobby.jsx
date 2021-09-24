@@ -89,20 +89,21 @@ function Lobby() {
 
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
-  });
+  }, []);
 
   const handleMasterList = useCallback((data) => {
+    console.log({ data });
     if (data && data.length) {
       setMasterList(data);
     }
-  });
+  }, []);
 
   async function success(pos) {
     setFetchingData(true);
 
     const placeIdOptions = {
       method: 'GET',
-      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=1&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
       headers: {},
     };
 
@@ -158,18 +159,6 @@ function Lobby() {
     } catch (error) {
       console.error(error);
     }
-
-    // resDetails.map(async (photoRef) => {
-    //   const photoOptions = {
-    //     method: 'GET',
-    //     url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoRef}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-    //     headers: {},
-    //   };
-
-    //   return await axios(photoOptions).then(() => {
-
-    //   });
-    // })
   }
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(success, null, {
@@ -186,7 +175,6 @@ function Lobby() {
       socket.off('MASTER_LIST', handleMasterList);
     };
   }, []);
-  console.log(masterList);
 
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
