@@ -9,10 +9,8 @@ import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Info } from 'react-feather';
-import placeHolder from '../../assets/images/DanPic.png';
 import leftSwipeBtn from '../../assets/svg/x.svg';
 import rightSwipeBtn from '../../assets/svg/heart.svg';
-import axios from 'axios';
 
 // @ts-ignore
 
@@ -20,20 +18,23 @@ function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
   const [match, setMatch] = useState(null);
-  const [photoList, setPhotoList] = useState(masterList[0].photoRefs);
+  const [photoList, setPhotoList] = useState(
+    masterList[0]?.photoRefs,
+  );
   const [currPhoto, setCurrPhoto] = useState(0);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
   const leftSwipe = useRef(null);
   const rightSwipe = useRef(null);
   let startX = useRef(null);
-
   const handleMasterList = useCallback((list) => {
+    console.log({list});
     if (!list || !list.length) return;
     setMasterListCopy(list);
   }, []);
 
   const handleMatch = useCallback(({ match }) => {
+    console.log({match});
     setMatch(match);
   }, []);
 
@@ -71,8 +72,8 @@ function CardSwipe({ masterList = [] }) {
     const copy = [...masterListCopy];
     copy.push(copy.shift());
     setMasterListCopy(copy);
-    setPhotoList(masterListCopy[0].photoRefs);
     setCurrPhoto(0);
+    setPhotoList(copy[0].photoRefs);
   };
 
   // ! WHAT THE HASHROUTER
@@ -81,9 +82,10 @@ function CardSwipe({ masterList = [] }) {
     const updatedApprovedList = approvedList.concat(
       masterListCopy[0],
     );
+    const sliced = masterListCopy.slice(1);
+    setMasterListCopy(sliced);
     setApprovedList(updatedApprovedList);
-    setMasterListCopy(masterListCopy.slice(1));
-    setPhotoList(masterListCopy[0].photoRefs);
+    setPhotoList(sliced[0].photoRefs);
     setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
@@ -147,10 +149,13 @@ function CardSwipe({ masterList = [] }) {
     if (currPhoto > 2) return;
     setCurrPhoto((old) => old + 1);
   };
-
-  if (!masterList || !masterListCopy.length) return null;
-  const { name, phone, website, address } = masterListCopy[0];
   console.log({ masterListCopy });
+  if (!masterList || !masterList.length) return null;
+  if (masterList && (!masterListCopy || !masterListCopy.length)) {
+    setMasterListCopy(masterList)
+    return
+  };
+  const { name, phone, website, address } = masterListCopy.[0];
 
   return (
     <div className={style.swipeContainer}>
@@ -168,25 +173,22 @@ function CardSwipe({ masterList = [] }) {
               alt={name}
               className={style.images}
             />
-            <div className={style.photoBar}>
-              {currPhoto !== 0 && (
-                <button
-                  onClick={handlePhotoLeftClick}
-                  className={style.photoLeftBtn}
-                  strokeWidth={4}
-                >
-                  <ChevronLeft size={48} strokeWidth={3} />
-                </button>
-              )}
-              {currPhoto < 2 && (
-                <button
-                  onClick={handlePhotoRightClick}
-                  className={style.photoRightBtn}
-                >
-                  <ChevronRight strokeWidth={3} size={48} />
-                </button>
-              )}
-            </div>
+            {currPhoto !== 0 && (
+              <button
+                className={style.photoLeftBtn}
+                onClick={handlePhotoLeftClick}
+              >
+                <ChevronLeft size={64} strokeWidth={3} />
+              </button>
+            )}
+            {currPhoto < 2 && (
+              <button
+                className={style.photoRightBtn}
+                onClick={handlePhotoRightClick}
+              >
+                <ChevronRight strokeWidth={3} size={64} />
+              </button>
+            )}
             <div className={style.swipeBar}>
               <button ref={leftSwipe} onClick={handleLeftSwipe}>
                 <img
@@ -196,7 +198,7 @@ function CardSwipe({ masterList = [] }) {
                 />
               </button>
               <button>
-                <Info />
+                <Info size={36} strokeWidth={3} color="#e9ec67" />
               </button>
               <button ref={rightSwipe} onClick={handleRightSwipe}>
                 <img src={rightSwipeBtn} alt="right" />

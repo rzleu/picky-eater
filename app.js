@@ -49,6 +49,7 @@ const randomCodeGenerator = () => {
 io.on('connection', (socket) => {
   socket.on('FOUND_MATCH', (match) => {
     const roomId = io.sockets.sockets.get(socket.id).roomId;
+    console.log({ match });
     io.in(roomId).emit('MATCH', { message: 'found match!', match });
   });
 
@@ -83,7 +84,6 @@ io.on('connection', (socket) => {
       });
 
       const data = io.sockets.sockets.get(otherUser).list;
-
       io.sockets.sockets.get(socket.id).roomId = room;
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
