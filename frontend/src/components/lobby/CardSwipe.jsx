@@ -8,7 +8,7 @@ import React, {
 import { SocketContext } from '../../context/socket';
 import style from './cardswipe.module.css';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'react-feather';
+import { ChevronLeft, ChevronRight, Info } from 'react-feather';
 import placeHolder from '../../assets/images/DanPic.png';
 import leftSwipeBtn from '../../assets/svg/x.svg';
 import rightSwipeBtn from '../../assets/svg/heart.svg';
@@ -168,41 +168,40 @@ function CardSwipe({ masterList = [] }) {
               alt={name}
               className={style.images}
             />
-            {currPhoto !== 0 && (
-              <button
-                onClick={handlePhotoLeftClick}
-                className={style.photoLeftBtn}
-                strokeWidth={4}
-              >
-                <ChevronLeft size={48} strokeWidth={3} />
+            <div className={style.photoBar}>
+              {currPhoto !== 0 && (
+                <button
+                  onClick={handlePhotoLeftClick}
+                  className={style.photoLeftBtn}
+                  strokeWidth={4}
+                >
+                  <ChevronLeft size={48} strokeWidth={3} />
+                </button>
+              )}
+              {currPhoto < 2 && (
+                <button
+                  onClick={handlePhotoRightClick}
+                  className={style.photoRightBtn}
+                >
+                  <ChevronRight strokeWidth={3} size={48} />
+                </button>
+              )}
+            </div>
+            <div className={style.swipeBar}>
+              <button ref={leftSwipe} onClick={handleLeftSwipe}>
+                <img
+                  className={style.leftSwipe}
+                  src={leftSwipeBtn}
+                  alt="swipeLeft"
+                />
               </button>
-            )}
-            {currPhoto < 2 && (
-              <button
-                onClick={handlePhotoRightClick}
-                className={style.photoRightBtn}
-              >
-                <ChevronRight strokeWidth={3} size={48} />
+              <button>
+                <Info />
               </button>
-            )}
-            <button
-              className={style.cardLeftBtn}
-              ref={leftSwipe}
-              onClick={handleLeftSwipe}
-            >
-              <img
-                className={style.leftSwipe}
-                src={leftSwipeBtn}
-                alt="swipeLeft"
-              />
-            </button>
-            <button
-              className={style.cardRightBtn}
-              ref={rightSwipe}
-              onClick={handleRightSwipe}
-            >
-              <img src={rightSwipeBtn} alt="right" />
-            </button>
+              <button ref={rightSwipe} onClick={handleRightSwipe}>
+                <img src={rightSwipeBtn} alt="right" />
+              </button>
+            </div>
             <h3>{name}</h3>
           </motion.div>
           <div>
