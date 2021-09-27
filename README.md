@@ -22,7 +22,10 @@
 - Framer Motion
 
 ## Features
-
+- Lobbies
+- Swiping left or right
+- Generate dynamic list of restauants based on user's location
+- User's preferences (to be implementated)
 
 ## Highlights
 The following code is the aynchronous call to extract the data from the Google Places API. In order to successfully extract the restaurant details and photos for a user's nearby restaurants. An initial request to extract the ```place_id``` was needed throught Google Nearby Search API and then the following Google Place Details and Photos API HTTP requests using the ```place_id``` and ```photo_reference``` data could appropriately consolidate all needed information.
@@ -89,4 +92,50 @@ The following code is the aynchronous call to extract the data from the Google P
       console.error(error);
     }
   }
+```
+
+
+```jsx
+ useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          document.querySelector('.card')
+            ? (startX =
+                (window.innerWidth -
+                  document.querySelector('.card').clientWidth) /
+                2)
+            : (startX = 0);
+          // startX =
+          //   (window.innerWidth -
+          //     document.querySelector('.card').clientWidth) /
+          //   2;
+          if (!entry.isIntersecting) {
+            console.log(startX);
+            console.log(entry.boundingClientRect.x);
+            if (entry.boundingClientRect.x - startX < 0) {
+              leftSwipe.current.click();
+              console.log('left');
+            } else if (entry.boundingClientRect.x - startX > 80) {
+              rightSwipe.current.click();
+              console.log('right');
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.5,
+        root: document.querySelector('#idklol'),
+        rootMargin: '0px',
+      },
+    );
+    if (cardRef.current) {
+      observer.observe(cardRef.current);
+    }
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current);
+      }
+    };
+  }, []);
 ```
