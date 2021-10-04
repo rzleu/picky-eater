@@ -12,10 +12,7 @@ const User = require('../../models/User');
 const validateSignupInput = require('../../validation/signup');
 const validateLoginInput = require('../../validation/login');
 
-router.get('/test', (req, res) =>
-  res.json({ msg: 'This is the users route' }),
-);
-
+// create user profile
 router.post('/signup', (req, res) => {
   const { errors, isValid } = validateSignupInput(req.body);
 
@@ -113,5 +110,13 @@ router.get(
     });
   },
 );
+
+// create preference // api/users/:user_id
+// router.post('/matches', (req, res) => {
+
+// });
+// read preference/ profile
+// update preference
+// delete preference
 
 module.exports = router;
