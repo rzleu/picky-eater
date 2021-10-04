@@ -17,9 +17,9 @@ function App() {
         <Route exact path="/" component={SplashPage} />
         <AuthRoute exact path="/" component={LoginForm} />
         <AuthRoute exact path="/" component={SignupForm} />
-        <Route exact path="/swipe" component={CardSwipe} />
+        <ProtectedRoute exact path="/swipe" component={CardSwipe} />
         {/* Make this authroute later */}
-        <Route path="/lobby" component={Lobby} />
+        <ProtectedRoute path="/lobby" component={Lobby} />
         <Route exact path="/about" component={About} />
       </Switch>
     </div>

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+
 const schema = yup.object().shape({
   username: yup.string().required(),
   // email: yup.string().email().required(),
@@ -14,7 +15,10 @@ const schema = yup.object().shape({
 
 export default function LoginForm({ splashBtn }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
+  const backendErrors = useSelector((state) => state.errors?.session);
+  const [errorObj, setErrorObj] = useState({});
   const {
     register,
     handleSubmit,
@@ -23,7 +27,13 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    dispatch(login(user));
+    dispatch(login(user)).then(() => {
+      if (backendErrors) {
+        setErrorObj({ ...backendErrors });
+      } else {
+        history.push('/lobby');
+      }
+    });
   };
 
   return (
@@ -43,6 +53,7 @@ export default function LoginForm({ splashBtn }) {
                   {...register('username')}
                 />
                 <p className="errorMsg">{errors.username?.message}</p>
+                <p className="errorMsg">{errorObj.username}</p>
               </div>
               <div>
                 <label htmlFor="password">Password</label>
@@ -54,6 +65,7 @@ export default function LoginForm({ splashBtn }) {
                   {...register('password')}
                 />
                 <p className="errorMsg">{errors.password?.message}</p>
+                <p className="errorMsg">{errorObj.password}</p>
               </div>
               <input type="submit" />
               <button onClick={() => setOpenModal(false)}>✖</button>
