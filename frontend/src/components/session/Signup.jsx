@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { signup } from '../../actions/sessionActions';
 import styles from './signup.module.css';
 import ClassNames from 'classnames';
+import { useHistory } from 'react-router-dom';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -18,6 +19,7 @@ const schema = yup.object().shape({
 
 export default function SignupForm({ splashBtn }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
   const {
     register,
@@ -28,7 +30,9 @@ export default function SignupForm({ splashBtn }) {
   });
   const onSubmit = (user) => {
     // console.log(user);
-    dispatch(signup(user));
+    dispatch(signup(user)).then(() => {
+      history.push('/lobby');
+    });
   };
 
   return (
