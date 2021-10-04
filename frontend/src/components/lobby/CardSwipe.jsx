@@ -136,7 +136,7 @@ function CardSwipe({ masterList = [] }) {
       },
       {
         threshold: 0.5,
-        root: document.querySelector('#idklol'),
+        root: document.querySelector('#boundary'),
         rootMargin: '0px',
       },
     );
@@ -171,7 +171,7 @@ function CardSwipe({ masterList = [] }) {
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
-      <div className={style.cardContainerContainer} id="idklol">
+      <div className={style.cardContainerContainer} id="boundary">
         <div className={style.cardContainerChild}>
           <motion.div
             ref={cardRef}
@@ -222,7 +222,11 @@ function CardSwipe({ masterList = [] }) {
               </button>
             </div>
             <div className={style.infoBlock}>
-              <h3>{name}</h3>
+              {infoButtonHidden ? (
+                <h3>{name}</h3>
+              ) : (
+                <h3 className={style.visibleHeader}>{name}</h3>
+              )}
               {infoButtonHidden && (
                 <div className={style.testing}>
                   <p>Rating: {rating}</p>
