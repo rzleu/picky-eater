@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { login } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
 import { useHistory } from 'react-router-dom';
@@ -17,8 +17,14 @@ export default function LoginForm({ splashBtn }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
-  const backendErrors = useSelector((state) => state.errors?.session);
-  const [errorObj, setErrorObj] = useState({});
+  const backendErrors = useSelector(
+    (state) => ({ ...state.errors?.session }),
+    shallowEqual,
+  );
+  const [errorObj, setErrorObj] = useState({
+    username: '',
+    password: '',
+  });
   const {
     register,
     handleSubmit,
@@ -27,9 +33,26 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    dispatch(login(user)).then(() => {
-      if (backendErrors) {
-        setErrorObj({ ...backendErrors });
+    // try {
+    //   dispatch(login(user)).then((res) => {
+    //     // console.log(res);
+    //     if (backendErrors) {
+    //       setErrorObj({ ...backendErrors });
+    //       console.log(backendErrors);
+    //     } else {
+    //       history.push('/lobby');
+    //     }
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    const loginUser = login(user);
+    loginUser(dispatch).then((res) => {
+      if (!res) {
+        setErrorObj({
+          username: 'Invalid Credentials',
+          password: 'Invalid Credentials',
+        });
       } else {
         history.push('/lobby');
       }
@@ -48,7 +71,8 @@ export default function LoginForm({ splashBtn }) {
                 <label htmlFor="username">Username</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.username?.message,
+                    errorInput:
+                      errors.username?.message || errorObj.username,
                   })}
                   {...register('username')}
                 />
@@ -59,7 +83,8 @@ export default function LoginForm({ splashBtn }) {
                 <label htmlFor="password">Password</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.username?.message,
+                    errorInput:
+                      errors.username?.message || errorObj.password,
                   })}
                   type="password"
                   {...register('password')}

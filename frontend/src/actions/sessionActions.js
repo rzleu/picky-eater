@@ -39,6 +39,7 @@ export const login = (user) => (dispatch) =>
       SessionAPIUtil.setAuthToken(token);
       const decoded = jwt_decode(token);
       dispatch(receiveUserSignIn(decoded));
+      return res;
     })
     .catch((err) => {
       dispatch(receiveErrors(err.response.data));
