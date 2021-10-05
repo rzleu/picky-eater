@@ -167,7 +167,7 @@
 
 .infoCircle {
   position: relative;
-  color: rgb(128, 128, 128);
+  color: rgb(200, 200, 200);
   filter: drop-shadow(0rem 0.2rem 0.4rem rgba(0, 0, 0, 0.8));
 }
 

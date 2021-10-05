@@ -101,10 +101,21 @@ function CardSwipe({ masterList = [] }) {
   }, [masterListCopy, approvedList]);
 
   const x = useMotionValue(0);
-  const background = useTransform(
+  const rotate = useTransform(x, [-1500, 1500], [-90, 90]);
+  const xInput = [-100, 0, 100];
+  const color = useTransform(x, xInput, [
+    '3px solid rgb(255, 0, 0)',
+    '3px solid rgb(255, 255, 255)',
+    '3px solid rgb(3, 209, 0)',
+  ]);
+  const filter = useTransform(
     x,
-    [-100, 0, 100],
-    ['#ff008c', '#7700ff', 'rgb(230, 255, 0)'],
+    [-100, 0.99, 2],
+    [
+      'drop-shadow(0 0 0.45rem red)',
+      'drop-shadow(0 0 0.45rem grey)',
+      'drop-shadow(0 0 0.45rem green)',
+    ],
   );
 
   useEffect(() => {
@@ -176,8 +187,19 @@ function CardSwipe({ masterList = [] }) {
           <motion.div
             ref={cardRef}
             className={`${style.card} card`}
+            style={{
+              x: x,
+              rotate: rotate,
+              cursor: 'grab',
+              border: color,
+              filter: filter,
+            }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
+            dragTransition={{
+              bounceStiffness: 500,
+              bounceDamping: 30,
+            }}
           >
             <img
               src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`}
