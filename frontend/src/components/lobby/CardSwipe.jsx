@@ -108,15 +108,24 @@ function CardSwipe({ masterList = [] }) {
     '3px solid rgb(255, 255, 255)',
     '3px solid rgb(3, 209, 0)',
   ]);
+  const strokeColor = useTransform(x, xInput, [
+    'rgb(225, 9, 67)',
+    'rgb(255, 106, 0)',
+    'rgb(3, 209, 0)',
+  ]);
   const filter = useTransform(
     x,
-    [-100, 0.99, 2],
+    [-10, -5, 5, 10],
     [
+      'drop-shadow(0 0 0.45rem transparent)',
       'drop-shadow(0 0 0.45rem red)',
       'drop-shadow(0 0 0.45rem grey)',
       'drop-shadow(0 0 0.45rem green)',
     ],
   );
+  const tickPath = useTransform(x, [50, 400], [0, 1]);
+  const crossPathA = useTransform(x, [-10, -100], [0, 3]);
+  const crossPathB = useTransform(x, [-50, -100], [0, 1]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -197,10 +206,39 @@ function CardSwipe({ masterList = [] }) {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragTransition={{
-              bounceStiffness: 500,
-              bounceDamping: 30,
+              bounceStiffness: 600,
+              bounceDamping: 40,
             }}
           >
+            {' '}
+            <svg className={style.decisionIcon} viewBox="8 8 30 30">
+              <motion.path
+                fill="none"
+                strokeWidth="2.5"
+                stroke={strokeColor}
+                d="M14,26 L 22,33 L 35,16"
+                // d="M10.219,1.688c-4.471,0-8.094,3.623-8.094,8.094s3.623,8.094,8.094,8.094s8.094-3.623,8.094-8.094S14.689,1.688,10.219,1.688 M10.219,17.022c-3.994,0-7.242-3.247-7.242-7.241c0-3.994,3.248-7.242,7.242-7.242c3.994,0,7.241,3.248,7.241,7.242C17.46,13.775,14.213,17.022,10.219,17.022 M15.099,7.03c-0.167-0.167-0.438-0.167-0.604,0.002L9.062,12.48l-2.269-2.277c-0.166-0.167-0.437-0.167-0.603,0c-0.166,0.166-0.168,0.437-0.002,0.603l2.573,2.578c0.079,0.08,0.188,0.125,0.3,0.125s0.222-0.045,0.303-0.125l5.736-5.751C15.268,7.466,15.265,7.196,15.099,7.03"
+                strokeDasharray="0 1"
+                style={{ pathLength: tickPath }}
+              />
+              <motion.path
+                fill="none"
+                strokeWidth="2"
+                stroke={strokeColor}
+                d="M17,17 L33,33"
+                // d="M15.898,4.045c-0.271-0.272-0.713-0.272-0.986,0l-4.71,4.711L5.493,4.045c-0.272-0.272-0.714-0.272-0.986,0s-0.272,0.714,0,0.986l4.709,4.711l-4.71,4.711c-0.272,0.271-0.272,0.713,0,0.986c0.136,0.136,0.314,0.203,0.492,0.203c0.179,0,0.357-0.067,0.493-0.203l4.711-4.711l4.71,4.711c0.137,0.136,0.314,0.203,0.494,0.203c0.178,0,0.355-0.067,0.492-0.203c0.273-0.273,0.273-0.715,0-0.986l-4.711-4.711l4.711-4.711C16.172,4.759,16.172,4.317,15.898,4.045z"
+                strokeDasharray="0 1"
+                style={{ pathLength: crossPathA }}
+              />
+              <motion.path
+                fill="none"
+                strokeWidth="2"
+                stroke={strokeColor}
+                d="M33,17 L17,33"
+                strokeDasharray="0 1"
+                style={{ pathLength: crossPathB }}
+              />
+            </svg>
             <img
               src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`}
               alt={name}

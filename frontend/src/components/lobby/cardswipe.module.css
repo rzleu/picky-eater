@@ -165,6 +165,10 @@
   bottom: 8.5%;
 }
 
+.decisionIcon {
+  position: absolute;
+}
+
 .infoCircle {
   position: relative;
   color: rgb(200, 200, 200);
