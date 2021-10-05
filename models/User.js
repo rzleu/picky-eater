@@ -20,7 +20,9 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    saved: {},
+    saved: {
+      type: Schema.Types.Mixed,
+    },
   },
   {
     timestamps: true,
