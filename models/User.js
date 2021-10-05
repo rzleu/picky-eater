@@ -20,7 +20,7 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    saved: [],
+    saved: {},
   },
   {
     timestamps: true,
