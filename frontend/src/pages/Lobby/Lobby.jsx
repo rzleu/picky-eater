@@ -74,7 +74,6 @@ function Lobby() {
   const { username, id } = useSelector((state) => state.session.user);
 
   const handleJoinRoom = useCallback(({ lobby }) => {
-    console.log(lobby);
     socket.emit('JOIN_ROOM', lobby);
     socket.on('INVALID_PIN', (message) => {
       setinvalidRoomError(message);
@@ -104,7 +103,6 @@ function Lobby() {
   }, []);
 
   const handleMasterList = useCallback((data) => {
-    console.log({ data });
     if (data && data.length) {
       setMasterList(data);
     }
@@ -127,7 +125,7 @@ function Lobby() {
           });
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
         });
 
       const restaurants = placeIds.map(async (placeId) => {

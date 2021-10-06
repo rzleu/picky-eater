@@ -29,7 +29,6 @@ export default function SignupForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    // console.log(user);
     dispatch(signup(user)).then(() => {
       history.push('/lobby');
     });
