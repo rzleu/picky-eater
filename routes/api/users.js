@@ -118,15 +118,15 @@ router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
 
   // for testing
-  const parsed = JSON.parse(restaurant);
-  console.log(parsed);
-  parsed['experience'] = '';
-  parsed['placeId'] = 1;
-  console.log(parsed);
+  // const parsed = JSON.parse(restaurant);
+  // console.log(parsed);
+  // parsed['experience'] = '';
+  // parsed['placeId'] = 1;
+  // console.log(parsed);
 
-  // restaurant['experience'] = '';
+  restaurant['experience'] = '';
   const currUser = await User.findById(userId);
-  console.log(currUser);
+  // console.log(currUser);
 
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
@@ -143,16 +143,16 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
   const currUser = await User.findById(userId);
-  console.log(currUser);
+  // console.log(currUser);
 
   if (restaurant && currUser && exp) {
     // for testing
-    const parsed = JSON.parse(restaurant);
-    parsed.experience = exp;
-    parsed.placeId = 1;
-    console.log(parsed);
+    // const parsed = JSON.parse(restaurant);
+    // parsed.experience = exp;
+    // parsed.placeId = 1;
+    // console.log(parsed);
 
-    // restaurant.experience = exp;
+    restaurant.experience = exp;
     currUser.save();
     res.send(currUser);
   } else {
