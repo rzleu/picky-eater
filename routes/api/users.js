@@ -13,7 +13,6 @@ const List = require('../../models/List');
 const validateSignupInput = require('../../validation/signup');
 const validateLoginInput = require('../../validation/login');
 
-// create user profile
 router.post('/signup', (req, res) => {
   const { errors, isValid } = validateSignupInput(req.body);
 
@@ -22,7 +21,6 @@ router.post('/signup', (req, res) => {
   }
 
   User.findOne({ email: req.body.email }).then((user) => {
-    // add addtional username check?
     if (user) {
       errors.email = 'User already exists';
       return res.status(400).json(errors);
@@ -31,7 +29,7 @@ router.post('/signup', (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      saved: {},
+      lists: {},
     });
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -39,7 +37,11 @@ router.post('/signup', (req, res) => {
         if (err) throw err;
         newUser.password = hash;
         newUser.save().then((user) => {
-          const payload = { id: user.id, email: user.email };
+          const payload = {
+            id: user.id,
+            email: user.email,
+            saved: [],
+          };
 
           jwt.sign(
             payload,
@@ -55,7 +57,6 @@ router.post('/signup', (req, res) => {
             },
           );
         });
-        // .catch((err) => console.log(err));
       });
     });
   });
@@ -71,7 +72,6 @@ router.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   User.findOne({ username }).then((user) => {
-    // console.log(user);
     if (!user) {
       errors.username = 'This user does not exist';
       return res.status(400).json(errors);
@@ -113,76 +113,47 @@ router.get(
     });
   },
 );
+
+// example
 // anthony.saved = { // "this is an object" -anthony Oct 2021
 //   _id: "3e234234"
 //   'my hoes': [obj1, obj2], // list
 //   'my bros': [obj3, obj4],
 // };
 
-// create individual list
-router.post('/lists', async (req, res) => {
-  const { title, id } = req.body;
-  // console.log(req.body);
-
-  // throw error if title exists as a key in saved hash
-  // const currUser = await Us er.findById(id);a
-  // console.log(id);
+// save a restaurant
+router.post('/saved', async (req, res) => {
+  const { id, restaurant } = req.body;
+  restaurant['experience'] = null;
   const currUser = await User.findById(id);
   console.log(currUser);
-  if (!Object.values(currUser.saved).includes(title)) {
-    // creating
-    const newList = new List({ title: title, restaurants: [] });
-    currUser.saved[title] = newList;
-    currUser.save();
-    res.send('JAMESxWaj').status(200);
+  if (currUser && restaurant) {
+    currUser.saved.push(restaurant);
+    res.send(currUser);
   } else {
-    //
-    console.log('DANIEL');
-    res.send('list is not unique').status(400); // cindy's task
+    res
+      .status(400)
+      .send({ error: 'Could not favorite this restaurant' });
   }
 });
 
-// add preference to existing list// api/users/:user_id
-router.post('/saved', async (req, res) => {
-  const { title, id, obj } = req.body;
+// experience check mark
+router.put('/saved', async (req, res) => {
+  const { id, restaurant, exp } = req.body;
   const currUser = await User.findById(id);
-  const list = currUser.saved[title];
-  if (list && !list.includes(obj)) {
-    list.push(obj);
-    currUser.save();
-    res.send('JAMESxWaj');
+  if (restaurant && currUser && exp) {
+    restaurant.experience = exp;
+    res.send(currUser);
   } else {
-    res.send('add preference to existing list'); // cindy, fix error
+    res.status(400).send({ error: 'Invalid experience' });
   }
 });
 // read preference/ profile
 
-// delete specific preference
+// delete a saved restaurant
 router.delete('/saved', async (req, res) => {
-  const { title, id, obj } = req.body;
+  const { id, restaurant } = req.body;
   const currUser = await User.findById(id);
-  const list = currUser.saved[title];
-  if (list && list.includes(obj)) {
-    currUser.saved[title] = list.filter((ele) => ele !== obj);
-    currUser.save();
-    res.send('JAMESxWaj');
-  } else {
-    res.send('delete specific preference'); // cindy, fix error
-  }
-});
-
-//delete whole list
-router.post('/lists', async (req, res) => {
-  const { title, id } = req.body;
-  // throw error if title exists as a key in saved hash
-  const currUser = await User.findById(id);
-  if (currUser.saved.title) {
-    delete currUser.saved.title;
-    currUser.save();
-    res.send('JAMESxWaj');
-  } else {
-    res.send('delete whole list'); // cindy's task
-  }
 });
 
 module.exports = router;

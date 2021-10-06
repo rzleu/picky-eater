@@ -21,7 +21,7 @@ const UserSchema = new Schema(
       required: true,
     },
     saved: {
-      type: Schema.Types.Mixed,
+      type: Array,
     },
   },
   {

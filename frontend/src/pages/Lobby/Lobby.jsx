@@ -161,6 +161,7 @@ function Lobby() {
               .slice(0, 3),
             rating: data.rating,
             website: data.website,
+            placeId: data.place_id,
           };
         },
       );

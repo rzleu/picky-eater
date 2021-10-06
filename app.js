@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
 
     socket
       .to(room)
-      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id }); //{
+      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id });
   });
 
   socket.on('disconnect', () => {
