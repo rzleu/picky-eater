@@ -31,10 +31,6 @@ module.exports = function validateSignupInput(data) {
     errors.email = 'Email is invalid';
   }
 
-  // if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
-  //   errors.password = 'Password must be at least 6 characters';
-  // }
-
   if (!Validator.isStrongPassword(data.password)) {
     errors.password =
       'Password must be at least eight characters and contain at least one uppercase letter, one lowercase letter, one number and one special character';
