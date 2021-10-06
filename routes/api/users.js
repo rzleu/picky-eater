@@ -9,7 +9,6 @@ const passport = require('passport');
 const keys = require('../../config/keys');
 
 const User = require('../../models/User');
-const List = require('../../models/List');
 const validateSignupInput = require('../../validation/signup');
 const validateLoginInput = require('../../validation/login');
 
@@ -117,7 +116,15 @@ router.get(
 // save a restaurant
 router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
-  restaurant['experience'] = null;
+
+  // for testing
+  const parsed = JSON.parse(restaurant);
+  console.log(parsed);
+  parsed['experience'] = '';
+  parsed['placeId'] = 1;
+  console.log(parsed);
+
+  // restaurant['experience'] = '';
   const currUser = await User.findById(userId);
   console.log(currUser);
 
@@ -136,9 +143,16 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
   const currUser = await User.findById(userId);
+  console.log(currUser);
 
   if (restaurant && currUser && exp) {
-    restaurant.experience = exp;
+    // for testing
+    const parsed = JSON.parse(restaurant);
+    parsed.experience = exp;
+    parsed.placeId = 1;
+    console.log(parsed);
+
+    // restaurant.experience = exp;
     currUser.save();
     res.send(currUser);
   } else {
@@ -150,12 +164,19 @@ router.put('/saved', async (req, res) => {
 router.delete('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
   const currUser = await User.findById(userId);
-  const newSaved = currUser.saved.filter(
-    (rest) => rest.placeId !== restaurant.placeId,
-  );
-  currUser.saved = newSaved;
-  currUser.save();
-  res.send(currUser);
+
+  // console.log(currUser.saved);
+
+  if (currUser && restaurant) {
+    const newSaved = currUser.saved.filter(
+      (rest) => rest.placeId !== restaurant.placeId,
+    );
+    currUser.saved = newSaved;
+    currUser.save();
+    res.send(currUser);
+  } else {
+    res.status(400).send({ error: 'Unsuccessful deletion' });
+  }
 });
 
 module.exports = router;
