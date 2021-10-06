@@ -9,7 +9,7 @@ import React, {
 import * as yup from 'yup';
 import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import { SocketContext } from '../../context/socket';
@@ -24,7 +24,7 @@ import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
 import { User } from 'react-feather';
 import { CSSTransition } from 'react-transition-group';
 import useOutsideClick from '../../hooks/useOutsideClick';
-
+import { logout } from '../../actions/sessionActions';
 // VANTA.WAVES('.lobbyContainer');
 
 const schema = yup.object().shape({
@@ -49,6 +49,7 @@ function Lobby() {
   const vantaRef = useRef(null);
   const [invalidRoomError, setinvalidRoomError] = useState(null);
   const clickRef = useRef();
+  const dispatch = useDispatch();
 
   useOutsideClick(clickRef, () => setShowDropDown(false));
 
@@ -213,7 +214,13 @@ function Lobby() {
           unmountOnExit
         >
           <ul className="nav--dropdown">
-            <li>Logout</li>
+            <button
+              onClick={() => {
+                dispatch(logout());
+              }}
+            >
+              Logout
+            </button>
             <li>Matches</li>
           </ul>
         </CSSTransition>
