@@ -4,7 +4,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { signup } from '../../actions/sessionActions';
-import styles from './signup.module.css';
 import ClassNames from 'classnames';
 import { useHistory } from 'react-router-dom';
 

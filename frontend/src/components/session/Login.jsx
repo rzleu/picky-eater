@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { login } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
 import { useHistory } from 'react-router-dom';
@@ -17,10 +17,6 @@ export default function LoginForm({ splashBtn }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
-  const backendErrors = useSelector(
-    (state) => ({ ...state.errors?.session }),
-    shallowEqual,
-  );
   const [errorObj, setErrorObj] = useState({
     username: '',
     password: '',

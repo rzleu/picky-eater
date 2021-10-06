@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './about.module.css';
 import CindyPic from '../../assets/images/CindyPic.png';
 import AntPic from '../../assets/images/AntPic.png';
