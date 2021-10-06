@@ -102,11 +102,10 @@ function CardSwipe({ masterList = [] }) {
   }, [masterListCopy, approvedList]);
 
   const userId = useSelector((state) => state.session.user.id);
-  const restaurant = masterListCopy[0];
 
   const handleSave = () => {
-    console.log(restaurant);
-    dispatch(saveRestaurant(restaurant, userId));
+    console.log(match);
+    dispatch(saveRestaurant(match, userId));
   };
 
   const x = useMotionValue(0);

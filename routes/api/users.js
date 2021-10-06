@@ -78,7 +78,11 @@ router.post('/login', (req, res) => {
 
     bcrypt.compare(password, user.password).then((isMatch) => {
       if (isMatch) {
-        const payload = { id: user.id, username: user.username };
+        const payload = {
+          id: user.id,
+          username: user.username,
+          saved: user.saved,
+        };
 
         jwt.sign(
           payload,
@@ -117,6 +121,7 @@ router.get(
 router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
 
+  console.log(restaurant);
   // for testing
   // const parsed = JSON.parse(restaurant);
   // console.log(parsed);
@@ -126,12 +131,12 @@ router.post('/saved', async (req, res) => {
 
   restaurant['experience'] = '';
   const currUser = await User.findById(userId);
-  // console.log(currUser);
+  console.log(currUser);
 
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
     currUser.save();
-    res.send(currUser);
+    res.send(restaurant);
   } else {
     res
       .status(400)
