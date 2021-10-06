@@ -41,7 +41,9 @@ export default function LoginForm({ splashBtn }) {
           password: 'Invalid Credentials',
         });
       } else {
-        history.push('/lobby');
+        history.push('/lobby', {
+          isLoggedIn: true,
+        });
       }
     });
   };
