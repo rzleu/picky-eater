@@ -167,6 +167,7 @@ function Lobby() {
       );
       setMasterList(resDetails);
       setFetchingData(false);
+      console.log(resDetails);
     } catch (error) {
       console.error(error);
     }

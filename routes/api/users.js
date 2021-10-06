@@ -114,21 +114,16 @@ router.get(
   },
 );
 
-// example
-// anthony.saved = { // "this is an object" -anthony Oct 2021
-//   _id: "3e234234"
-//   'my hoes': [obj1, obj2], // list
-//   'my bros': [obj3, obj4],
-// };
-
 // save a restaurant
 router.post('/saved', async (req, res) => {
-  const { id, restaurant } = req.body;
+  const { userId, restaurant } = req.body;
   restaurant['experience'] = null;
-  const currUser = await User.findById(id);
+  const currUser = await User.findById(userId);
   console.log(currUser);
+
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
+    currUser.save();
     res.send(currUser);
   } else {
     res
@@ -137,23 +132,30 @@ router.post('/saved', async (req, res) => {
   }
 });
 
-// experience check mark
+// edit experience emoji
 router.put('/saved', async (req, res) => {
-  const { id, restaurant, exp } = req.body;
-  const currUser = await User.findById(id);
+  const { userId, restaurant, exp } = req.body;
+  const currUser = await User.findById(userId);
+
   if (restaurant && currUser && exp) {
     restaurant.experience = exp;
+    currUser.save();
     res.send(currUser);
   } else {
     res.status(400).send({ error: 'Invalid experience' });
   }
 });
-// read preference/ profile
 
 // delete a saved restaurant
 router.delete('/saved', async (req, res) => {
-  const { id, restaurant } = req.body;
-  const currUser = await User.findById(id);
+  const { userId, restaurant } = req.body;
+  const currUser = await User.findById(userId);
+  const newSaved = currUser.saved.filter(
+    (rest) => rest.placeId !== restaurant.placeId,
+  );
+  currUser.saved = newSaved;
+  currUser.save();
+  res.send(currUser);
 });
 
 module.exports = router;
