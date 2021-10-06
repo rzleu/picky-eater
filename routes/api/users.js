@@ -28,7 +28,7 @@ router.post('/signup', (req, res) => {
       username: req.body.username,
       email: req.body.email,
       password: req.body.password,
-      lists: {},
+      saved: [],
     });
 
     bcrypt.genSalt(10, (err, salt) => {
