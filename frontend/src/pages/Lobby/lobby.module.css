@@ -11,6 +11,22 @@
   overflow: hidden;
 }
 
+.dropDown {
+  position: absolute;
+  top: 5%;
+  left: 2.5%;
+  cursor: pointer;
+  border: 0;
+  background: rgba(145, 61, 136, 1);
+  border-radius: 100vh;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  filter: drop-shadow(2px 4px 6px black);
+}
+
 .container h2 {
   position: relative;
   z-index: 1;

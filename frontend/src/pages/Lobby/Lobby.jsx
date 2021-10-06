@@ -21,6 +21,9 @@ import styles from './lobby.module.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
+import { User } from 'react-feather';
+import { CSSTransition } from 'react-transition-group';
+import useOutsideClick from '../../hooks/useOutsideClick';
 
 // VANTA.WAVES('.lobbyContainer');
 
@@ -37,6 +40,7 @@ function Lobby() {
     resolver: yupResolver(schema),
   });
   const socket = useContext(SocketContext);
+  const [showDropDown, setShowDropDown] = useState(null);
   const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
@@ -44,6 +48,9 @@ function Lobby() {
   const [vantaEffect, setVantaEffect] = useState(0);
   const vantaRef = useRef(null);
   const [invalidRoomError, setinvalidRoomError] = useState(null);
+  const clickRef = useRef();
+
+  useOutsideClick(clickRef, () => setShowDropDown(false));
 
   useEffect(() => {
     if (!vantaEffect) {
@@ -191,6 +198,28 @@ function Lobby() {
 
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
+      {/* DROPDOWN */}
+      <button
+        ref={clickRef}
+        className={styles.dropDown}
+        type="button"
+        onClick={() => setShowDropDown((old) => !old)}
+      >
+        <User color="white" z-index="2" />
+        <CSSTransition
+          in={showDropDown}
+          timeout={1000}
+          classNames="navbar-ani"
+          unmountOnExit
+        >
+          <ul className="nav--dropdown">
+            <li>Logout</li>
+            <li>Matches</li>
+          </ul>
+        </CSSTransition>
+      </button>
+
+      {/* MAIN LOBBY */}
       {!roomCode ? (
         <h2 style={{ opacity: '0' }}>ROOM CODE: {roomCode}</h2>
       ) : (
