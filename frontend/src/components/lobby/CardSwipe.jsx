@@ -37,7 +37,6 @@ function CardSwipe({ masterList = [] }) {
   }, []);
 
   const handleMatch = useCallback(({ match }) => {
-    console.log({ match });
     setMatch(match);
     socket.off('APPROVED_LIST');
     socket.off('MATCH');
@@ -145,14 +144,10 @@ function CardSwipe({ masterList = [] }) {
           //     document.querySelector('.card').clientWidth) /
           //   2;
           if (!entry.isIntersecting) {
-            console.log(startX);
-            console.log(entry.boundingClientRect.x);
             if (entry.boundingClientRect.x - startX < 0) {
               leftSwipe.current.click();
-              console.log('left');
             } else if (entry.boundingClientRect.x - startX > 80) {
               rightSwipe.current.click();
-              console.log('right');
             }
           }
         });
@@ -182,7 +177,6 @@ function CardSwipe({ masterList = [] }) {
     if (currPhoto > 2) return;
     setCurrPhoto((old) => old + 1);
   };
-  console.log({ masterListCopy });
   if (!masterList || !masterList.length) return null;
   if (masterList && (!masterListCopy || !masterListCopy.length)) {
     setMasterListCopy(masterList);

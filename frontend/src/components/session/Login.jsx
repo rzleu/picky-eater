@@ -33,19 +33,6 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    // try {
-    //   dispatch(login(user)).then((res) => {
-    //     // console.log(res);
-    //     if (backendErrors) {
-    //       setErrorObj({ ...backendErrors });
-    //       console.log(backendErrors);
-    //     } else {
-    //       history.push('/lobby');
-    //     }
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
     const loginUser = login(user);
     loginUser(dispatch).then((res) => {
       if (!res) {
