@@ -13,6 +13,8 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Info } from 'react-feather';
 import leftSwipeBtn from '../../assets/svg/x.svg';
 import rightSwipeBtn from '../../assets/svg/heart.svg';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveRestaurant } from '../../actions/restaurantActions';
 
 // @ts-ignore
 
@@ -23,6 +25,7 @@ function CardSwipe({ masterList = [] }) {
   const [photoList, setPhotoList] = useState(
     masterList[0]?.photoRefs,
   );
+  const dispatch = useDispatch();
   const history = useHistory();
   const [currPhoto, setCurrPhoto] = useState(0);
   const [infoButtonHidden, setinfoButtonHidden] = useState(false);
@@ -85,7 +88,6 @@ function CardSwipe({ masterList = [] }) {
     setPhotoList(copy[0].photoRefs);
   };
 
-  // ! WHAT THE HASHROUTER
   const handleRightSwipe = useCallback(() => {
     if (masterListCopy.length === 0) return;
     const updatedApprovedList = approvedList.concat(
@@ -98,6 +100,14 @@ function CardSwipe({ masterList = [] }) {
     setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
+
+  const userId = useSelector((state) => state.session.user.id);
+  const restaurant = masterListCopy[0];
+
+  const handleSave = () => {
+    console.log(restaurant);
+    dispatch(saveRestaurant(restaurant, userId));
+  };
 
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-1500, 1500], [-90, 90]);
@@ -339,6 +349,7 @@ function CardSwipe({ masterList = [] }) {
           >
             Reload?
           </button>
+          <button onClick={() => handleSave()}>Star</button>
         </div>
       </CSSTransition>
     </div>
