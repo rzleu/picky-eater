@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { signup } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
 import { useHistory } from 'react-router-dom';
+import './signup.module.css';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
