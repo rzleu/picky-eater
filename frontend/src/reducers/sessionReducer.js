@@ -1,4 +1,3 @@
-import { RECEIVE_RESTAURANT } from '../actions/restaurantActions';
 import {
   RECEIVE_CURRENT_USER,
   RECEIVE_USER_LOGOUT,
