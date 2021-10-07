@@ -1,12 +1,13 @@
-import { 
+import { RECEIVE_RESTAURANT } from '../actions/restaurantActions';
+import {
   RECEIVE_CURRENT_USER,
-  RECEIVE_USER_LOGOUT, 
-  RECEIVE_USER_SIGN_IN 
-} from "../actions/sessionActions";
+  RECEIVE_USER_LOGOUT,
+  RECEIVE_USER_SIGN_IN,
+} from '../actions/sessionActions';
 
 const initialState = {
   isAuthenticated: false,
-  user: {}
+  user: {},
 };
 
 const SessionReducer = (state = initialState, action) => {
@@ -14,7 +15,7 @@ const SessionReducer = (state = initialState, action) => {
     case RECEIVE_USER_LOGOUT:
       return {
         isAuthenticated: false,
-        user: undefined
+        user: undefined,
       };
     case RECEIVE_CURRENT_USER:
       return {
@@ -30,6 +31,6 @@ const SessionReducer = (state = initialState, action) => {
     default:
       return state;
   }
-}
+};
 
 export default SessionReducer;

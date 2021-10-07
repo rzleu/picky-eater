@@ -36,7 +36,7 @@ export default function LoginForm({ splashBtn }) {
           password: 'Invalid Credentials',
         });
       } else {
-        history.go(0);
+        history.push('/lobby');
       }
     });
   };

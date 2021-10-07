@@ -78,9 +78,6 @@ function Lobby() {
     };
   }, [vantaEffect]);
 
-  // * maybe this isn't user
-  const { username, id } = useSelector((state) => state.session.user);
-
   const handleJoinRoom = useCallback(({ lobby }) => {
     socket.emit('JOIN_ROOM', lobby);
     socket.on('INVALID_PIN', (message) => {
@@ -175,7 +172,6 @@ function Lobby() {
       );
       setMasterList(resDetails);
       setFetchingData(false);
-      console.log(resDetails);
     } catch (error) {
       console.error(error);
     }
@@ -232,10 +228,6 @@ function Lobby() {
       ) : (
         <h2>ROOM CODE: {roomCode}</h2>
       )}
-      {/* {document.querySelector('.card') ? (
-        <h2>ROOM CODE IS {roomCode}</h2>
-      ) : null} */}
-      {/* <h2>ROOM CODE: {roomCode}</h2> */}
       <Link className={styles.aboutLink} to="/about">
         <FontAwesomeIcon
           className={styles.keyBoard}
@@ -249,10 +241,6 @@ function Lobby() {
             <form onSubmit={handleSubmit(handleJoinRoom)}>
               <h2 className={styles.havePin}>Have a Pin?</h2>
               <div className={styles.inputContainer}>
-                {/* <div
-                  class={styles.pincodeInputContainer}
-                  {...register('lobby')}
-                ></div> */}
                 <input
                   placeholder={'PIN'}
                   className={styles.pinInput}

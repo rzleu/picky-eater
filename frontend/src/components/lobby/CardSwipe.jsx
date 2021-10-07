@@ -104,7 +104,6 @@ function CardSwipe({ masterList = [] }) {
   const userId = useSelector((state) => state.session.user.id);
 
   const handleSave = () => {
-    console.log(match);
     dispatch(saveRestaurant(match, userId));
   };
 
@@ -344,7 +343,7 @@ function CardSwipe({ masterList = [] }) {
           </div>
           <button
             className={style.reload}
-            onClick={() => history.push('/')}
+            onClick={() => history.go(0)}
           >
             Reload?
           </button>

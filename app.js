@@ -87,8 +87,6 @@ io.on('connection', (socket) => {
       socket.to(room).emit('JOIN_REQUEST_ACCEPTED', room);
       socket.to(room).emit('MASTER_LIST', data);
     } else {
-      console.log('Room is unavailable');
-
       const message = 'Invalid PIN';
       socket.emit('INVALID_PIN', message);
     }

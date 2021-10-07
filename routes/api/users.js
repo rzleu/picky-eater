@@ -121,7 +121,6 @@ router.get(
 router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
 
-  console.log(restaurant);
   // for testing
   // const parsed = JSON.parse(restaurant);
   // console.log(parsed);
@@ -131,7 +130,6 @@ router.post('/saved', async (req, res) => {
 
   restaurant['experience'] = '';
   const currUser = await User.findById(userId);
-  console.log(currUser);
 
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
@@ -148,7 +146,6 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
   const currUser = await User.findById(userId);
-  // console.log(currUser);
 
   if (restaurant && currUser && exp) {
     // for testing
@@ -169,8 +166,6 @@ router.put('/saved', async (req, res) => {
 router.delete('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
   const currUser = await User.findById(userId);
-
-  // console.log(currUser.saved);
 
   if (currUser && restaurant) {
     const newSaved = currUser.saved.filter(
