@@ -4,6 +4,8 @@ import {
   RECEIVE_USER_SIGN_IN,
 } from '../actions/sessionActions';
 
+import { RECEIVE_RESTAURANT } from '../actions/restaurantActions';
+
 const initialState = {
   isAuthenticated: false,
   user: {},
@@ -23,9 +25,19 @@ const SessionReducer = (state = initialState, action) => {
         user: action.currentUser,
       };
     case RECEIVE_USER_SIGN_IN:
+      console.log({ action });
       return {
         ...state,
+        user: action.currentUser,
         isSignedIn: true,
+      };
+    case RECEIVE_RESTAURANT:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          saved: [...state.user.saved, action.restaurant],
+        },
       };
     default:
       return state;

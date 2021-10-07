@@ -50,3 +50,9 @@ export const logout = () => (dispatch) => {
   SessionAPIUtil.setAuthToken(false);
   dispatch(logoutUser());
 };
+
+// export const fetchUser = (userId) => (dispatch) =>
+//   SessionAPIUtil.fetchUser(userId).then(
+//     (user) => dispatch(receiveCurrentUser(user)),
+//     (err) => dispatch(receiveErrors(err.response.data)),
+//   );

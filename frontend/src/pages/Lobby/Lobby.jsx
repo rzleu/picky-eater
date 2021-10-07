@@ -9,14 +9,14 @@ import React, {
 import * as yup from 'yup';
 import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 import WAVES from 'vanta/dist/vanta.waves.min';
-import PincodeInput from 'pincode-input';
-import 'pincode-input/dist/pincode-input.min.css';
+// import PincodeInput from 'pincode-input';
+// import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,7 +41,7 @@ function Lobby() {
   });
   const socket = useContext(SocketContext);
   const [showDropDown, setShowDropDown] = useState(null);
-  const [showCardSwipe, setShowCardSwipe] = useState(false);
+  // const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
@@ -99,7 +99,7 @@ function Lobby() {
   );
 
   const handleRoomAccepted = useCallback((data) => {
-    setShowCardSwipe(true);
+    // setShowCardSwipe(true);
     setRoomCode(data);
   }, []);
 
@@ -118,7 +118,8 @@ function Lobby() {
 
     const placeIdOptions = {
       method: 'GET',
-      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+      // url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
       headers: {},
     };
 
@@ -136,7 +137,8 @@ function Lobby() {
       const restaurants = placeIds.map(async (placeId) => {
         const placeDetailOptions = {
           method: 'GET',
-          url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+          url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+          // url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
           headers: {},
         };
 
@@ -196,7 +198,7 @@ function Lobby() {
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}
-      <button
+      <div
         ref={clickRef}
         className={styles.dropDown}
         type="button"
@@ -210,17 +212,17 @@ function Lobby() {
           unmountOnExit
         >
           <ul className="nav--dropdown">
-            <button
+            <li
               onClick={() => {
                 dispatch(logout());
               }}
             >
               Logout
-            </button>
+            </li>
             <li>Matches</li>
           </ul>
         </CSSTransition>
-      </button>
+      </div>
 
       {/* MAIN LOBBY */}
       {!roomCode ? (

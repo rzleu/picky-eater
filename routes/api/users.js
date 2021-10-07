@@ -117,6 +117,17 @@ router.get(
   },
 );
 
+// get a user
+router.get('/', async (req, res) => {
+  const userId = req.query.userId;
+  const currUser = await User.findById(userId);
+  if (currUser) {
+    res.send(currUser);
+  } else {
+    res.status(400).send({ error: 'Could not find user' });
+  }
+});
+
 // save a restaurant
 router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
@@ -133,8 +144,8 @@ router.post('/saved', async (req, res) => {
 
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
-    currUser.save();
-    res.send(restaurant);
+    await currUser.save();
+    res.send(JSON.stringify(restaurant));
   } else {
     res
       .status(400)
@@ -155,7 +166,7 @@ router.put('/saved', async (req, res) => {
     // console.log(parsed);
 
     restaurant.experience = exp;
-    currUser.save();
+    await currUser.save();
     res.send(currUser);
   } else {
     res.status(400).send({ error: 'Invalid experience' });
