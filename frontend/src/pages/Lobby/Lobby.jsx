@@ -56,8 +56,11 @@ function Lobby() {
   const listRef = useRef([]);
   const clickRef = useRef();
   const dispatch = useDispatch();
-  const saved = useSelector((state) => state.session.user.saved);
+  const savedRest = useSelector((state) => state.session.user.saved);
   const userId = useSelector((state) => state.session.user.id);
+  const user = useSelector((state) => state.session.user);
+  const [experience, setExperience] = useState('');
+  const [saved, setSaved] = useState([]);
   useOutsideClick(clickRef, () => setShowDropDown(false));
 
   useEffect(() => {
@@ -84,6 +87,19 @@ function Lobby() {
       if (vantaEffect) vantaEffect.destroy();
     };
   }, [vantaEffect]);
+
+  useEffect(() => {
+    axios
+      .get('/api/users', {
+        params: {
+          userId,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setSaved(res.saved);
+      });
+  }, [experience]);
 
   const handleJoinRoom = useCallback(({ lobby }) => {
     socket.emit('JOIN_ROOM', lobby);
@@ -290,41 +306,40 @@ function Lobby() {
       </div>
       {showMatches && (
         <div className={styles.showMatches}>
-          {saved.map((match, idx) => {
+          {savedRest.map((match, idx) => {
             return (
               <div className={styles.matchContainer} key={idx}>
                 <li>{match.name}</li>
                 <div className={styles.reactions}>
                   <ThumbsUp
                     onClick={() => {
-                      return axios({
-                        method: 'put',
-                        url: '/api/users/saved',
-                        data: {
+                      console.log(saved);
+                      return axios
+                        .put('/api/users/saved', {
                           restaurant: match,
                           userId: userId,
                           exp: 'good',
-                        },
-                      }).then(() => console.log(saved));
+                        })
+                        .then((res) => console.log(res));
                     }}
                   />
                   <ThumbsDown
                     onClick={() => {
-                      return axios({
-                        method: 'put',
-                        url: '/api/users/saved',
-                        data: {
+                      console.log(match);
+                      return axios
+                        .put('/api/users/saved', {
                           restaurant: match,
                           userId: userId,
                           exp: 'bad',
-                        },
-                      })
-                        .then(() => console.log(saved))
-                        .catch((err) => console.log(err));
+                        })
+                        .then((res) =>
+                          console.log('log 3', res, saved),
+                        );
                     }}
                   />
                   <Meh
                     onClick={() => {
+                      console.log(match);
                       return axios({
                         method: 'put',
                         url: '/api/users/saved',

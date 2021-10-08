@@ -157,11 +157,10 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
   const currUser = await User.findById(userId);
-
   if (restaurant && currUser && exp) {
     restaurant.experience = exp;
-    console.log(restaurant.experience);
-    currUser.save();
+    await currUser.save();
+    console.log('log 2', exp, currUser);
     // switch back to currUser
     res.send(restaurant);
   } else {
