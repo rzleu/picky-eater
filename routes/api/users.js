@@ -214,6 +214,8 @@ router.delete('/saved', async (req, res) => {
   const newSaved = currUserSaved.saved.filter(
     (rest) => rest.placeId !== restaurant.placeId,
   );
+
+  console.log({ newSaved });
   const currUser = await User.findByIdAndUpdate(
     userId,
     {
@@ -221,10 +223,9 @@ router.delete('/saved', async (req, res) => {
     },
     { new: true },
   );
+  console.log({ currUser });
   if (currUser) {
     res.send(currUser);
-    console.log(currUser.saved);
-    console.log(newSaved);
   } else {
     res.status(400).send({ error: 'Unsuccessful deletion' });
   }

@@ -114,7 +114,7 @@ function Lobby() {
   const handleCreateRoom = useCallback((e) => {
     e.preventDefault();
     // if (listRef.current.length) {
-    socket.emit('CREATE_RAND_ROOM', listRef.current);
+    socket.emit('CREATE_RAND_ROOM', convertList());
     // }
   }, []);
 
@@ -274,7 +274,6 @@ function Lobby() {
     };
   }, []);
 
-  console.log(saved);
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}
@@ -314,7 +313,7 @@ function Lobby() {
                 <div className={styles.reactions}>
                   <ThumbsUp
                     onClick={() => {
-                      console.log(saved);
+                      // console.log(saved);
                       return axios
                         .put('/api/users/saved', {
                           restaurant: match,
@@ -326,7 +325,7 @@ function Lobby() {
                   />
                   <ThumbsDown
                     onClick={() => {
-                      console.log(match);
+                      // console.log(match);
                       return axios
                         .put('/api/users/saved', {
                           restaurant: match,

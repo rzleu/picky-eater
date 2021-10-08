@@ -156,7 +156,7 @@
 .card::after {
   position: absolute;
   content: '';
-  background: linear-gradient(0deg, black 0%, transparent 60%) bottom;
+  background: linear-gradient(0deg, black 0%, transparent 60%) top;
   left: 0;
   right: 0;
   z-index: 1;

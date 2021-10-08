@@ -178,7 +178,7 @@ function CardSwipe({ masterList = [] }) {
   };
 
   const handlePhotoRightClick = () => {
-    if (currPhoto > 2) return;
+    if (currPhoto > 6) return;
     setCurrPhoto((old) => old + 1);
   };
   if (!masterList || !masterList.length) return null;
@@ -188,7 +188,8 @@ function CardSwipe({ masterList = [] }) {
     return null;
   }
   const { name, phone, website, address, rating } = masterListCopy[0];
-
+  console.log({ photoList });
+  console.log({ masterListCopy });
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>

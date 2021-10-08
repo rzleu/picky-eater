@@ -21,6 +21,7 @@ export default function SignupForm({ splashBtn }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
+  const [backendErrors, setBackendErrors] = useState({});
   const {
     register,
     handleSubmit,
@@ -29,8 +30,13 @@ export default function SignupForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    dispatch(signup(user)).then(() => {
-      history.push('/lobby');
+    dispatch(signup(user)).then((res) => {
+      console.log({ res });
+      if (res.errors?.email) {
+        setBackendErrors({ email: res.errors.email });
+      } else {
+        history.push('/lobby');
+      }
     });
   };
 
@@ -56,12 +62,14 @@ export default function SignupForm({ splashBtn }) {
                 <label htmlFor="email">Email</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.email?.message,
+                    errorInput:
+                      errors.email?.message || backendErrors.email,
                   })}
                   type="email"
                   {...register('email')}
                 />
                 <p className="errorMsg">{errors.email?.message}</p>
+                <p className="errorMsg">{backendErrors.email}</p>
               </div>
               <div>
                 <label htmlFor="password">Password</label>
