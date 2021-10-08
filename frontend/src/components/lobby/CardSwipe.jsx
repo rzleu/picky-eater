@@ -22,18 +22,17 @@ function CardSwipe({ masterList = [] }) {
   const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
   const [match, setMatch] = useState(false);
-  const [photoList, setPhotoList] = useState(
-    masterList[0]?.photoRefs,
-  );
+  const [photoList, setPhotoList] = useState(masterList[0]?.photos);
+  const [currPhoto, setCurrPhoto] = useState(0);
   const dispatch = useDispatch();
   const history = useHistory();
-  const [currPhoto, setCurrPhoto] = useState(0);
   const [infoButtonHidden, setinfoButtonHidden] = useState(false);
   const socket = useContext(SocketContext);
   const cardRef = useRef(null);
   const leftSwipe = useRef(null);
   const rightSwipe = useRef(null);
   let startX = useRef(null);
+
   const handleMasterList = useCallback((list) => {
     if (!list || !list.length) return;
     setMasterListCopy(list);
@@ -79,24 +78,21 @@ function CardSwipe({ masterList = [] }) {
   }, [approvedList, handleMatch]);
 
   const handleLeftSwipe = () => {
-    if (masterListCopy.length === 0) return;
-
     const copy = [...masterListCopy];
     copy.push(copy.shift());
     setMasterListCopy(copy);
     setCurrPhoto(0);
-    setPhotoList(copy[0].photoRefs);
+    setPhotoList(copy[0].photos);
   };
 
   const handleRightSwipe = useCallback(() => {
-    if (masterListCopy.length === 0) return;
     const updatedApprovedList = approvedList.concat(
       masterListCopy[0],
     );
     const sliced = masterListCopy.slice(1);
     setMasterListCopy(sliced);
     setApprovedList(updatedApprovedList);
-    setPhotoList(sliced[0].photoRefs);
+    setPhotoList(sliced[0].photos);
     setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
   }, [masterListCopy, approvedList]);
@@ -188,8 +184,8 @@ function CardSwipe({ masterList = [] }) {
   if (!masterList || !masterList.length) return null;
   if (masterList && (!masterListCopy || !masterListCopy.length)) {
     setMasterListCopy(masterList);
-    setPhotoList(masterList[0].photoRefs);
-    return;
+    setPhotoList(masterList[0].photos);
+    return null;
   }
   const { name, phone, website, address, rating } = masterListCopy[0];
 
@@ -253,7 +249,7 @@ function CardSwipe({ masterList = [] }) {
               />
             </svg>
             <img
-              src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${photoList[currPhoto]}&maxwidth=500&key=${process.env.REACT_APP_GOOGLE_API_KEY}`}
+              src={photoList[currPhoto]}
               alt={name}
               className={style.images}
             />

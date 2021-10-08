@@ -49,6 +49,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.21/dist/vanta.waves.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/pincode-input@0.4.2/dist/pincode-input.min.js"></script>
+    <script
+      async
+      src="https://maps.googleapis.com/maps/api/js?key=%REACT_APP_GOOGLE_API_KEY%&libraries=places"
+    ></script>
     <title>pickyEatr</title>
   </head>
   <body>
@@ -66,5 +70,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <div id="google-attr"></div>
   </body>
 </html>

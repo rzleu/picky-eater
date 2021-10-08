@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('CREATE_RAND_ROOM', (restaurants) => {
+    console.log({ restaurants });
     let roomCode = randomCodeGenerator();
     while (socket.adapter.rooms.has(roomCode)) {
       roomCode = randomCodeGenerator();

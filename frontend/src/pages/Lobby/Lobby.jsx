@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form';
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 import WAVES from 'vanta/dist/vanta.waves.min';
-// import PincodeInput from 'pincode-input';
-// import 'pincode-input/dist/pincode-input.min.css';
+import PincodeInput from 'pincode-input';
+import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -42,12 +42,14 @@ function Lobby() {
   const socket = useContext(SocketContext);
   const [showDropDown, setShowDropDown] = useState(null);
   // const [showCardSwipe, setShowCardSwipe] = useState(false);
+  const [nearbyRes, setNearbyRes] = useState([]);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
   const [vantaEffect, setVantaEffect] = useState(0);
   const vantaRef = useRef(null);
   const [invalidRoomError, setinvalidRoomError] = useState(null);
+  const listRef = useRef([]);
   const clickRef = useRef();
   const dispatch = useDispatch();
 
@@ -88,15 +90,12 @@ function Lobby() {
     });
   }, []);
 
-  const handleCreateRoom = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (masterList.length) {
-        socket.emit('CREATE_RAND_ROOM', masterList);
-      }
-    },
-    [masterList],
-  );
+  const handleCreateRoom = useCallback((e) => {
+    e.preventDefault();
+    // if (listRef.current.length) {
+    socket.emit('CREATE_RAND_ROOM', listRef.current);
+    // }
+  }, []);
 
   const handleRoomAccepted = useCallback((data) => {
     // setShowCardSwipe(true);
@@ -113,74 +112,133 @@ function Lobby() {
     }
   }, []);
 
-  async function success(pos) {
-    setFetchingData(true);
+  // async function success(pos) {
+  //   setFetchingData(true);
 
-    const placeIdOptions = {
-      method: 'GET',
-      // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-      url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-      headers: {},
+  //   const placeIdOptions = {
+  //     method: 'GET',
+  //     // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+  //     url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+  //     headers: {},
+  //   };
+
+  //   try {
+  //     const placeIds = await axios(placeIdOptions)
+  //       .then((data) => {
+  //         return data.data.results.map(({ place_id }) => {
+  //           return place_id;
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+
+  //     const restaurants = placeIds.map(async (placeId) => {
+  //       const placeDetailOptions = {
+  //         method: 'GET',
+  //         // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+  //         url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
+  //         headers: {},
+  //       };
+
+  //       const placeDetails = await axios(placeDetailOptions)
+  //         .then((data) => {
+  //           return data.data.result;
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
+  //         });
+
+  //       return placeDetails;
+  //     });
+
+  //     const resDetails = (await Promise.all(restaurants)).map(
+  //       (data) => {
+  //         return {
+  //           name: data.name,
+  //           address: data.vicinity,
+  //           phone: data.formatted_phone_number,
+  //           location: data.geometry.location,
+  //           photoRefs: data.photos
+  //             .map((photo) => {
+  //               return photo.photo_reference;
+  //             })
+  //             .sort(() => 0.5 - Math.random())
+  //             .slice(0, 3),
+  //           rating: data.rating,
+  //           website: data.website,
+  //           placeId: data.place_id,
+  //         };
+  //       },
+  //     );
+  //     setMasterList(resDetails);
+  //     setFetchingData(false);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // }
+
+  const clientSideGoogle = async (pos) => {
+    const location = new window.google.maps.LatLng(
+      pos.coords.latitude,
+      pos.coords.longitude,
+    );
+
+    const request = {
+      location: location,
+      radius: '8000',
+      type: ['food'],
+      keyword: ['restaurant'],
     };
 
-    try {
-      const placeIds = await axios(placeIdOptions)
-        .then((data) => {
-          return data.data.results.map(({ place_id }) => {
-            return place_id;
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    const service = new window.google.maps.places.PlacesService(
+      document.getElementById('google-attr'),
+    );
 
-      const restaurants = placeIds.map(async (placeId) => {
-        const placeDetailOptions = {
-          method: 'GET',
-          // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-          url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-          headers: {},
-        };
+    service.nearbySearch(request, callback);
 
-        const placeDetails = await axios(placeDetailOptions)
-          .then((data) => {
-            return data.data.result;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        return placeDetails;
-      });
-
-      const resDetails = (await Promise.all(restaurants)).map(
-        (data) => {
-          return {
-            name: data.name,
-            address: data.vicinity,
-            phone: data.formatted_phone_number,
-            location: data.geometry.location,
-            photoRefs: data.photos
-              .map((photo) => {
-                return photo.photo_reference;
-              })
-              .sort(() => 0.5 - Math.random())
-              .slice(0, 3),
-            rating: data.rating,
-            website: data.website,
-            placeId: data.place_id,
+    // nearbySearch callback
+    function callback(results, status) {
+      if (
+        status === window.google.maps.places.PlacesServiceStatus.OK
+      ) {
+        for (let i = 0; i < results.length; i++) {
+          const request = {
+            placeId: results[i].place_id,
+            fields: [
+              'name',
+              'vicinity',
+              'formatted_phone_number',
+              'photos',
+              'rating',
+              'website',
+              'place_id',
+            ],
           };
-        },
-      );
-      setMasterList(resDetails);
-      setFetchingData(false);
-    } catch (error) {
-      console.error(error);
+          const innerCallback = async (place, status) => {
+            if (
+              status ===
+              window.google.maps.places.PlacesServiceStatus.OK
+            ) {
+              listRef.current = [...listRef.current, place];
+            }
+          };
+          service.getDetails(request, innerCallback);
+        }
+      }
     }
-  }
+  };
+
+  const convertList = () => {
+    const temp = listRef.current.map(({ photos, ...rest }) => ({
+      ...rest,
+      photos: photos.map((photo) => photo.getUrl({ width: 500 })),
+    }));
+    return temp;
+  };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(success, null, {
+    navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
 
@@ -293,7 +351,7 @@ function Lobby() {
           </div>
         </>
       ) : (
-        <CardSwipe masterList={masterList} />
+        <CardSwipe masterList={convertList()} />
       )}
     </div>
   );
