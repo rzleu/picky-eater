@@ -17,7 +17,7 @@
   left: 2.5%;
   cursor: pointer;
   border: 0;
-  background: rgba(145, 61, 136, 1);
+  background: #ff9960;
   border-radius: 100vh;
   width: 48px;
   height: 48px;
@@ -25,6 +25,30 @@
   place-items: center;
   z-index: 1;
   filter: drop-shadow(2px 4px 6px black);
+}
+
+.matchContainer li {
+  list-style: none;
+}
+.showMatches {
+  position: absolute;
+  width: 550px;
+  height: 460px;
+  background: white;
+  z-index: 8;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+.matchContainer {
+  display: flex;
+  padding: 10px 0px 0px 10px;
+  justify-content: space-between;
+}
+
+.reactions {
+  display: flex;
+  margin-right: 15px;
+  gap: 20px;
 }
 
 .container h2 {

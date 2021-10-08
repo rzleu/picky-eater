@@ -77,7 +77,6 @@
   width: 100%;
   overflow: scroll;
   overflow-x: hidden;
-  width: 160px;
   height: 60px;
   left: 50%;
   top: 50%;
@@ -91,6 +90,14 @@
   text-transform: uppercase;
   color: white;
   font-family: 'Kanit';
+
+  overflow-y: hidden;
+}
+
+.nav--dropdown li {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 .nav--dropdown * {
   /* padding: 5% 10%; */
@@ -100,6 +107,9 @@
 }
 
 .nav--dropdown *:hover {
-  background-color: var(--primaryBlueHover);
+  /* background-color: var(--primaryBlueHover); */
   color: var(--white);
+  background: green;
+
+  cursor: pointer;
 }

@@ -159,15 +159,11 @@ router.put('/saved', async (req, res) => {
   const currUser = await User.findById(userId);
 
   if (restaurant && currUser && exp) {
-    // for testing
-    // const parsed = JSON.parse(restaurant);
-    // parsed.experience = exp;
-    // parsed.placeId = 1;
-    // console.log(parsed);
-
     restaurant.experience = exp;
-    await currUser.save();
-    res.send(currUser);
+    console.log(restaurant.experience);
+    currUser.save();
+    // switch back to currUser
+    res.send(restaurant);
   } else {
     res.status(400).send({ error: 'Invalid experience' });
   }
@@ -182,10 +178,13 @@ router.delete('/saved', async (req, res) => {
     const newSaved = currUser.saved.filter(
       (rest) => rest.placeId !== restaurant.placeId,
     );
+    console.log(currUser.saved);
     currUser.saved = newSaved;
+    console.log(currUser.saved);
     currUser.save();
-    res.send(currUser);
+    res.send(restaurant);
   } else {
+    console.log(currUser, restaurant);
     res.status(400).send({ error: 'Unsuccessful deletion' });
   }
 });

@@ -7,21 +7,24 @@ import React, {
   useRef,
 } from 'react';
 import * as yup from 'yup';
-import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-
+import axios from 'axios';
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 import WAVES from 'vanta/dist/vanta.waves.min';
-import PincodeInput from 'pincode-input';
-import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
-import { User } from 'react-feather';
+import {
+  User,
+  ThumbsUp,
+  ThumbsDown,
+  Meh,
+  Trash2,
+} from 'react-feather';
 import { CSSTransition } from 'react-transition-group';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { logout } from '../../actions/sessionActions';
@@ -41,6 +44,7 @@ function Lobby() {
   });
   const socket = useContext(SocketContext);
   const [showDropDown, setShowDropDown] = useState(null);
+  const [showMatches, setShowMatches] = useState(null);
   // const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [nearbyRes, setNearbyRes] = useState([]);
   const [roomCode, setRoomCode] = useState('');
@@ -52,7 +56,8 @@ function Lobby() {
   const listRef = useRef([]);
   const clickRef = useRef();
   const dispatch = useDispatch();
-
+  const saved = useSelector((state) => state.session.user.saved);
+  const userId = useSelector((state) => state.session.user.id);
   useOutsideClick(clickRef, () => setShowDropDown(false));
 
   useEffect(() => {
@@ -277,11 +282,82 @@ function Lobby() {
             >
               Logout
             </li>
-            <li>Matches</li>
+            <li onClick={() => setShowMatches((old) => !old)}>
+              Matches
+            </li>
           </ul>
         </CSSTransition>
       </div>
-
+      {showMatches && (
+        <div className={styles.showMatches}>
+          {saved.map((match, idx) => {
+            return (
+              <div className={styles.matchContainer} key={idx}>
+                <li>{match.name}</li>
+                <div className={styles.reactions}>
+                  <ThumbsUp
+                    onClick={() => {
+                      return axios({
+                        method: 'put',
+                        url: '/api/users/saved',
+                        data: {
+                          restaurant: match,
+                          userId: userId,
+                          exp: 'good',
+                        },
+                      }).then(() => console.log(saved));
+                    }}
+                  />
+                  <ThumbsDown
+                    onClick={() => {
+                      return axios({
+                        method: 'put',
+                        url: '/api/users/saved',
+                        data: {
+                          restaurant: match,
+                          userId: userId,
+                          exp: 'bad',
+                        },
+                      })
+                        .then(() => console.log(saved))
+                        .catch((err) => console.log(err));
+                    }}
+                  />
+                  <Meh
+                    onClick={() => {
+                      return axios({
+                        method: 'put',
+                        url: '/api/users/saved',
+                        data: {
+                          restaurant: match,
+                          userId: userId,
+                          exp: 'neutral',
+                        },
+                      })
+                        .then(() => console.log('working'))
+                        .catch((err) => console.log(err));
+                    }}
+                  />
+                  <Trash2
+                    onClick={() => {
+                      return axios({
+                        method: 'delete',
+                        url: '/api/users/saved',
+                        data: {
+                          restaurant: match,
+                          userId: userId,
+                        },
+                      })
+                        .then(() => console.log('working'))
+                        .catch((err) => console.log(err));
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       {/* MAIN LOBBY */}
       {!roomCode ? (
         <h2 style={{ opacity: '0' }}>ROOM CODE: {roomCode}</h2>
