@@ -60,7 +60,7 @@ function Lobby() {
   const userId = useSelector((state) => state.session.user.id);
   const user = useSelector((state) => state.session.user);
   const [experience, setExperience] = useState('');
-  const [saved, setSaved] = useState([]);
+  const [saved, setSaved] = useState({});
   useOutsideClick(clickRef, () => setShowDropDown(false));
 
   useEffect(() => {
@@ -97,7 +97,7 @@ function Lobby() {
       })
       .then((res) => {
         console.log(res);
-        setSaved(res.saved);
+        setSaved(res.data.saved);
       });
   }, [experience]);
 
@@ -274,6 +274,7 @@ function Lobby() {
     };
   }, []);
 
+  console.log(saved);
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}
@@ -306,7 +307,7 @@ function Lobby() {
       </div>
       {showMatches && (
         <div className={styles.showMatches}>
-          {savedRest.map((match, idx) => {
+          {saved.map((match, idx) => {
             return (
               <div className={styles.matchContainer} key={idx}>
                 <li>{match.name}</li>
@@ -363,7 +364,9 @@ function Lobby() {
                           userId: userId,
                         },
                       })
-                        .then(() => console.log('working'))
+                        .then(() =>
+                          setExperience(`delete${match.placeId}`),
+                        )
                         .catch((err) => console.log(err));
                     }}
                   />

@@ -156,34 +156,76 @@ router.post('/saved', async (req, res) => {
 // edit experience emoji
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
-  const currUser = await User.findById(userId);
-  if (restaurant && currUser && exp) {
-    restaurant.experience = exp;
-    await currUser.save();
-    console.log('log 2', exp, currUser);
-    // switch back to currUser
-    res.send(restaurant);
+  const currUserSaved = await User.findById(userId);
+  const currSaved = currUserSaved.saved;
+  const i = currSaved.findIndex(
+    (rest) => rest.placeId === restaurant.placeId,
+  );
+  currSaved[i].experience = exp;
+  const currUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      saved: currSaved,
+    },
+    { new: true },
+  );
+  if (currUser) {
+    res.send(currUser);
+    console.log(currUser.saved);
   } else {
-    res.status(400).send({ error: 'Invalid experience' });
+    res.status(400).send({ error: 'Invalid' });
   }
+  // if (restaurant && currUser && exp) {
+  //   // restaurant.experience = exp;
+  //   const changeRestExp = currUser.saved.find(
+  //     (rest) => rest.placeId === restaurant.placeId,
+  //   );
+  //   changeRestExp.experience = exp;
+  //   await currUser.save();
+  //   console.log('log 2', exp, currUser);
+  //   // switch back to currUser
+  //   res.send(restaurant);
+  // } else {
+  //   res.status(400).send({ error: 'Invalid experience' });
+  // }
 });
 
 // delete a saved restaurant
 router.delete('/saved', async (req, res) => {
-  const { userId, restaurant } = req.body;
-  const currUser = await User.findById(userId);
+  // const { userId, restaurant } = req.body;
+  // const currUser = await User.findById(userId);
 
-  if (currUser && restaurant) {
-    const newSaved = currUser.saved.filter(
-      (rest) => rest.placeId !== restaurant.placeId,
-    );
+  // if (currUser && restaurant) {
+  //   const newSaved = currUser.saved.filter(
+  //     (rest) => rest.placeId !== restaurant.placeId,
+  //   );
+  //   console.log(currUser.saved);
+  //   currUser.saved = newSaved;
+  //   console.log(currUser.saved);
+  //   currUser.save();
+  //   res.send(restaurant);
+  // } else {
+  //   console.log(currUser, restaurant);
+  //   res.status(400).send({ error: 'Unsuccessful deletion' });
+  // }
+  const { userId, restaurant } = req.body;
+  const currUserSaved = await User.findById(userId);
+  // const currSaved = currUserSaved.saved;
+  const newSaved = currUserSaved.saved.filter(
+    (rest) => rest.placeId !== restaurant.placeId,
+  );
+  const currUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      saved: newSaved,
+    },
+    { new: true },
+  );
+  if (currUser) {
+    res.send(currUser);
     console.log(currUser.saved);
-    currUser.saved = newSaved;
-    console.log(currUser.saved);
-    currUser.save();
-    res.send(restaurant);
+    console.log(newSaved);
   } else {
-    console.log(currUser, restaurant);
     res.status(400).send({ error: 'Unsuccessful deletion' });
   }
 });
