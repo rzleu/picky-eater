@@ -41,50 +41,42 @@ function CardSwipe({ masterList = [] }) {
     setMasterListCopy(list);
   }, []);
 
-  const handleMatch = useCallback(
-    ({ match }) => {
-      console.log({ match });
-      setMatch(match);
-      socket.off('APPROVED_LIST');
-      socket.off('MATCH');
-      socket.off('MASTER_LIST');
-    },
-    [socket],
-  );
+  const handleMatch = useCallback(({ match }) => {
+    console.log({ match });
+    setMatch(match);
+    socket.off('APPROVED_LIST');
+    socket.off('MATCH');
+    socket.off('MASTER_LIST');
+  }, []);
 
   const handleInfoButton = () => {
     setinfoButtonHidden(!infoButtonHidden);
   };
-  console.log(socket.id);
-  useEffect(() => {
-    socket.on(
-      'RECEIVE_OTHER_LIST',
-      ({ user, approvedList: otherUserList }) => {
-        console.log({
-          user,
-          socket: socket.id,
-          otherUserList,
-          rightSwipeList,
-        });
-        // if (!otherUserList || !otherUserList.length) return;
-        if (socket.id !== user) {
-          //approved list is list of the other users matched restaurants
-          console.log('ids are not the same');
-          const match = rightSwipeList.current.find(
-            ({ location_id }) =>
-              otherUserList.some(
-                (currUserItem) =>
-                  location_id === currUserItem.location_id &&
-                  socket.id !== user,
-              ),
-          );
-          console.log({ matchOne: match });
-          if (match) {
-            socket.emit('FOUND_MATCH', match);
-          }
+
+  const handleReceiveOtherList = useCallback(
+    ({ user, approvedList }) => {
+      console.log({ approvedList, rightSwipeList });
+      console.log(socket.id === user);
+      if (socket.id !== user) {
+        //approved list is list of the other users matched restaurants
+        const match = rightSwipeList.current.find(({ place_id }) =>
+          approvedList.some(
+            (currUserItem) =>
+              place_id === currUserItem.place_id &&
+              socket.id !== user,
+          ),
+        );
+        console.log({ matchOne: match });
+        if (match) {
+          socket.emit('FOUND_MATCH', match);
         }
-      },
-    );
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    socket.on('RECEIVE_OTHER_LIST', handleReceiveOtherList);
 
     socket.on('MASTER_LIST', handleMasterList);
     socket.on('MATCH', handleMatch);
@@ -93,7 +85,7 @@ function CardSwipe({ masterList = [] }) {
       socket.off('MATCH');
       socket.off('MASTER_LIST');
     };
-  }, []);
+  }, [handleMasterList, handleReceiveOtherList, handleMatch, socket]);
 
   const handleLeftSwipe = () => {
     const copy = [...masterListCopy];
@@ -108,7 +100,7 @@ function CardSwipe({ masterList = [] }) {
     rightSwipeList.current = rightSwipeList.current.concat(
       masterListCopy[0],
     );
-    // setPhotoList(sliced[0].photos);
+    console.log(socket.id);
     setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', rightSwipeList.current);
   }, [masterListCopy, socket]);

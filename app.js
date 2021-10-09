@@ -52,6 +52,13 @@ io.on('connection', (socket) => {
     io.in(roomId).emit('MATCH', { message: 'found match!', match });
   });
 
+  socket.on('RIGHT_SWIPE_LIST', (approvedList) => {
+    const room = io.sockets.sockets.get(socket.id).roomId;
+    socket.broadcast
+      .to(room)
+      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id });
+  });
+
   socket.on('CREATE_RAND_ROOM', (restaurants) => {
     let roomCode = randomCodeGenerator();
     while (socket.adapter.rooms.has(roomCode)) {
@@ -90,14 +97,6 @@ io.on('connection', (socket) => {
       const message = 'Invalid PIN';
       socket.emit('INVALID_PIN', message);
     }
-  });
-
-  socket.on('RIGHT_SWIPE_LIST', (approvedList) => {
-    const room = io.sockets.sockets.get(socket.id).roomId;
-    console.log(socket.id);
-    socket.broadcast
-      .to(room)
-      .emit('RECEIVE_OTHER_LIST', { approvedList, user: socket.id });
   });
 
   socket.on('disconnect', () => {
