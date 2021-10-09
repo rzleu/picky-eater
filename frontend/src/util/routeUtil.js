@@ -1,14 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 
-const Auth = ({ component: Component, path, loggedIn, exact }) => {
+export const AuthRoute = ({ component: Component, path, exact }) => {
+  const isLoggedIn = useSelector((state) => state.session);
+  console.log({ isLoggedIn });
   return (
     <Route
       path={path}
       exact={exact}
       render={(props) =>
-        !loggedIn ? (
+        !(isLoggedIn?.isAuthenticated || isLoggedIn?.isSignedIn) ? (
           <Component {...props} />
         ) : (
           <Redirect to="/lobby" />
@@ -18,21 +20,19 @@ const Auth = ({ component: Component, path, loggedIn, exact }) => {
   );
 };
 
-const Protected = ({ component: Component, loggedIn, ...rest }) => {
+export const ProtectedRoute = ({ component: Component, ...rest }) => {
+  const isLoggedIn = useSelector((state) => state.session);
+
   return (
     <Route
       {...rest}
       render={(props) =>
-        loggedIn ? <Component {...props} /> : <Redirect to="/" />
+        isLoggedIn?.isAuthenticated || isLoggedIn?.isSignedIn ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/" />
+        )
       }
     />
   );
 };
-
-const mapStateToProps = (state) => ({
-  loggedIn: state.session.isAuthenticated,
-});
-
-export const AuthRoute = connect(mapStateToProps)(Auth);
-
-export const ProtectedRoute = connect(mapStateToProps)(Protected);
