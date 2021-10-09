@@ -60,9 +60,10 @@ function Lobby() {
   const userId = useSelector((state) => state.session.user.id);
   const user = useSelector((state) => state.session.user);
   const [experience, setExperience] = useState('');
-  const [saved, setSaved] = useState({});
+  const [saved, setSaved] = useState([]);
   useOutsideClick(clickRef, () => setShowDropDown(false));
 
+  // * VANTA
   useEffect(() => {
     if (!vantaEffect) {
       setVantaEffect(
@@ -88,6 +89,7 @@ function Lobby() {
     };
   }, [vantaEffect]);
 
+  // * fetch user
   useEffect(() => {
     axios
       .get('/api/users', {
@@ -101,6 +103,7 @@ function Lobby() {
       });
   }, [experience]);
 
+  // SOCKET.IO
   const handleJoinRoom = useCallback(({ lobby }) => {
     socket.emit('JOIN_ROOM', lobby);
     socket.on('INVALID_PIN', (message) => {
@@ -110,95 +113,26 @@ function Lobby() {
       }, 3000);
     });
   }, []);
-
   const handleCreateRoom = useCallback((e) => {
     e.preventDefault();
     // if (listRef.current.length) {
     socket.emit('CREATE_RAND_ROOM', convertList());
     // }
   }, []);
-
   const handleRoomAccepted = useCallback((data) => {
     // setShowCardSwipe(true);
     setRoomCode(data);
   }, []);
-
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
   }, []);
-
   const handleMasterList = useCallback((data) => {
     if (data && data.length) {
       setMasterList(data);
     }
   }, []);
 
-  // async function success(pos) {
-  //   setFetchingData(true);
-
-  //   const placeIdOptions = {
-  //     method: 'GET',
-  //     // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-  //     url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-  //     headers: {},
-  //   };
-
-  //   try {
-  //     const placeIds = await axios(placeIdOptions)
-  //       .then((data) => {
-  //         return data.data.results.map(({ place_id }) => {
-  //           return place_id;
-  //         });
-  //       })
-  //       .catch((error) => {
-  //         console.error(error);
-  //       });
-
-  //     const restaurants = placeIds.map(async (placeId) => {
-  //       const placeDetailOptions = {
-  //         method: 'GET',
-  //         // url: `https://warm-plains-96923.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-  //         url: `https://gentle-thicket-64456.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-  //         headers: {},
-  //       };
-
-  //       const placeDetails = await axios(placeDetailOptions)
-  //         .then((data) => {
-  //           return data.data.result;
-  //         })
-  //         .catch((error) => {
-  //           console.log(error);
-  //         });
-
-  //       return placeDetails;
-  //     });
-
-  //     const resDetails = (await Promise.all(restaurants)).map(
-  //       (data) => {
-  //         return {
-  //           name: data.name,
-  //           address: data.vicinity,
-  //           phone: data.formatted_phone_number,
-  //           location: data.geometry.location,
-  //           photoRefs: data.photos
-  //             .map((photo) => {
-  //               return photo.photo_reference;
-  //             })
-  //             .sort(() => 0.5 - Math.random())
-  //             .slice(0, 3),
-  //           rating: data.rating,
-  //           website: data.website,
-  //           placeId: data.place_id,
-  //         };
-  //       },
-  //     );
-  //     setMasterList(resDetails);
-  //     setFetchingData(false);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }
-
+  // Google API Call
   const clientSideGoogle = async (pos) => {
     const location = new window.google.maps.LatLng(
       pos.coords.latitude,
@@ -220,6 +154,7 @@ function Lobby() {
 
     // nearbySearch callback
     function callback(results, status) {
+      setFetchingData(true);
       if (
         status === window.google.maps.places.PlacesServiceStatus.OK
       ) {
@@ -246,10 +181,12 @@ function Lobby() {
           };
           service.getDetails(request, innerCallback);
         }
+        setFetchingData(false);
       }
     }
   };
 
+  // utlity for converting functions to urls
   const convertList = () => {
     const temp = listRef.current.map(({ photos, ...rest }) => ({
       ...rest,
@@ -258,6 +195,7 @@ function Lobby() {
     return temp;
   };
 
+  // Geolocation
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
@@ -291,6 +229,7 @@ function Lobby() {
           unmountOnExit
         >
           <ul className="nav--dropdown">
+            <li>{user.username}</li>
             <li
               onClick={() => {
                 dispatch(logout());
@@ -375,6 +314,7 @@ function Lobby() {
           })}
         </div>
       )}
+
       {/* MAIN LOBBY */}
       {!roomCode ? (
         <h2 style={{ opacity: '0' }}>ROOM CODE: {roomCode}</h2>

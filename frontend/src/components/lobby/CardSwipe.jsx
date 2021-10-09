@@ -19,10 +19,11 @@ import { saveRestaurant } from '../../actions/restaurantActions';
 // @ts-ignore
 
 function CardSwipe({ masterList = [] }) {
-  const [approvedList, setApprovedList] = useState([]);
+  const userId = useSelector((state) => state.session.user.id);
+  // const [approvedList, setApprovedList] = useState([]);
   const [masterListCopy, setMasterListCopy] = useState(masterList);
   const [match, setMatch] = useState(false);
-  const [photoList, setPhotoList] = useState(masterList[0]?.photos);
+  // const [photoList, setPhotoList] = useState(masterList[0]?.photos);
   const [currPhoto, setCurrPhoto] = useState(0);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -31,6 +32,8 @@ function CardSwipe({ masterList = [] }) {
   const cardRef = useRef(null);
   const leftSwipe = useRef(null);
   const rightSwipe = useRef(null);
+  const rightSwipeList = useRef([]);
+
   let startX = useRef(null);
 
   const handleMasterList = useCallback((list) => {
@@ -38,32 +41,47 @@ function CardSwipe({ masterList = [] }) {
     setMasterListCopy(list);
   }, []);
 
-  const handleMatch = useCallback(({ match }) => {
-    setMatch(match);
-    socket.off('APPROVED_LIST');
-    socket.off('MATCH');
-    socket.off('MASTER_LIST');
-  }, []);
+  const handleMatch = useCallback(
+    ({ match }) => {
+      console.log({ match });
+      setMatch(match);
+      socket.off('APPROVED_LIST');
+      socket.off('MATCH');
+      socket.off('MASTER_LIST');
+    },
+    [socket],
+  );
 
   const handleInfoButton = () => {
     setinfoButtonHidden(!infoButtonHidden);
   };
-
+  console.log(socket.id);
   useEffect(() => {
     socket.on(
       'RECEIVE_OTHER_LIST',
       ({ user, approvedList: otherUserList }) => {
-        if (!otherUserList || !otherUserList.length) return;
-        if (socket.id === user) return;
-        //approved list is list of the other users matched restaurants
-        const match = approvedList.find(({ location_id }) =>
-          otherUserList.some(
-            (currUserItem) =>
-              location_id === currUserItem.location_id,
-          ),
-        );
-        if (match) {
-          socket.emit('FOUND_MATCH', match);
+        console.log({
+          user,
+          socket: socket.id,
+          otherUserList,
+          rightSwipeList,
+        });
+        // if (!otherUserList || !otherUserList.length) return;
+        if (socket.id !== user) {
+          //approved list is list of the other users matched restaurants
+          console.log('ids are not the same');
+          const match = rightSwipeList.current.find(
+            ({ location_id }) =>
+              otherUserList.some(
+                (currUserItem) =>
+                  location_id === currUserItem.location_id &&
+                  socket.id !== user,
+              ),
+          );
+          console.log({ matchOne: match });
+          if (match) {
+            socket.emit('FOUND_MATCH', match);
+          }
         }
       },
     );
@@ -75,34 +93,31 @@ function CardSwipe({ masterList = [] }) {
       socket.off('MATCH');
       socket.off('MASTER_LIST');
     };
-  }, [approvedList, handleMatch]);
+  }, []);
 
   const handleLeftSwipe = () => {
     const copy = [...masterListCopy];
     copy.push(copy.shift());
     setMasterListCopy(copy);
     setCurrPhoto(0);
-    setPhotoList(copy[0].photos);
+    // setPhotoList(copy[0].photos);
   };
 
   const handleRightSwipe = useCallback(() => {
-    const updatedApprovedList = approvedList.concat(
+    setMasterListCopy(masterListCopy.slice(1));
+    rightSwipeList.current = rightSwipeList.current.concat(
       masterListCopy[0],
     );
-    const sliced = masterListCopy.slice(1);
-    setMasterListCopy(sliced);
-    setApprovedList(updatedApprovedList);
-    setPhotoList(sliced[0].photos);
+    // setPhotoList(sliced[0].photos);
     setCurrPhoto(0);
-    socket.emit('RIGHT_SWIPE_LIST', updatedApprovedList);
-  }, [masterListCopy, approvedList]);
-
-  const userId = useSelector((state) => state.session.user.id);
+    socket.emit('RIGHT_SWIPE_LIST', rightSwipeList.current);
+  }, [masterListCopy, socket]);
 
   const handleSave = () => {
     dispatch(saveRestaurant(match, userId));
   };
 
+  // animations
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-1500, 1500], [-90, 90]);
   const xInput = [-100, 0, 100];
@@ -126,13 +141,13 @@ function CardSwipe({ masterList = [] }) {
       'drop-shadow(0 0 0.45rem green)',
     ],
   );
-
   const svgBackdrop =
     'drop-shadow(0px 10px 5px rgba(255,255,255,0.1))';
   const checkStroke = useTransform(x, [50, 200], [0, 1]);
   const xStroke1 = useTransform(x, [-10, -55], [0, 1]);
   const xStroke2 = useTransform(x, [-50, -100], [0, 1]);
 
+  // intersection api
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries, observer) => {
@@ -178,18 +193,16 @@ function CardSwipe({ masterList = [] }) {
   };
 
   const handlePhotoRightClick = () => {
-    if (currPhoto > 6) return;
+    if (currPhoto > 9) return;
     setCurrPhoto((old) => old + 1);
   };
   if (!masterList || !masterList.length) return null;
   if (masterList && (!masterListCopy || !masterListCopy.length)) {
     setMasterListCopy(masterList);
-    setPhotoList(masterList[0].photos);
+    // setPhotoList(masterList[0].photos);
     return null;
   }
   const { name, phone, website, address, rating } = masterListCopy[0];
-  console.log({ photoList });
-  console.log({ masterListCopy });
   return (
     <div className={style.swipeContainer}>
       <h2 className={style.swipeHeader}>Swipe Left or Right!</h2>
@@ -250,7 +263,7 @@ function CardSwipe({ masterList = [] }) {
               />
             </svg>
             <img
-              src={photoList[currPhoto]}
+              src={masterListCopy[0]?.photos?.[currPhoto]}
               alt={name}
               className={style.images}
             />
@@ -262,7 +275,7 @@ function CardSwipe({ masterList = [] }) {
                 <ChevronLeft size={64} strokeWidth={3} />
               </button>
             )}
-            {currPhoto < 2 && (
+            {currPhoto < 8 && (
               <button
                 className={style.photoRightBtn}
                 onClick={handlePhotoRightClick}
