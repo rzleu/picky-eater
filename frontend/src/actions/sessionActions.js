@@ -51,8 +51,8 @@ export const logout = () => (dispatch) => {
   dispatch(logoutUser());
 };
 
-// export const fetchUser = (userId) => (dispatch) =>
-//   SessionAPIUtil.fetchUser(userId).then(
-//     (user) => dispatch(receiveCurrentUser(user)),
-//     (err) => dispatch(receiveErrors(err.response.data)),
-//   );
+export const fetchUser = (userId) => (dispatch) =>
+  SessionAPIUtil.fetchUser(userId).then(
+    (user) => dispatch(receiveCurrentUser(user)),
+    (err) => dispatch(receiveErrors(err.response.data)),
+  );

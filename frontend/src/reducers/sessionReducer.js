@@ -4,7 +4,10 @@ import {
   RECEIVE_USER_SIGN_IN,
 } from '../actions/sessionActions';
 
-import { RECEIVE_RESTAURANT } from '../actions/restaurantActions';
+import {
+  RECEIVE_RESTAURANT,
+  DELETE_RESTAURANT,
+} from '../actions/restaurantActions';
 
 const initialState = {
   isAuthenticated: false,
@@ -19,24 +22,37 @@ const SessionReducer = (state = initialState, action) => {
         user: undefined,
       };
     case RECEIVE_CURRENT_USER:
+      console.log(action.currentUser);
       return {
         ...state,
         isAuthenticated: !!action.currentUser,
         user: action.currentUser,
       };
     case RECEIVE_USER_SIGN_IN:
-      console.log({ action });
+      console.log(action.currentUser);
       return {
         ...state,
         user: action.currentUser,
         isSignedIn: true,
       };
     case RECEIVE_RESTAURANT:
+      console.log({ action });
       return {
         ...state,
         user: {
           ...state.user,
-          saved: [...state.user.saved, action.restaurant],
+          saved: state.user.saved.concat(action.restaurant),
+        },
+      };
+    case DELETE_RESTAURANT:
+      const deleteIdx = state.user.saved.findIndex(
+        (res) => res.place_id === action.restaurant.place_id,
+      );
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          saved: state.user.saved.filter((_, i) => i !== deleteIdx),
         },
       };
     default:

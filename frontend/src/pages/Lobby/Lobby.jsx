@@ -27,7 +27,8 @@ import {
 } from 'react-feather';
 import { CSSTransition } from 'react-transition-group';
 import useOutsideClick from '../../hooks/useOutsideClick';
-import { logout } from '../../actions/sessionActions';
+import { logout, fetchUser } from '../../actions/sessionActions';
+import { deleteRestaurant } from '../../actions/restaurantActions';
 // VANTA.WAVES('.lobbyContainer');
 
 const schema = yup.object().shape({
@@ -46,7 +47,6 @@ function Lobby() {
   const [showDropDown, setShowDropDown] = useState(null);
   const [showMatches, setShowMatches] = useState(null);
   // const [showCardSwipe, setShowCardSwipe] = useState(false);
-  const [nearbyRes, setNearbyRes] = useState([]);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
@@ -55,6 +55,7 @@ function Lobby() {
   const [invalidRoomError, setinvalidRoomError] = useState(null);
   const listRef = useRef([]);
   const clickRef = useRef();
+  const savedListRef = useRef();
   const dispatch = useDispatch();
   const savedRest = useSelector((state) => state.session.user.saved);
   const userId = useSelector((state) => state.session.user.id);
@@ -62,7 +63,7 @@ function Lobby() {
   const [experience, setExperience] = useState('');
   const [saved, setSaved] = useState([]);
   useOutsideClick(clickRef, () => setShowDropDown(false));
-
+  useOutsideClick(savedListRef, () => setShowMatches(false));
   // * VANTA
   useEffect(() => {
     if (!vantaEffect) {
@@ -98,7 +99,6 @@ function Lobby() {
         },
       })
       .then((res) => {
-        console.log(res);
         setSaved(res.data.saved);
       });
   }, [experience]);
@@ -200,7 +200,9 @@ function Lobby() {
     navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
-
+    if (userId) {
+      dispatch(fetchUser(userId));
+    }
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
     socket.on('ROOM_CODE', handleRoomCode);
     socket.on('MASTER_LIST', handleMasterList);
@@ -244,10 +246,17 @@ function Lobby() {
         </CSSTransition>
       </div>
       {showMatches && (
-        <div className={styles.showMatches}>
-          {saved.map((match, idx) => {
+        <div className={styles.showMatches} ref={savedListRef}>
+          {(!savedRest || !savedRest.length) && (
+            <div> No Matches</div>
+          )}
+          {savedRest.map((match) => {
+            console.log(match);
             return (
-              <div className={styles.matchContainer} key={idx}>
+              <div
+                className={styles.matchContainer}
+                key={match.place_id}
+              >
                 <li>{match.name}</li>
                 <div className={styles.reactions}>
                   <ThumbsUp
@@ -278,7 +287,6 @@ function Lobby() {
                   />
                   <Meh
                     onClick={() => {
-                      console.log(match);
                       return axios({
                         method: 'put',
                         url: '/api/users/saved',
@@ -294,18 +302,9 @@ function Lobby() {
                   />
                   <Trash2
                     onClick={() => {
-                      return axios({
-                        method: 'delete',
-                        url: '/api/users/saved',
-                        data: {
-                          restaurant: match,
-                          userId: userId,
-                        },
-                      })
-                        .then(() =>
-                          setExperience(`delete${match.placeId}`),
-                        )
-                        .catch((err) => console.log(err));
+                      dispatch(
+                        deleteRestaurant(match.place_id, userId),
+                      );
                     }}
                   />
                 </div>

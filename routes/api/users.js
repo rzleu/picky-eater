@@ -141,6 +141,16 @@ router.post('/saved', async (req, res) => {
 
   restaurant['experience'] = '';
   const currUser = await User.findById(userId);
+  console.log({ restaurant, saved: currUser.saved });
+  if (
+    currUser &&
+    currUser.saved.some((el) => el.place_id === restaurant.place_id)
+  ) {
+    res
+      .send('restaurant has already been added to saved')
+      .status(400);
+    return;
+  }
 
   if (currUser && restaurant) {
     currUser.saved.push(restaurant);
@@ -157,19 +167,19 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, restaurant, exp } = req.body;
   const currUserSaved = await User.findById(userId);
-  const currSaved = currUserSaved.saved;
-  const i = currSaved.findIndex(
-    (rest) => rest.placeId === restaurant.placeId,
-  );
-  currSaved[i].experience = exp;
-  const currUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      saved: currSaved,
-    },
-    { new: true },
-  );
-  if (currUser) {
+  if (currUserSaved) {
+    const currSaved = currUserSaved.saved;
+    const i = currSaved.findIndex(
+      (rest) => rest.placeId === restaurant.placeId,
+    );
+    currSaved[i].experience = exp;
+    const currUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        saved: currSaved,
+      },
+      { new: true },
+    );
     res.send(currUser);
     console.log(currUser.saved);
   } else {
@@ -209,22 +219,20 @@ router.delete('/saved', async (req, res) => {
   //   res.status(400).send({ error: 'Unsuccessful deletion' });
   // }
   const { userId, restaurant } = req.body;
+  console.log({restaurant})
   const currUserSaved = await User.findById(userId);
   // const currSaved = currUserSaved.saved;
-  const newSaved = currUserSaved.saved.filter(
-    (rest) => rest.placeId !== restaurant.placeId,
-  );
-
-  console.log({ newSaved });
-  const currUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      saved: newSaved,
-    },
-    { new: true },
-  );
-  console.log({ currUser });
-  if (currUser) {
+  if (currUserSaved) {
+    const newSaved = currUserSaved.saved.filter(
+      (rest) => rest.placeId !== restaurant,
+    );
+    const currUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        saved: newSaved,
+      },
+      { new: true },
+    );
     res.send(currUser);
   } else {
     res.status(400).send({ error: 'Unsuccessful deletion' });

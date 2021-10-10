@@ -58,7 +58,7 @@ function CardSwipe({ masterList = [] }) {
       console.log({ approvedList, rightSwipeList });
       console.log(socket.id === user);
       if (socket.id !== user) {
-        //approved list is list of the other users matched restaurants
+        //approved list is list of the other users matched restaurantsL
         const match = rightSwipeList.current.find(({ place_id }) =>
           approvedList.some(
             (currUserItem) =>
@@ -267,7 +267,7 @@ function CardSwipe({ masterList = [] }) {
                 <ChevronLeft size={64} strokeWidth={3} />
               </button>
             )}
-            {currPhoto < 8 && (
+            {currPhoto < 9 && (
               <button
                 className={style.photoRightBtn}
                 onClick={handlePhotoRightClick}
