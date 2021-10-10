@@ -219,6 +219,20 @@ function Lobby() {
     };
   }, []);
 
+  function setColor(match) {
+    switch (match.experience) {
+      case 'good':
+        return 'green';
+      case 'bad':
+        return 'red';
+      case 'neutral':
+        return 'orange';
+      case '':
+        return 'grey';
+      default:
+        break;
+    }
+  }
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}
@@ -253,8 +267,9 @@ function Lobby() {
       {/* show matches */}
       {showMatches && (
         <div className={styles.showMatches} ref={savedListRef}>
+          <h3 className={styles.matchTitle}>SAVED MATCHES</h3>
           {(!savedRest || !savedRest.length) && (
-            <div> No Matches</div>
+            <div className={styles.noMatches}> No Saved Matches</div>
           )}
           {savedRest.map((match) => {
             // console.log(match);
@@ -263,9 +278,17 @@ function Lobby() {
                 className={styles.matchContainer}
                 key={match.place_id}
               >
-                <li>{match.name}</li>
+                <li className={styles.restaurantName}>
+                  {match.name}
+                </li>
                 <div className={styles.reactions}>
                   <ThumbsUp
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'good'
+                        ? setColor(match)
+                        : 'grey'
+                    }
                     onClick={() =>
                       dispatch(
                         fetchRestaurantExperience(
@@ -277,6 +300,12 @@ function Lobby() {
                     }
                   />
                   <ThumbsDown
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'bad'
+                        ? setColor(match)
+                        : 'grey'
+                    }
                     onClick={() =>
                       dispatch(
                         fetchRestaurantExperience(
@@ -288,6 +317,12 @@ function Lobby() {
                     }
                   />
                   <Meh
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'neutral'
+                        ? setColor(match)
+                        : 'grey'
+                    }
                     onClick={() =>
                       dispatch(
                         fetchRestaurantExperience(
@@ -299,6 +334,7 @@ function Lobby() {
                     }
                   />
                   <Trash2
+                    className={styles.reactionIcons}
                     onClick={() => {
                       dispatch(
                         deleteRestaurant(match.place_id, userId),

@@ -74,30 +74,28 @@
   gap: 0.5rem;
   background-color: inherit;
   max-height: 400px;
-  width: 100%;
   overflow: scroll;
   overflow-x: hidden;
-  height: 60px;
-  left: 50%;
-  top: 50%;
   border-radius: 3px;
   justify-content: center;
   width: 160px;
-  height: 60px;
+  height: 100px;
   left: 50%;
   top: 50%;
   border-radius: 3px;
   text-transform: uppercase;
   color: white;
   font-family: 'Kanit';
-
+  cursor: default;
   overflow-y: hidden;
 }
 
 .nav--dropdown li {
-  width: 100%;
+  width: 70%;
   display: flex;
   justify-content: center;
+  align-self: center;
+  letter-spacing: 2px;
 }
 .nav--dropdown * {
   /* padding: 5% 10%; */
@@ -106,10 +104,10 @@
   color: var(--veryDarkGrey);
 }
 
-.nav--dropdown *:hover {
+.nav--dropdown li:not(:first-child):hover {
   /* background-color: var(--primaryBlueHover); */
   color: var(--white);
-  background: green;
-
+  background: #ff7c49;
+  border-radius: 100px;
   cursor: pointer;
 }
