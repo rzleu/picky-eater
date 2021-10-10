@@ -165,13 +165,16 @@ router.post('/saved', async (req, res) => {
 
 // edit experience emoji
 router.put('/saved', async (req, res) => {
-  const { userId, restaurant, exp } = req.body;
+  const { userId, id, exp } = req.body;
   const currUserSaved = await User.findById(userId);
+  console.log({ id });
   if (currUserSaved) {
     const currSaved = currUserSaved.saved;
-    const i = currSaved.findIndex(
-      (rest) => rest.placeId === restaurant.placeId,
-    );
+    const i = currSaved.findIndex((rest) => rest.place_id === id);
+    if (i === -1) {
+      res.send('cannot find saved restaurant').status(404);
+      return;
+    }
     currSaved[i].experience = exp;
     const currUser = await User.findByIdAndUpdate(
       userId,
@@ -180,7 +183,7 @@ router.put('/saved', async (req, res) => {
       },
       { new: true },
     );
-    res.send(currUser);
+    res.send(currUser.saved);
     console.log(currUser.saved);
   } else {
     res.status(400).send({ error: 'Invalid' });
@@ -219,13 +222,14 @@ router.delete('/saved', async (req, res) => {
   //   res.status(400).send({ error: 'Unsuccessful deletion' });
   // }
   const { userId, restaurant } = req.body;
-  console.log({restaurant})
+  console.log({ restaurant });
   const currUserSaved = await User.findById(userId);
   // const currSaved = currUserSaved.saved;
   if (currUserSaved) {
     const newSaved = currUserSaved.saved.filter(
-      (rest) => rest.placeId !== restaurant,
+      (rest) => rest.place_id !== restaurant,
     );
+
     const currUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -233,6 +237,8 @@ router.delete('/saved', async (req, res) => {
       },
       { new: true },
     );
+
+    console.log(currUser.saved);
     res.send(currUser);
   } else {
     res.status(400).send({ error: 'Unsuccessful deletion' });

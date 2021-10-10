@@ -7,6 +7,7 @@ import {
 import {
   RECEIVE_RESTAURANT,
   DELETE_RESTAURANT,
+  RECEIVE_RESTAURANT_EXPERIENCE,
 } from '../actions/restaurantActions';
 
 const initialState = {
@@ -46,13 +47,22 @@ const SessionReducer = (state = initialState, action) => {
       };
     case DELETE_RESTAURANT:
       const deleteIdx = state.user.saved.findIndex(
-        (res) => res.place_id === action.restaurant.place_id,
+        (res) => res.place_id === action.restaurant,
       );
       return {
         ...state,
         user: {
           ...state.user,
           saved: state.user.saved.filter((_, i) => i !== deleteIdx),
+        },
+      };
+    case RECEIVE_RESTAURANT_EXPERIENCE:
+      console.log(action.response.data);
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          saved: action.response.data,
         },
       };
     default:

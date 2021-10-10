@@ -28,7 +28,10 @@ import {
 import { CSSTransition } from 'react-transition-group';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { logout, fetchUser } from '../../actions/sessionActions';
-import { deleteRestaurant } from '../../actions/restaurantActions';
+import {
+  deleteRestaurant,
+  fetchRestaurantExperience,
+} from '../../actions/restaurantActions';
 // VANTA.WAVES('.lobbyContainer');
 
 const schema = yup.object().shape({
@@ -64,6 +67,7 @@ function Lobby() {
   const [saved, setSaved] = useState([]);
   useOutsideClick(clickRef, () => setShowDropDown(false));
   useOutsideClick(savedListRef, () => setShowMatches(false));
+  console.log({ savedRest });
   // * VANTA
   useEffect(() => {
     if (!vantaEffect) {
@@ -90,18 +94,18 @@ function Lobby() {
     };
   }, [vantaEffect]);
 
-  // * fetch user
-  useEffect(() => {
-    axios
-      .get('/api/users', {
-        params: {
-          userId,
-        },
-      })
-      .then((res) => {
-        setSaved(res.data.saved);
-      });
-  }, [experience]);
+  // // * fetch user
+  // useEffect(() => {
+  //   axios
+  //     .get('/api/users', {
+  //       params: {
+  //         userId,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setSaved(res.data.saved);
+  //     });
+  // }, [experience]);
 
   // SOCKET.IO
   const handleJoinRoom = useCallback(({ lobby }) => {
@@ -200,6 +204,7 @@ function Lobby() {
     navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
+    console.log({ userId });
     if (userId) {
       dispatch(fetchUser(userId));
     }
@@ -245,13 +250,14 @@ function Lobby() {
           </ul>
         </CSSTransition>
       </div>
+      {/* show matches */}
       {showMatches && (
         <div className={styles.showMatches} ref={savedListRef}>
           {(!savedRest || !savedRest.length) && (
             <div> No Matches</div>
           )}
           {savedRest.map((match) => {
-            console.log(match);
+            // console.log(match);
             return (
               <div
                 className={styles.matchContainer}
@@ -260,45 +266,37 @@ function Lobby() {
                 <li>{match.name}</li>
                 <div className={styles.reactions}>
                   <ThumbsUp
-                    onClick={() => {
-                      // console.log(saved);
-                      return axios
-                        .put('/api/users/saved', {
-                          restaurant: match,
-                          userId: userId,
-                          exp: 'good',
-                        })
-                        .then((res) => console.log(res));
-                    }}
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'good',
+                        ),
+                      )
+                    }
                   />
                   <ThumbsDown
-                    onClick={() => {
-                      // console.log(match);
-                      return axios
-                        .put('/api/users/saved', {
-                          restaurant: match,
-                          userId: userId,
-                          exp: 'bad',
-                        })
-                        .then((res) =>
-                          console.log('log 3', res, saved),
-                        );
-                    }}
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'bad',
+                        ),
+                      )
+                    }
                   />
                   <Meh
-                    onClick={() => {
-                      return axios({
-                        method: 'put',
-                        url: '/api/users/saved',
-                        data: {
-                          restaurant: match,
-                          userId: userId,
-                          exp: 'neutral',
-                        },
-                      })
-                        .then(() => console.log('working'))
-                        .catch((err) => console.log(err));
-                    }}
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'neutral',
+                        ),
+                      )
+                    }
                   />
                   <Trash2
                     onClick={() => {

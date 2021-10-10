@@ -1,7 +1,23 @@
 import * as RestaurantAPIUtil from '../util/restaurantApiUtil';
-
+import axios from 'axios';
+import { setAuthToken } from '../util/sessionApiUtil';
 export const RECEIVE_RESTAURANT = 'RECEIVE_RESTAURANT';
 export const DELETE_RESTAURANT = 'DELETE_RESTAURANT';
+export const RECEIVE_RESTAURANT_EXPERIENCE =
+  'RECEIVE_RESTAURANT_EXPERIENCE';
+
+export const receiveRestaurantExperience = (
+  id,
+  userId,
+  exp,
+  response,
+) => ({
+  type: RECEIVE_RESTAURANT_EXPERIENCE,
+  id,
+  userId,
+  exp,
+  response,
+});
 
 export const receiveRestaurant = (restaurant, userId) => ({
   type: RECEIVE_RESTAURANT,
@@ -26,10 +42,24 @@ export const saveRestaurant = (restaurant, userId) => (dispatch) => {
 
 export const deleteRestaurant =
   (restaurant, userId) => (dispatch) => {
-    console.log({ restaurant, userId });
-    RestaurantAPIUtil.deleteRestaurant(restaurant, userId).then(
-      () => {
+    delete axios.defaults.headers.common['Authorization'];
+    RestaurantAPIUtil.deleteRestaurant(restaurant, userId)
+      .then(() => {
         dispatch(deleteRestaurantPojo(restaurant, userId));
+      })
+      .catch((responce) => console.error(responce));
+    if (localStorage.jwtToken) {
+      setAuthToken(localStorage.jwtToken);
+    }
+  };
+
+export const fetchRestaurantExperience =
+  (id, userId, exp) => (dispatch) => {
+    RestaurantAPIUtil.fetchRestaurantExperience(id, userId, exp).then(
+      (response) => {
+        dispatch(
+          receiveRestaurantExperience(id, userId, exp, response),
+        );
       },
     );
   };
