@@ -43,6 +43,7 @@
   border-radius: 5px;
   background: transparent;
   backdrop-filter: brightness(0.1) blur(6px);
+  margin-top: 2.8%;
 }
 
 .matchTitle {
