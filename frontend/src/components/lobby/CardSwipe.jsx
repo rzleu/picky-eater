@@ -138,7 +138,7 @@ function CardSwipe({ masterList = [] }) {
   );
   const svgBackdrop =
     'drop-shadow(0px 10px 5px rgba(255,255,255,0.1))';
-  const checkStroke = useTransform(x, [50, 200], [0, 1]);
+  const checkStroke = useTransform(x, [20, 100], [0, 1]);
   const xStroke1 = useTransform(x, [-10, -55], [0, 1]);
   const xStroke2 = useTransform(x, [-50, -100], [0, 1]);
 
@@ -158,9 +158,9 @@ function CardSwipe({ masterList = [] }) {
           //     document.querySelector('.card').clientWidth) /
           //   2;
           if (!entry.isIntersecting) {
-            if (entry.boundingClientRect.x - startX < 0) {
+            if (entry.boundingClientRect.x - startX < 30) {
               leftSwipe.current.click();
-            } else if (entry.boundingClientRect.x - startX > 80) {
+            } else if (entry.boundingClientRect.x - startX > 50) {
               rightSwipe.current.click();
             }
           }
@@ -343,7 +343,13 @@ function CardSwipe({ masterList = [] }) {
               <h3>
                 You've matched on{' '}
                 <span>
-                  <a href={website} rel="noreferrer" target="_blank">
+                  {' '}
+                  <a
+                    className={style.matchName}
+                    href={website}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
                     {match.name}
                   </a>
                 </span>
@@ -362,7 +368,7 @@ function CardSwipe({ masterList = [] }) {
 
             <button
               ref={buttonClicked}
-              className={style.reload}
+              className={style.reload2}
               onClick={() => handleSave()}
             >
               Save Match
