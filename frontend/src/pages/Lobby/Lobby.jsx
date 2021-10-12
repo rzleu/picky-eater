@@ -233,6 +233,7 @@ function Lobby() {
         break;
     }
   }
+  // console.log(listRef.current);
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}

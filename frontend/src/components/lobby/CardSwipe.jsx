@@ -158,9 +158,9 @@ function CardSwipe({ masterList = [] }) {
           //     document.querySelector('.card').clientWidth) /
           //   2;
           if (!entry.isIntersecting) {
-            if (entry.boundingClientRect.x - startX < 30) {
+            if (entry.boundingClientRect.x - startX < 20) {
               leftSwipe.current.click();
-            } else if (entry.boundingClientRect.x - startX > 50) {
+            } else if (entry.boundingClientRect.x - startX > 60) {
               rightSwipe.current.click();
             }
           }
