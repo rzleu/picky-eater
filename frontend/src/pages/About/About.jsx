@@ -46,7 +46,11 @@ function About() {
                     </a>
                   </li>
                   <li className={styles.personalSite}>
-                    <a href="#">
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://cindyj301.github.io"
+                    >
                       <img src={globe} alt="personalSite" />
                     </a>
                   </li>
@@ -86,7 +90,11 @@ function About() {
                     </a>
                   </li>
                   <li className={styles.personalSite}>
-                    <a href="#">
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://www.anthonyhuang.dev"
+                    >
                       <img src={globe} alt="personalSite" />
                     </a>
                   </li>
@@ -126,7 +134,11 @@ function About() {
                     </a>
                   </li>
                   <li className={styles.personalSite}>
-                    <a href="#">
+                    <a
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href="https://richzleung.com/"
+                    >
                       <img src={globe} alt="personalSite" />
                     </a>
                   </li>
@@ -167,7 +179,11 @@ function About() {
                       </a>
                     </li>
                     <li className={styles.personalSite}>
-                      <a href="#">
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://dmechenko.github.io/portfoliov1.1/"
+                      >
                         <img src={globe} alt="personalSite" />
                       </a>
                     </li>
