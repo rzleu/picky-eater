@@ -389,7 +389,6 @@ function Lobby() {
                 />
               </div>
               <div>
-                <h3 className={styles.createRoom}>Create a room?</h3>
                 {!Object.values(convertList()).length ? (
                   <svg
                     className={styles.loader}
@@ -409,13 +408,18 @@ function Lobby() {
                     ></circle>
                   </svg>
                 ) : (
-                  <button
-                    className={styles.generateButton}
-                    onClick={handleCreateRoom}
-                    disabled={fetchingData}
-                  >
-                    Create
-                  </button>
+                  <div>
+                    <h3 className={styles.createRoom}>
+                      Create a room?
+                    </h3>
+                    <button
+                      className={styles.generateButton}
+                      onClick={handleCreateRoom}
+                      disabled={fetchingData}
+                    >
+                      Create
+                    </button>
+                  </div>
                 )}
               </div>
             </form>
