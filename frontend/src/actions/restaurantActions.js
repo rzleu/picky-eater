@@ -34,7 +34,6 @@ export const deleteRestaurantPojo = (restaurant, userId) => ({
 export const saveRestaurant = (restaurant, userId) => (dispatch) => {
   RestaurantAPIUtil.saveRestaurant(restaurant, userId).then(
     ({ data }) => {
-      console.log(data);
       dispatch(receiveRestaurant(data, userId));
     },
   );

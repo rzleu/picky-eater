@@ -4,7 +4,6 @@ import { Route, Redirect } from 'react-router-dom';
 
 export const AuthRoute = ({ component: Component, path, exact }) => {
   const isLoggedIn = useSelector((state) => state.session);
-  console.log({ isLoggedIn });
   return (
     <Route
       path={path}

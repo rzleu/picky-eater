@@ -9,7 +9,6 @@ export const fetchRestaurantExperience = (id, userId, exp) => {
 };
 
 export const deleteRestaurant = (restaurant, userId) => {
-  console.log({ restaurant, userId });
   return axios.delete(
     '/api/users/saved',
     {

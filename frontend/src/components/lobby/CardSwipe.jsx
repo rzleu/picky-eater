@@ -36,14 +36,12 @@ function CardSwipe({ masterList = [] }) {
   const buttonClicked = useRef();
   let startX = useRef(null);
 
-  console.log({ masterList });
   const handleMasterList = useCallback((list) => {
     if (!list || !list.length) return;
     setMasterListCopy(list);
   }, []);
 
   const handleMatch = useCallback(({ match }) => {
-    console.log({ match });
     setMatch(match);
     socket.off('APPROVED_LIST');
     socket.off('MATCH');
@@ -56,8 +54,6 @@ function CardSwipe({ masterList = [] }) {
 
   const handleReceiveOtherList = useCallback(
     ({ user, approvedList }) => {
-      console.log({ approvedList, rightSwipeList });
-      console.log(socket.id === user);
       if (socket.id !== user) {
         //approved list is list of the other users matched restaurantsL
         const match = rightSwipeList.current.find(({ place_id }) =>
@@ -67,7 +63,6 @@ function CardSwipe({ masterList = [] }) {
               socket.id !== user,
           ),
         );
-        console.log({ matchOne: match });
         if (match) {
           socket.emit('FOUND_MATCH', match);
         }
@@ -101,7 +96,6 @@ function CardSwipe({ masterList = [] }) {
     rightSwipeList.current = rightSwipeList.current.concat(
       masterListCopy[0],
     );
-    console.log(socket.id);
     setCurrPhoto(0);
     socket.emit('RIGHT_SWIPE_LIST', rightSwipeList.current);
   }, [masterListCopy, socket]);
@@ -159,9 +153,9 @@ function CardSwipe({ masterList = [] }) {
           //     document.querySelector('.card').clientWidth) /
           //   2;
           if (!entry.isIntersecting) {
-            if (entry.boundingClientRect.x - startX < 0) {
+            if (entry.boundingClientRect.x - startX < 20) {
               leftSwipe.current.click();
-            } else if (entry.boundingClientRect.x - startX > 80) {
+            } else if (entry.boundingClientRect.x - startX > 60) {
               rightSwipe.current.click();
             }
           }

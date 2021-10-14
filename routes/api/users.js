@@ -132,16 +132,8 @@ router.get('/', async (req, res) => {
 router.post('/saved', async (req, res) => {
   const { userId, restaurant } = req.body;
 
-  // for testing
-  // const parsed = JSON.parse(restaurant);
-  // console.log(parsed);
-  // parsed['experience'] = '';
-  // parsed['placeId'] = 1;
-  // console.log(parsed);
-
   restaurant['experience'] = '';
   const currUser = await User.findById(userId);
-  console.log({ restaurant, saved: currUser.saved });
   if (
     currUser &&
     currUser.saved.some((el) => el.place_id === restaurant.place_id)
@@ -167,7 +159,6 @@ router.post('/saved', async (req, res) => {
 router.put('/saved', async (req, res) => {
   const { userId, id, exp } = req.body;
   const currUserSaved = await User.findById(userId);
-  console.log({ id });
   if (currUserSaved) {
     const currSaved = currUserSaved.saved;
     const i = currSaved.findIndex((rest) => rest.place_id === id);
@@ -184,45 +175,14 @@ router.put('/saved', async (req, res) => {
       { new: true },
     );
     res.send(currUser.saved);
-    console.log(currUser.saved);
   } else {
     res.status(400).send({ error: 'Invalid' });
   }
-  // if (restaurant && currUser && exp) {
-  //   // restaurant.experience = exp;
-  //   const changeRestExp = currUser.saved.find(
-  //     (rest) => rest.placeId === restaurant.placeId,
-  //   );
-  //   changeRestExp.experience = exp;
-  //   await currUser.save();
-  //   console.log('log 2', exp, currUser);
-  //   // switch back to currUser
-  //   res.send(restaurant);
-  // } else {
-  //   res.status(400).send({ error: 'Invalid experience' });
-  // }
 });
 
 // delete a saved restaurant
 router.delete('/saved', async (req, res) => {
-  // const { userId, restaurant } = req.body;
-  // const currUser = await User.findById(userId);
-
-  // if (currUser && restaurant) {
-  //   const newSaved = currUser.saved.filter(
-  //     (rest) => rest.placeId !== restaurant.placeId,
-  //   );
-  //   console.log(currUser.saved);
-  //   currUser.saved = newSaved;
-  //   console.log(currUser.saved);
-  //   currUser.save();
-  //   res.send(restaurant);
-  // } else {
-  //   console.log(currUser, restaurant);
-  //   res.status(400).send({ error: 'Unsuccessful deletion' });
-  // }
   const { userId, restaurant } = req.body;
-  console.log({ restaurant });
   const currUserSaved = await User.findById(userId);
   // const currSaved = currUserSaved.saved;
   if (currUserSaved) {
@@ -238,7 +198,6 @@ router.delete('/saved', async (req, res) => {
       { new: true },
     );
 
-    console.log(currUser.saved);
     res.send(currUser);
   } else {
     res.status(400).send({ error: 'Unsuccessful deletion' });

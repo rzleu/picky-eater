@@ -132,7 +132,6 @@ function Lobby() {
     setRoomCode(code);
   }, []);
   const handleMasterList = useCallback((data) => {
-    console.log({ data });
     if (data && data.length) {
       setMasterList(data);
     }
@@ -202,7 +201,6 @@ function Lobby() {
   };
 
   useEffect(() => {
-    console.log({ ref: listRef.current });
     if (!masterList.length && listRef.current.length > 0) {
       setMasterList(convertList());
     }
@@ -213,7 +211,6 @@ function Lobby() {
     navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
-    // console.log({ userId });
     if (userId) {
       dispatch(fetchUser(userId));
     }
@@ -281,7 +278,6 @@ function Lobby() {
             <div className={styles.noMatches}> No Saved Matches</div>
           )}
           {savedRest.map((match) => {
-            // console.log(match);
             return (
               <div
                 className={styles.matchContainer}
@@ -394,8 +390,7 @@ function Lobby() {
               </div>
               <div>
                 <h3 className={styles.createRoom}>Create a room?</h3>
-                {console.log(masterList)}
-                {!masterList.length ? (
+                {!Object.values(convertList()).length ? (
                   <svg
                     className={styles.loader}
                     width="50px"

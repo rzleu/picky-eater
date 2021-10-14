@@ -23,21 +23,18 @@ const SessionReducer = (state = initialState, action) => {
         user: undefined,
       };
     case RECEIVE_CURRENT_USER:
-      console.log(action.currentUser);
       return {
         ...state,
         isAuthenticated: !!action.currentUser,
         user: action.currentUser,
       };
     case RECEIVE_USER_SIGN_IN:
-      console.log(action.currentUser);
       return {
         ...state,
         user: action.currentUser,
         isSignedIn: true,
       };
     case RECEIVE_RESTAURANT:
-      console.log({ action });
       return {
         ...state,
         user: {
@@ -57,7 +54,6 @@ const SessionReducer = (state = initialState, action) => {
         },
       };
     case RECEIVE_RESTAURANT_EXPERIENCE:
-      console.log(action.response.data);
       return {
         ...state,
         user: {

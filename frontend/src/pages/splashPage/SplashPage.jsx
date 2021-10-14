@@ -17,7 +17,6 @@ function SplashPage() {
     const loginDemo = login(user);
     loginDemo(dispatch).then(() => history.go(0));
   };
-  console.log({ currUser });
   return (
     <div className={`h-100 ${styles.splashContainer}`}>
       <h1 className={styles.headerLogo}>
