@@ -25,7 +25,7 @@ function SplashPage() {
         pickyEatr
       </h1>
 
-      <h2>Swipe Right</h2>
+      <h2>Grab a Friend and Swipe Right!</h2>
       <div className={styles.buttonContainer}>
         <SignupForm splashBtn={styles.splashBtn1} />
         <LoginForm splashBtn={styles.splashBtn2} />

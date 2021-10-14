@@ -36,6 +36,7 @@ function CardSwipe({ masterList = [] }) {
   const buttonClicked = useRef();
   let startX = useRef(null);
 
+  console.log({ masterList });
   const handleMasterList = useCallback((list) => {
     if (!list || !list.length) return;
     setMasterListCopy(list);
@@ -158,9 +159,9 @@ function CardSwipe({ masterList = [] }) {
           //     document.querySelector('.card').clientWidth) /
           //   2;
           if (!entry.isIntersecting) {
-            if (entry.boundingClientRect.x - startX < 20) {
+            if (entry.boundingClientRect.x - startX < 0) {
               leftSwipe.current.click();
-            } else if (entry.boundingClientRect.x - startX > 60) {
+            } else if (entry.boundingClientRect.x - startX > 80) {
               rightSwipe.current.click();
             }
           }

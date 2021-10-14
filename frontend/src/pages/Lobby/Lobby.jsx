@@ -67,7 +67,6 @@ function Lobby() {
   const [saved, setSaved] = useState([]);
   useOutsideClick(clickRef, () => setShowDropDown(false));
   useOutsideClick(savedListRef, () => setShowMatches(false));
-  console.log({ savedRest });
   // * VANTA
   useEffect(() => {
     if (!vantaEffect) {
@@ -120,6 +119,8 @@ function Lobby() {
   const handleCreateRoom = useCallback((e) => {
     e.preventDefault();
     // if (listRef.current.length) {
+    if (!listRef.current.length) return;
+
     socket.emit('CREATE_RAND_ROOM', convertList());
     // }
   }, []);
@@ -131,6 +132,7 @@ function Lobby() {
     setRoomCode(code);
   }, []);
   const handleMasterList = useCallback((data) => {
+    console.log({ data });
     if (data && data.length) {
       setMasterList(data);
     }
@@ -199,12 +201,19 @@ function Lobby() {
     return temp;
   };
 
+  useEffect(() => {
+    console.log({ ref: listRef.current });
+    if (!masterList.length && listRef.current.length > 0) {
+      setMasterList(convertList());
+    }
+  }, [masterList, listRef.current, roomCode]);
+
   // Geolocation
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
-    console.log({ userId });
+    // console.log({ userId });
     if (userId) {
       dispatch(fetchUser(userId));
     }
@@ -233,7 +242,6 @@ function Lobby() {
         break;
     }
   }
-  // console.log(listRef.current);
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
       {/* DROPDOWN */}
@@ -386,33 +394,34 @@ function Lobby() {
               </div>
               <div>
                 <h3 className={styles.createRoom}>Create a room?</h3>
-                <button
-                  className={styles.generateButton}
-                  onClick={handleCreateRoom}
-                  disabled={fetchingData}
-                >
-                  {fetchingData ? (
-                    <svg
-                      className={styles.loader}
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 66 66"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle
-                        className={styles.path}
-                        fill="none"
-                        strokeWidth="6"
-                        strokeLinecap="round"
-                        cx="33"
-                        cy="33"
-                        r="30"
-                      ></circle>
-                    </svg>
-                  ) : (
-                    'Create'
-                  )}
-                </button>
+                {console.log(masterList)}
+                {!masterList.length ? (
+                  <svg
+                    className={styles.loader}
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 66 66"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      className={styles.path}
+                      fill="none"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      cx="33"
+                      cy="33"
+                      r="30"
+                    ></circle>
+                  </svg>
+                ) : (
+                  <button
+                    className={styles.generateButton}
+                    onClick={handleCreateRoom}
+                    disabled={fetchingData}
+                  >
+                    Create
+                  </button>
+                )}
               </div>
             </form>
           </div>
