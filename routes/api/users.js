@@ -110,7 +110,7 @@ router.get(
   (req, res) => {
     res.json({
       id: req.user.id,
-      handle: req.user.handle,
+      username: req.user.username,
       email: req.user.email,
       saved: req.user.saved,
     });
