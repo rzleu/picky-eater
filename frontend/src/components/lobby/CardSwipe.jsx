@@ -148,10 +148,6 @@ function CardSwipe({ masterList = [] }) {
                   document.querySelector('.card').clientWidth) /
                 2)
             : (startX = 0);
-          // startX =
-          //   (window.innerWidth -
-          //     document.querySelector('.card').clientWidth) /
-          //   2;
           if (!entry.isIntersecting) {
             if (entry.boundingClientRect.x - startX < 20) {
               leftSwipe.current.click();
@@ -279,7 +275,7 @@ function CardSwipe({ masterList = [] }) {
               )}
               <div
                 className={style.swipeBar}
-                style={{ bottom: infoButtonHidden ? '33%' : '12%' }}
+                style={{ bottom: infoButtonHidden ? '37%' : '12%' }}
               >
                 <button ref={leftSwipe} onClick={handleLeftSwipe}>
                   <img
