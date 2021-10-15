@@ -4,8 +4,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { signup } from '../../actions/sessionActions';
-import styles from './signup.module.css';
 import ClassNames from 'classnames';
+import { useHistory } from 'react-router-dom';
+import './signup.module.css';
 
 const schema = yup.object().shape({
   username: yup.string().required(),
@@ -18,7 +19,9 @@ const schema = yup.object().shape({
 
 export default function SignupForm({ splashBtn }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
+  const [backendErrors, setBackendErrors] = useState({});
   const {
     register,
     handleSubmit,
@@ -27,8 +30,13 @@ export default function SignupForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    // console.log(user);
-    dispatch(signup(user));
+    dispatch(signup(user)).then((res) => {
+      if (res.errors?.email) {
+        setBackendErrors({ email: res.errors.email });
+      } else {
+        history.push('/lobby');
+      }
+    });
   };
 
   return (
@@ -53,12 +61,14 @@ export default function SignupForm({ splashBtn }) {
                 <label htmlFor="email">Email</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.email?.message,
+                    errorInput:
+                      errors.email?.message || backendErrors.email,
                   })}
                   type="email"
                   {...register('email')}
                 />
                 <p className="errorMsg">{errors.email?.message}</p>
+                <p className="errorMsg">{backendErrors.email}</p>
               </div>
               <div>
                 <label htmlFor="password">Password</label>

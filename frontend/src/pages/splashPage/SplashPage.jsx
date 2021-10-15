@@ -3,9 +3,20 @@ import LoginForm from '../../components/session/Login';
 import SignupForm from '../../components/session/Signup';
 import styles from './splashpage.module.css';
 import logoTemp from '../../assets/images/logoTemp.png';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../actions/sessionActions';
+import { useHistory } from 'react-router-dom';
 
 function SplashPage() {
+  const dispatch = useDispatch();
+  const currUser = useSelector((state) => state.session);
+  const history = useHistory();
+  const user = { username: 'dmech', password: 'Password1!' };
+
+  const handleClick = () => {
+    const loginDemo = login(user);
+    loginDemo(dispatch).then(() => history.go(0));
+  };
   return (
     <div className={`h-100 ${styles.splashContainer}`}>
       <h1 className={styles.headerLogo}>
@@ -13,17 +24,13 @@ function SplashPage() {
         pickyEatr
       </h1>
 
-      <h2>Swipe Right</h2>
+      <h2>Grab a Friend and Swipe Right!</h2>
       <div className={styles.buttonContainer}>
-        {/* <button>Create Account</button> */}
         <SignupForm splashBtn={styles.splashBtn1} />
-        {/* <button className={styles.splashBtn2}>Log In</button> */}
         <LoginForm splashBtn={styles.splashBtn2} />
-        {/* <button className={styles.splashBtn3}> */}
-        <Link className={styles.splashBtn3} to="/lobby">
+        <button className={styles.splashBtn3} onClick={handleClick}>
           Continue to App
-        </Link>
-        {/* </button> */}
+        </button>
       </div>
     </div>
   );

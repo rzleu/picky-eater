@@ -1,3 +1,4 @@
+
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useState,
@@ -7,21 +8,31 @@ import React, {
   useRef,
 } from 'react';
 import * as yup from 'yup';
-import axios from 'axios';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
-
+import axios from 'axios';
 import { SocketContext } from '../../context/socket';
 import CardSwipe from '../../components/lobby';
 import WAVES from 'vanta/dist/vanta.waves.min';
-import PincodeInput from 'pincode-input';
-import 'pincode-input/dist/pincode-input.min.css';
 import styles from './lobby.module.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
-
+import {
+  User,
+  ThumbsUp,
+  ThumbsDown,
+  Meh,
+  Trash2,
+} from 'react-feather';
+import { CSSTransition } from 'react-transition-group';
+import useOutsideClick from '../../hooks/useOutsideClick';
+import { logout, fetchUser } from '../../actions/sessionActions';
+import {
+  deleteRestaurant,
+  fetchRestaurantExperience,
+} from '../../actions/restaurantActions';
 // VANTA.WAVES('.lobbyContainer');
 
 const schema = yup.object().shape({
@@ -37,14 +48,27 @@ function Lobby() {
     resolver: yupResolver(schema),
   });
   const socket = useContext(SocketContext);
-  const [showCardSwipe, setShowCardSwipe] = useState(false);
+  const [showDropDown, setShowDropDown] = useState(null);
+  const [showMatches, setShowMatches] = useState(null);
+  // const [showCardSwipe, setShowCardSwipe] = useState(false);
   const [roomCode, setRoomCode] = useState('');
   const [masterList, setMasterList] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
   const [vantaEffect, setVantaEffect] = useState(0);
   const vantaRef = useRef(null);
   const [invalidRoomError, setinvalidRoomError] = useState(null);
-
+  const listRef = useRef([]);
+  const clickRef = useRef();
+  const savedListRef = useRef();
+  const dispatch = useDispatch();
+  const savedRest = useSelector((state) => state.session.user.saved);
+  const userId = useSelector((state) => state.session.user.id);
+  const user = useSelector((state) => state.session.user);
+  const [experience, setExperience] = useState('');
+  const [saved, setSaved] = useState([]);
+  useOutsideClick(clickRef, () => setShowDropDown(false));
+  useOutsideClick(savedListRef, () => setShowMatches(false));
+  // * VANTA
   useEffect(() => {
     if (!vantaEffect) {
       setVantaEffect(
@@ -70,11 +94,21 @@ function Lobby() {
     };
   }, [vantaEffect]);
 
-  // * maybe this isn't user
-  const { username, id } = useSelector((state) => state.session.user);
+  // // * fetch user
+  // useEffect(() => {
+  //   axios
+  //     .get('/api/users', {
+  //       params: {
+  //         userId,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setSaved(res.data.saved);
+  //     });
+  // }, [experience]);
 
+  // SOCKET.IO
   const handleJoinRoom = useCallback(({ lobby }) => {
-    console.log(lobby);
     socket.emit('JOIN_ROOM', lobby);
     socket.on('INVALID_PIN', (message) => {
       setinvalidRoomError(message);
@@ -83,101 +117,104 @@ function Lobby() {
       }, 3000);
     });
   }, []);
+  const handleCreateRoom = useCallback((e) => {
+    e.preventDefault();
+    // if (listRef.current.length) {
+    if (!listRef.current.length) return;
 
-  const handleCreateRoom = useCallback(
-    (e) => {
-      e.preventDefault();
-      if (masterList.length) {
-        socket.emit('CREATE_RAND_ROOM', masterList);
-      }
-    },
-    [masterList],
-  );
-
+    socket.emit('CREATE_RAND_ROOM', convertList());
+    // }
+  }, []);
   const handleRoomAccepted = useCallback((data) => {
-    setShowCardSwipe(true);
+    // setShowCardSwipe(true);
     setRoomCode(data);
   }, []);
-
   const handleRoomCode = useCallback((code) => {
     setRoomCode(code);
   }, []);
-
   const handleMasterList = useCallback((data) => {
-    console.log({ data });
     if (data && data.length) {
       setMasterList(data);
     }
   }, []);
 
-  async function success(pos) {
-    setFetchingData(true);
+  // Google API Call
+  const clientSideGoogle = async (pos) => {
+    const location = new window.google.maps.LatLng(
+      pos.coords.latitude,
+      pos.coords.longitude,
+    );
 
-    const placeIdOptions = {
-      method: 'GET',
-      url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${pos.coords.latitude}%2C${pos.coords.longitude}&keyword=restaurant&type=food&radius=8000&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-      headers: {},
+    const request = {
+      location: location,
+      radius: '8000',
+      type: ['food'],
+      keyword: ['restaurant'],
     };
 
-    try {
-      const placeIds = await axios(placeIdOptions)
-        .then((data) => {
-          return data.data.results.map(({ place_id }) => {
-            return place_id;
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    const service = new window.google.maps.places.PlacesService(
+      document.getElementById('google-attr'),
+    );
 
-      const restaurants = placeIds.map(async (placeId) => {
-        const placeDetailOptions = {
-          method: 'GET',
-          url: `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.REACT_APP_GOOGLE_API_KEY}`,
-          headers: {},
-        };
+    service.nearbySearch(request, callback);
 
-        const placeDetails = await axios(placeDetailOptions)
-          .then((data) => {
-            return data.data.result;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        return placeDetails;
-      });
-
-      const resDetails = (await Promise.all(restaurants)).map(
-        (data) => {
-          return {
-            name: data.name,
-            address: data.vicinity,
-            phone: data.formatted_phone_number,
-            location: data.geometry.location,
-            photoRefs: data.photos
-              .map((photo) => {
-                return photo.photo_reference;
-              })
-              .sort(() => 0.5 - Math.random())
-              .slice(0, 3),
-            rating: data.rating,
-            website: data.website,
+    // nearbySearch callback
+    function callback(results, status) {
+      setFetchingData(true);
+      if (
+        status === window.google.maps.places.PlacesServiceStatus.OK
+      ) {
+        for (let i = 0; i < results.length; i++) {
+          const request = {
+            placeId: results[i].place_id,
+            fields: [
+              'name',
+              'vicinity',
+              'formatted_phone_number',
+              'photos',
+              'rating',
+              'website',
+              'place_id',
+            ],
           };
-        },
-      );
-      setMasterList(resDetails);
-      setFetchingData(false);
-    } catch (error) {
-      console.error(error);
+          const innerCallback = async (place, status) => {
+            if (
+              status ===
+              window.google.maps.places.PlacesServiceStatus.OK
+            ) {
+              listRef.current = [...listRef.current, place];
+            }
+          };
+          service.getDetails(request, innerCallback);
+        }
+        setFetchingData(false);
+      }
     }
-  }
+  };
+
+  // utlity for converting functions to urls
+  const convertList = () => {
+    const temp = listRef.current.map(({ photos, ...rest }) => ({
+      ...rest,
+      photos: photos.map((photo) => photo.getUrl({ width: 500 })),
+    }));
+    return temp;
+  };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(success, null, {
+    if (!masterList.length && listRef.current.length > 0) {
+      setMasterList(convertList());
+    }
+  }, [masterList, listRef.current, roomCode]);
+
+  // Geolocation
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(clientSideGoogle, null, {
       enableHighAccuracy: true,
     });
-
+    if (userId) {
+      dispatch(fetchUser(userId));
+    }
     socket.on('JOIN_REQUEST_ACCEPTED', handleRoomAccepted);
     socket.on('ROOM_CODE', handleRoomCode);
     socket.on('MASTER_LIST', handleMasterList);
@@ -189,17 +226,140 @@ function Lobby() {
     };
   }, []);
 
+  function setColor(match) {
+    switch (match.experience) {
+      case 'good':
+        return 'green';
+      case 'bad':
+        return 'red';
+      case 'neutral':
+        return 'orange';
+      case '':
+        return 'grey';
+      default:
+        break;
+    }
+  }
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
+      {/* DROPDOWN */}
+      <div
+        ref={clickRef}
+        className={styles.dropDown}
+        type="button"
+        onClick={() => setShowDropDown((old) => !old)}
+      >
+        <User color="white" z-index="2" />
+        <CSSTransition
+          in={showDropDown}
+          timeout={1000}
+          classNames="navbar-ani"
+          unmountOnExit
+        >
+          <ul className="nav--dropdown">
+            <li>{user.username}</li>
+            <li
+              onClick={() => {
+                dispatch(logout());
+              }}
+            >
+              Logout
+            </li>
+            <li onClick={() => setShowMatches((old) => !old)}>
+              Matches
+            </li>
+          </ul>
+        </CSSTransition>
+      </div>
+      {/* show matches */}
+      {showMatches && (
+        <div className={styles.showMatches} ref={savedListRef}>
+          <h3 className={styles.matchTitle}>SAVED MATCHES</h3>
+          {(!savedRest || !savedRest.length) && (
+            <div className={styles.noMatches}> No Saved Matches</div>
+          )}
+          {savedRest.map((match) => {
+            return (
+              <div
+                className={styles.matchContainer}
+                key={match.place_id}
+              >
+                <li className={styles.restaurantName}>
+                  {match.name}
+                </li>
+                <div className={styles.reactions}>
+                  <ThumbsUp
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'good'
+                        ? setColor(match)
+                        : 'grey'
+                    }
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'good',
+                        ),
+                      )
+                    }
+                  />
+                  <ThumbsDown
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'bad'
+                        ? setColor(match)
+                        : 'grey'
+                    }
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'bad',
+                        ),
+                      )
+                    }
+                  />
+                  <Meh
+                    className={styles.reactionIcons}
+                    fill={
+                      match.experience === 'neutral'
+                        ? setColor(match)
+                        : 'grey'
+                    }
+                    onClick={() =>
+                      dispatch(
+                        fetchRestaurantExperience(
+                          match.place_id,
+                          userId,
+                          'neutral',
+                        ),
+                      )
+                    }
+                  />
+                  <Trash2
+                    className={styles.reactionIcons}
+                    onClick={() => {
+                      dispatch(
+                        deleteRestaurant(match.place_id, userId),
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* MAIN LOBBY */}
       {!roomCode ? (
         <h2 style={{ opacity: '0' }}>ROOM CODE: {roomCode}</h2>
       ) : (
         <h2>ROOM CODE: {roomCode}</h2>
       )}
-      {/* {document.querySelector('.card') ? (
-        <h2>ROOM CODE IS {roomCode}</h2>
-      ) : null} */}
-      {/* <h2>ROOM CODE: {roomCode}</h2> */}
       <Link className={styles.aboutLink} to="/about">
         <FontAwesomeIcon
           className={styles.keyBoard}
@@ -213,10 +373,6 @@ function Lobby() {
             <form onSubmit={handleSubmit(handleJoinRoom)}>
               <h2 className={styles.havePin}>Have a Pin?</h2>
               <div className={styles.inputContainer}>
-                {/* <div
-                  class={styles.pincodeInputContainer}
-                  {...register('lobby')}
-                ></div> */}
                 <input
                   placeholder={'PIN'}
                   className={styles.pinInput}
@@ -234,40 +390,44 @@ function Lobby() {
                 />
               </div>
               <div>
-                <h3 className={styles.createRoom}>Create a room?</h3>
-                <button
-                  className={styles.generateButton}
-                  onClick={handleCreateRoom}
-                  disabled={fetchingData}
-                >
-                  {fetchingData ? (
-                    <svg
-                      className={styles.loader}
-                      width="50px"
-                      height="50px"
-                      viewBox="0 0 66 66"
-                      xmlns="http://www.w3.org/2000/svg"
+                {!Object.values(convertList()).length ? (
+                  <svg
+                    className={styles.loader}
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 66 66"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      className={styles.path}
+                      fill="none"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                      cx="33"
+                      cy="33"
+                      r="30"
+                    ></circle>
+                  </svg>
+                ) : (
+                  <div>
+                    <h3 className={styles.createRoom}>
+                      Create a room?
+                    </h3>
+                    <button
+                      className={styles.generateButton}
+                      onClick={handleCreateRoom}
+                      disabled={fetchingData}
                     >
-                      <circle
-                        className={styles.path}
-                        fill="none"
-                        strokeWidth="6"
-                        strokeLinecap="round"
-                        cx="33"
-                        cy="33"
-                        r="30"
-                      ></circle>
-                    </svg>
-                  ) : (
-                    'Create'
-                  )}
-                </button>
+                      Create
+                    </button>
+                  </div>
+                )}
               </div>
             </form>
           </div>
         </>
       ) : (
-        <CardSwipe masterList={masterList} />
+        <CardSwipe masterList={convertList()} />
       )}
     </div>
   );

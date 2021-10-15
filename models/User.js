@@ -18,12 +18,9 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
-    saved: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Restaurant',
-      },
-    ],
+    saved: {
+      type: Array,
+    },
   },
   {
     timestamps: true,

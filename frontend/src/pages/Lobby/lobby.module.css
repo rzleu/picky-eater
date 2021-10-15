@@ -11,10 +11,125 @@
   overflow: hidden;
 }
 
+.dropDown {
+  position: absolute;
+  top: 5%;
+  left: 2.5%;
+  border: 0;
+  background: #ff9960;
+  border-radius: 100vh;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  filter: drop-shadow(2px 4px 6px black);
+  cursor: pointer;
+}
+
+.matchContainer li {
+  list-style: none;
+  color: white;
+}
+
+.showMatches {
+  position: absolute;
+  width: 600px;
+  height: 500px;
+  z-index: 8;
+  overflow: scroll;
+  overflow-x: hidden;
+  border: 1px solid black;
+  border-radius: 5px;
+  background: transparent;
+  backdrop-filter: brightness(0.1) blur(6px);
+  margin-top: 2.8%;
+}
+
+.matchTitle {
+  font-family: 'Kanit';
+  display: flex;
+  justify-content: center;
+  font-style: italic;
+  margin: 10px 0px;
+  font-size: 35px;
+  color: white;
+}
+
+.matchContainer {
+  display: flex;
+  /* padding: 10px 0px 0px 10px; */
+  justify-content: space-between;
+  border-bottom: 1px solid grey;
+  height: 40px;
+  align-items: center;
+}
+
+.noMatches {
+  color: white;
+  display: flex;
+  justify-content: center;
+  font-family: 'Kanit';
+  margin-top: 30%;
+  font-size: 25px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #000000;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #000000;
+}
+
+.reactions {
+  display: flex;
+  margin-right: 15px;
+  gap: 20px;
+}
+
+.reactionIcons {
+  cursor: pointer;
+}
+
+.reactionIcons:hover {
+  filter: opacity(50%);
+}
+
+.reactionIcons:last-child {
+  color: #2b2b2b;
+  fill: grey;
+}
+
+.reactionIcons:last-child:hover {
+  filter: opacity(100%);
+  fill: #c9bfbf;
+}
+
+.restaurantName {
+  font-family: 'Kanit';
+  font-weight: 700;
+  letter-spacing: 2px;
+  max-width: 65%;
+  overflow-wrap: break-word;
+  padding-left: 25px;
+}
+
 .container h2 {
   position: relative;
   z-index: 1;
-  margin-top: 50px;
+  margin-top: 0px;
   margin-bottom: 0px;
 }
 
@@ -57,6 +172,7 @@
   font-family: 'Kanit';
   font-weight: 600;
   font-size: 1.1rem;
+  text-align: center;
 }
 
 .container form {

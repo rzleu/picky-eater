@@ -1,32 +1,37 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Route, Redirect, withRouter } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Route, Redirect } from 'react-router-dom';
 
-const Auth = ({ component: Component, path, loggedIn, exact }) => (
-  <Route
-    path={path}
-    exact={exact}
-    render={(props) =>
-      !loggedIn ? <Component {...props} /> : <Redirect to="/lobby" />
-    }
-  />
-);
+export const AuthRoute = ({ component: Component, path, exact }) => {
+  const isLoggedIn = useSelector((state) => state.session);
+  return (
+    <Route
+      path={path}
+      exact={exact}
+      render={(props) =>
+        !(isLoggedIn?.isAuthenticated || isLoggedIn?.isSignedIn) ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/lobby" />
+        )
+      }
+    />
+  );
+};
 
-const Protected = ({ component: Component, loggedIn, ...rest }) => (
-  <Route
-    {...rest}
-    render={(props) =>
-      loggedIn ? <Component {...props} /> : <Redirect to="/" />
-    }
-  />
-);
+export const ProtectedRoute = ({ component: Component, ...rest }) => {
+  const isLoggedIn = useSelector((state) => state.session);
 
-const mapStateToProps = (state) => ({
-  loggedIn: state.session.isAuthenticated,
-});
-
-export const AuthRoute = withRouter(connect(mapStateToProps)(Auth));
-
-export const ProtectedRoute = withRouter(
-  connect(mapStateToProps)(Protected),
-);
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isLoggedIn?.isAuthenticated || isLoggedIn?.isSignedIn ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/" />
+        )
+      }
+    />
+  );
+};

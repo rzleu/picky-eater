@@ -5,16 +5,21 @@ import * as yup from 'yup';
 import { useDispatch } from 'react-redux';
 import { login } from '../../actions/sessionActions';
 import ClassNames from 'classnames';
-import { Redirect } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+
 const schema = yup.object().shape({
   username: yup.string().required(),
-  // email: yup.string().email().required(),
   password: yup.string().min(8).required(),
 });
 
 export default function LoginForm({ splashBtn }) {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
+  const [errorObj, setErrorObj] = useState({
+    username: '',
+    password: '',
+  });
   const {
     register,
     handleSubmit,
@@ -23,7 +28,17 @@ export default function LoginForm({ splashBtn }) {
     resolver: yupResolver(schema),
   });
   const onSubmit = (user) => {
-    dispatch(login(user));
+    const loginUser = login(user);
+    loginUser(dispatch).then((res) => {
+      if (!res) {
+        setErrorObj({
+          username: 'Invalid Credentials',
+          password: 'Invalid Credentials',
+        });
+      } else {
+        history.push('/lobby');
+      }
+    });
   };
 
   return (
@@ -38,22 +53,26 @@ export default function LoginForm({ splashBtn }) {
                 <label htmlFor="username">Username</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.username?.message,
+                    errorInput:
+                      errors.username?.message || errorObj.username,
                   })}
                   {...register('username')}
                 />
                 <p className="errorMsg">{errors.username?.message}</p>
+                <p className="errorMsg">{errorObj.username}</p>
               </div>
               <div>
                 <label htmlFor="password">Password</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.username?.message,
+                    errorInput:
+                      errors.username?.message || errorObj.password,
                   })}
                   type="password"
                   {...register('password')}
                 />
                 <p className="errorMsg">{errors.password?.message}</p>
+                <p className="errorMsg">{errorObj.password}</p>
               </div>
               <input type="submit" />
               <button onClick={() => setOpenModal(false)}>✖</button>

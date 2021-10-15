@@ -39,11 +39,10 @@ export const login = (user) => (dispatch) =>
       SessionAPIUtil.setAuthToken(token);
       const decoded = jwt_decode(token);
       dispatch(receiveUserSignIn(decoded));
-      // console.log(res);
+      return res;
     })
     .catch((err) => {
       dispatch(receiveErrors(err.response.data));
-      // console.log(err);
     });
 
 export const logout = () => (dispatch) => {
@@ -51,3 +50,9 @@ export const logout = () => (dispatch) => {
   SessionAPIUtil.setAuthToken(false);
   dispatch(logoutUser());
 };
+
+export const fetchUser = (userId) => (dispatch) =>
+  SessionAPIUtil.fetchUser(userId).then(
+    (user) => dispatch(receiveCurrentUser(user.data)),
+    (err) => dispatch(receiveErrors(err.response.data)),
+  );
