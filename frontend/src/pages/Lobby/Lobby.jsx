@@ -1,4 +1,3 @@
-
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useState,
@@ -390,7 +389,7 @@ function Lobby() {
                 />
               </div>
               <div>
-                {!Object.values(convertList()).length ? (
+                {fetchingData ? (
                   <svg
                     className={styles.loader}
                     width="50px"
