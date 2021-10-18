@@ -33,7 +33,7 @@ module.exports = function validateSignupInput(data) {
 
   if (!Validator.isStrongPassword(data.password)) {
     errors.password =
-      'Password must be at least eight characters and contain at least one uppercase letter, one lowercase letter, one number and one special character';
+      'Field must contain at least one of each: uppercase letter, lowercase letter, number, & special character';
   }
 
   if (Validator.isEmpty(data.password)) {

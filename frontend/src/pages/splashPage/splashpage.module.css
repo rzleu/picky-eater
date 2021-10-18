@@ -191,4 +191,11 @@ h1 {
   display: flex;
   top: 1%;
   align-items: center;
+  cursor: pointer;
+}
+
+.disclaimer {
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 1%;
 }

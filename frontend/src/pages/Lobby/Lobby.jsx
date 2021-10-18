@@ -241,6 +241,11 @@ function Lobby() {
   }
   return (
     <div className={`${styles.container}`} ref={vantaRef}>
+      {!roomCode && (
+        <div className={styles.disclaimer}>
+          * Location services required *
+        </div>
+      )}
       {/* DROPDOWN */}
       <div
         ref={clickRef}
@@ -408,14 +413,21 @@ function Lobby() {
                     ></circle>
                   </svg>
                 ) : (
-                  <div>
+                  <div
+                    styles={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
                     <h3 className={styles.createRoom}>
-                      Create a room?
+                      Create a room: This app Needs two to tango
                     </h3>
                     <button
                       className={styles.generateButton}
                       onClick={handleCreateRoom}
                       disabled={fetchingData}
+                      style={{ margin: 'auto' }}
                     >
                       Create
                     </button>
