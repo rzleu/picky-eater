@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 import styles from './about.module.css';
 import CindyPic from '../../assets/images/CindyPic.png';
 import AntPic from '../../assets/images/AntPic.png';
@@ -7,10 +9,14 @@ import DanPic from '../../assets/images/DanPic.png';
 import gitHub from '../../assets/images/github-alt-brands.png';
 import linkedIn from '../../assets/images/linkedin-brands.png';
 import globe from '../../assets/images/globe-solid.png';
+import logoTemp from '../../assets/images/logoTemp.png';
 
 function About() {
   return (
     <div className={styles.aboutContainer}>
+      <Link to="/" className={styles.headerLogo}>
+        <img className={styles.splashLogo} src={logoTemp} alt="" />
+      </Link>
       <h1 className={styles.aboutHeader}>The pickyEatr Team</h1>
       <div className={styles.teamContainer}>
         <div className={styles.teamItems}>

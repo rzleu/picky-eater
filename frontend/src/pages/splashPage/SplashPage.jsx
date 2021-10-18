@@ -24,7 +24,13 @@ function SplashPage() {
         pickyEatr
       </h1>
 
-      <h2>Grab a Friend and Swipe Right!</h2>
+      <h2>
+        Grab a Friend and Swipe Right!{' '}
+        <div className={styles.disclaimer}>
+          * Location services required *
+        </div>
+      </h2>
+
       <div className={styles.buttonContainer}>
         <SignupForm splashBtn={styles.splashBtn1} />
         <LoginForm splashBtn={styles.splashBtn2} />

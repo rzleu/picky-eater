@@ -11,7 +11,7 @@ import './signup.module.css';
 const schema = yup.object().shape({
   username: yup.string().required(),
   email: yup.string().email().required(),
-  password: yup.string().min(8).required(),
+  password: yup.string(),
   password2: yup
     .string()
     .oneOf([yup.ref('password'), null], 'passwords must match'),
@@ -21,7 +21,11 @@ export default function SignupForm({ splashBtn }) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [openModal, setOpenModal] = useState(false);
-  const [backendErrors, setBackendErrors] = useState({});
+  const [backendErrors, setBackendErrors] = useState({
+    email: '',
+    username: '',
+    password: '',
+  });
   const {
     register,
     handleSubmit,
@@ -31,10 +35,13 @@ export default function SignupForm({ splashBtn }) {
   });
   const onSubmit = (user) => {
     dispatch(signup(user)).then((res) => {
-      if (res.errors?.email) {
-        setBackendErrors({ email: res.errors.email });
-      } else {
-        history.push('/lobby');
+      console.log({ res });
+      if (res.errors) {
+        setBackendErrors({
+          email: res.errors?.email,
+          username: res.errors?.username,
+          password: res.errors?.password,
+        });
       }
     });
   };
@@ -51,11 +58,13 @@ export default function SignupForm({ splashBtn }) {
                 <label htmlFor="username">Username</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.username?.message,
+                    errorInput:
+                      errors.username?.message || backendErrors.email,
                   })}
                   {...register('username')}
                 />
                 <p className="errorMsg">{errors.username?.message}</p>
+                <p className="errorMsg">{backendErrors.username}</p>
               </div>
               <div>
                 <label htmlFor="email">Email</label>
@@ -74,12 +83,16 @@ export default function SignupForm({ splashBtn }) {
                 <label htmlFor="password">Password</label>
                 <input
                   className={ClassNames({
-                    errorInput: errors.password?.message,
+                    errorInput:
+                      errors.password?.message ||
+                      backendErrors.password,
                   })}
                   type="password"
+                  placeholder="At least 8 characters"
                   {...register('password')}
                 />
                 <p className="errorMsg">{errors.password?.message}</p>
+                <p className="errorMsg">{backendErrors.password}</p>
               </div>
               <div>
                 <label htmlFor="password2">
