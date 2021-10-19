@@ -35,7 +35,6 @@ export default function SignupForm({ splashBtn }) {
   });
   const onSubmit = (user) => {
     dispatch(signup(user)).then((res) => {
-      console.log({ res });
       if (res.errors) {
         setBackendErrors({
           email: res.errors?.email,

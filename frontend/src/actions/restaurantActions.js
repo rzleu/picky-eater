@@ -46,7 +46,7 @@ export const deleteRestaurant =
       .then(() => {
         dispatch(deleteRestaurantPojo(restaurant, userId));
       })
-      .catch((responce) => console.error(responce));
+      .catch((response) => console.error(response));
     if (localStorage.jwtToken) {
       setAuthToken(localStorage.jwtToken);
     }
